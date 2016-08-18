@@ -1,0 +1,19 @@
+div.mainHeader  {
+    min-width: 300px;
+    max-width: 800px;
+}
+
+div.mainInput {
+    min-width: 300px;
+    max-width: 800px;
+}
+
+div.mainOutput  {
+    min-width: 300px;
+    max-width: 800px;
+}
+
+div.mainFooter  {
+    min-width: 300px;
+    max-width: 800px;
+}

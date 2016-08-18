@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+<title>PathWalue</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<link href="static/css/styles.css" rel="stylesheet" type="text/css" />
+</head>
+
+
+<body>
+
+
+<div class="mainHeader">
+<h1>PathWalue - pathways with value</h1>
+<hr>
+<h2>Instructions</h2>
+</div>
+
+
+<div class="mainInput">
+<hr>
+<h2>Input</h2>
+<form>
+<p><input name="nResults" type="number" value="10" min="1" max="20"></p>
+<p><select class="select2Multi" name="compounds">
+    <option value="1">Compound 1</option>
+    <option value="2">Compound 2</option>
+    <option value="3">Compound 3</option>
+    </select></p>
+<p><select class="select2Multi" name="enzymes">
+    <option value="1">Enzyme 1</option>
+    <option value="2">Enzyme 2</option>
+    <option value="3">Enzyme 3</option>
+    </select></p>
+<p><button type="button" onclick="submitSearch()">Search</button></p>
+</form>
+</div>
+
+
+<div class="mainOutput">
+<hr>
+<h2>Results</h2>
+</div>
+
+
+<div class="mainFooter">
+<br>
+<hr>
+<h2>Powered by:</h2>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script src="static/js/multiselect.js"></script>
+<script src="static/js/pw.js"></script>
+
+
+</body>
+
+
+</html>
