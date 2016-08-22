@@ -28,6 +28,43 @@ function createHTMLElement(documentObject, tagName, attributes) {
     return element;
 }
 
+/**
+ * Return pathway value.
+ * @param {array} steps
+ * @param {object} compounds
+ *
+ * @returns {number}
+ */
+function evaluatePathway(steps, compounds) {
+    var rxns = [];
+    var pros = [];
+    var subs = [];
+    var substratesAll = [];
+    var productsAll = [];
+    _.forEach(steps, function(step) {
+        rxns.push(step[0]);
+        substratesAll.push.apply(substratesAll, step[1]);
+        productsAll.push.apply(productsAll, step[2]);
+    });
+    _.forEach(_.difference(substratesAll, productsAll), function(s) {
+        subs.push(compounds[s][0] * compounds[s][1]);
+    });
+    _.forEach(_.difference(productsAll, substratesAll), function(p) {
+        pros.push(compounds[p][0] * compounds[p][1]);
+    });
+    return Math.ceil((_.sum(pros)-_.sum(subs))*(_.sum(rxns)+1)/steps.length);
+    /*
+    values_reactions = (data[0] for data in steps.values())
+    substrates_all = set(s for step in steps.values() for s in step[1])
+    products_all = set(p for step in steps.values() for p in step[2])
+    substrates = substrates_all - products_all
+    products = products_all - substrates_all
+    values_reactants = (compounds[s][1] * compounds[s][0] for s in substrates)
+    values_products = (compounds[p][1] * compounds[p][0] for p in products)
+    amount_reactions = len(steps)
+    */
+}
+
 
 /**
  * Return pathways that meet filtering conditions.
@@ -102,7 +139,6 @@ function filterPathways(pathways, C, E, s, t, context) {
     });
     return pathways;
 }
-
 
 
 /**

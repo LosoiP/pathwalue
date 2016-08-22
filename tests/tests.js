@@ -194,6 +194,28 @@ QUnit.test('testValidateInputFields', function(assert) {
 
 
 QUnit.module('testEvaluatePathway');
+QUnit.test('testCorrectResults', function(assert) {
+    var steps1 = [[6, ['5', '6'], ['3', '4']]];
+    var steps2 = [
+        [2, ['1', '2'], ['5', '6']],
+        [6, ['5', '6'], ['3', '4']],
+    ];
+    var steps3 = [
+        [4, ['3', '4'], ['5', '6']],
+        [6, ['5', '6'], ['3', '4']],
+        [3, ['3', '4'], ['1', '2']],
+    ];
+    var compounds = {
+        '1': [1, 6], '2': [2, 5], '3': [3, 4],
+        '4': [4, 3], '5': [5, 2], '6': [1, 6],
+    };
+    var value1 = evaluatePathway(steps1, compounds);
+    var value2 = evaluatePathway(steps2, compounds);
+    var value3 = evaluatePathway(steps3, compounds);
+    assert.strictEqual(value1, 56, 'steps 1 -> 56');
+    assert.strictEqual(value2, 36, 'steps 2 -> 36');
+    assert.strictEqual(value3, Math.ceil(16*14/3), 'steps 3 -> ceil(16 * 14 / 3)');
+});
 
 
 QUnit.module('testFilterPathway');
