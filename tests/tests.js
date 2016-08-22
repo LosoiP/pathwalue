@@ -1,3 +1,4 @@
+'use strict';
 /**
  * @fileOverview QUnit tests for PathWalue-application.
  *
@@ -102,6 +103,11 @@ var CONTEXT = {
     'reaction_ecs': REACTION_ECS,
     'ec_reactions': EC_REACTIONS,
 };
+var PATHWAYS = [
+    ['1'], ['1', '4'], ['1', '4', '5'],
+    ['4'], ['4', '5'], ['4', '5', '1'],
+    ['5'], ['5', '1'], ['5', '1', '4'],
+];
 
 
 
@@ -143,11 +149,33 @@ function createMultiselect(documentObject, elementName) {
 // Test modules and functions
 // --------------------------
 
-QUnit.module('TestDetermineIntermediates');
+QUnit.module('testCreateHTMLElement');
+QUnit.test('testPElement', function(assert) {
+    var attributes = {
+        text: 'text',
+    };
+    var element = createHTMLElement(document, 'P', attributes);
+    assert.strictEqual(element.tagName, 'P', 'correct tagName: P')
+    assert.strictEqual(element.text, 'text', 'correct text: text');
+});
+QUnit.test('testOptionElement', function(assert) {
+    var attributes = {
+        selected: true,
+        value: 'value',
+    };
+    var element = createHTMLElement(document, 'OPTION', attributes);
+    assert.strictEqual(element.tagName, 'OPTION', 'correct tagName: OPTION');
+    assert.strictEqual(element.selected, true, 'correct selected: true');
+    assert.strictEqual(element.value, 'value', 'correct value: value');
+});
 
 
-QUnit.module('TestEvaluateInput');
-QUnit.test('TestValidateInputFields', function(assert) {
+
+QUnit.module('testDetermineIntermediates');
+
+
+QUnit.module('testEvaluateInput');
+QUnit.test('testValidateInputFields', function(assert) {
     var cEmptyEEmptyInvalid = validateInputCE([], []);
     var cEmptyEValid = validateInputCE([], ['1', '2']);
     var cValidEEmpty = validateInputCE(['1', '2'], []);
@@ -155,60 +183,210 @@ QUnit.test('TestValidateInputFields', function(assert) {
     var nInvalid0 = validateInputN(0);
     var nInvalid21 = validateInputN(21);
     var nValid10 = validateInputN(10);
-    assert.strictEqual(nInvalid0, false, 'false for invalid input');
-    assert.strictEqual(nInvalid21, false), 'false for invalid input';
-    assert.strictEqual(nValid10, true, 'true for valid input');
-    assert.strictEqual(cEmptyEEmptyInvalid, false, 'false for invalid input');
-    assert.strictEqual(cEmptyEValid, true, 'true for valid input');
-    assert.strictEqual(cValidEEmpty, true, 'true for valid input');
-    assert.strictEqual(cValidEValid, true, 'true for valid input');
+    assert.strictEqual(nInvalid0, false, 'false for invalid input n = 0');
+    assert.strictEqual(nInvalid21, false, 'false for invalid input n = 21');
+    assert.strictEqual(nValid10, true, 'true for valid input n = 10');
+    assert.strictEqual(cEmptyEEmptyInvalid, false, 'false for invalid input empty C empty E');
+    assert.strictEqual(cEmptyEValid, true, 'true for valid input empty C');
+    assert.strictEqual(cValidEEmpty, true, 'true for valid input empty E');
+    assert.strictEqual(cValidEValid, true, 'true for valid input C and E');
 });
 
 
-QUnit.module('TestEvaluatePathway');
+QUnit.module('testEvaluatePathway');
 
 
-QUnit.module('TestFilterPathway');
+QUnit.module('testFilterPathway');
+QUnit.test('testFilterAll', function(assert) {
+    var pws = filterPathways(PATHWAYS, ['1', '3', '5'], ['1', '2', '3', '4'],
+        '1', '3', CONTEXT);
+    assert.deepEqual(pws, [], 'filter all pathways');
+});
+QUnit.test('testFilterCompounds', function(assert) {
+    var pws1 = filterPathways(PATHWAYS, ['1'], [], '', '', CONTEXT);
+    var pws13 = filterPathways(PATHWAYS, ['1', '3'], [], '', '', CONTEXT);
+    var pws135 = filterPathways(PATHWAYS, ['1', '3', '5'], [], '', '', CONTEXT);
+    var filtered1 = [
+        ['1'], ['1', '4'], ['1', '4', '5'],
+        ['4', '5'], ['4', '5', '1'],
+        ['5'], ['5', '1'], ['5', '1', '4'],
+    ];
+    var filtered13 = [
+        ['1'], ['1', '4'], ['1', '4', '5'],
+        ['4', '5'], ['4', '5', '1'],
+        ['5', '1'], ['5', '1', '4'],
+    ];
+    var filtered135 = [
+        ['1', '4'], ['1', '4', '5'],
+        ['4', '5'], ['4', '5', '1'],
+        ['5', '1'], ['5', '1', '4'],
+    ];
+    assert.deepEqual(pws1, filtered1, 'filter correct compounds 1');
+    assert.deepEqual(pws13, filtered13, 'filter correct compounds 1 and 3');
+    assert.deepEqual(pws135, filtered135, 'filter correct compounds 1, 3 and 5');
+});
+QUnit.test('testFilterEnzymes', function(assert) {
+    var pws1 = filterPathways(PATHWAYS, [], ['1'], '', '', CONTEXT);
+    var pws13 = filterPathways(PATHWAYS, [], ['1', '3'], '', '', CONTEXT);
+    var pws135 = filterPathways(PATHWAYS, [], ['1', '3', '4'], '', '', CONTEXT);
+    var filtered1 = [
+        ['1'], ['1', '4'], ['1', '4', '5'],
+        ['4', '5', '1'],
+        ['5', '1'], ['5', '1', '4'],
+    ];
+    var filtered13 = [
+        ['1', '4'], ['1', '4', '5'],
+        ['4', '5', '1'],
+        ['5', '1', '4'],
+    ];
+    var filtered135 = [['1', '4', '5'], ['4', '5', '1'], ['5', '1', '4']];
+    assert.deepEqual(pws1, filtered1, 'filter correct enzymes 1');
+    assert.deepEqual(pws13, filtered13, 'filter correct enzymes 1 and 3');
+    assert.deepEqual(pws135, filtered135, 'filter correct enzymes 1, 3 and 5');
+});
+QUnit.test('testSources', function(assert) {
+    var pws3 = filterPathways(PATHWAYS, [], [], '3', '', CONTEXT);
+    var pws5 = filterPathways(PATHWAYS, [], [], '5', '', CONTEXT);
+    var filtered3 = [['4'], ['4', '5'], ['5']];
+    var filtered5 = [['1'], ['5'], ['5', '1']];
+    assert.deepEqual(pws3, filtered3, 'filter correct source 3');
+    assert.deepEqual(pws5, filtered5, 'filter correct source 5');
+});
+QUnit.test('testTargets', function(assert) {
+    var pws3 = filterPathways(PATHWAYS, [], [], '', '3', CONTEXT);
+    var pws5 = filterPathways(PATHWAYS, [], [], '', '5', CONTEXT);
+    var filtered3 = [['1'], ['5'], ['5', '1']];
+    var filtered5 = [['1'], ['1', '4'], ['4']];
+    assert.deepEqual(pws3, filtered3, 'filter correct target 3');
+    assert.deepEqual(pws5, filtered5, 'filter correct target 5');
+});
+QUnit.test('testNoFilters', function(assert) {
+    var pws = filterPathways(PATHWAYS, [], [], '', '', CONTEXT);
+    var pws132 = filterPathways([['1', '3', '2']], [], [], '', '', CONTEXT);
+    var pws513 = filterPathways([['5', '1', '3']], [], [], '', '', CONTEXT);
+    var pws5132 = filterPathways([['5', '1', '3', '2']], [], [], '', '', CONTEXT);
+    var pws6135 = filterPathways([['6', '1', '3', '5']], [], [], '', '', CONTEXT);
+    assert.deepEqual(pws, PATHWAYS, "don't filter pathways");
+    assert.deepEqual(pws132, [], 'filter cycle 1, 3, 2');
+    assert.deepEqual(pws513, [], 'filter cycle 5, 1, 3');
+    assert.deepEqual(pws5132, [], 'filter cycle 5, 1, 3, 2');
+    assert.deepEqual(pws6135, [['6', '1', '3', '5']], "don't filter 6, 1, 3, 5");
+});
+QUnit.test('testPairedFilters', function(assert) {
+    var pwsC1E3 = filterPathways(PATHWAYS, ['1'], ['3'], '', '', CONTEXT);
+    var pwsC13S5 = filterPathways(PATHWAYS, ['1', '3'], [], '5', '', CONTEXT);
+    var pwsC13T3 = filterPathways(PATHWAYS, ['1', '3'], [], '', '3', CONTEXT);
+    var pwsE1S5 = filterPathways(PATHWAYS, [], ['1'], '5', '', CONTEXT);
+    var pwsE1T5 = filterPathways(PATHWAYS, [], ['1'], '', '5', CONTEXT);
+    var pwsS3T5 = filterPathways(PATHWAYS, [], [], '3', '5', CONTEXT);
+    var pwsC13E1S1T3 = filterPathways(PATHWAYS, ['1', '3'], ['1'], '1', '3', CONTEXT);
+    var filteredC1E3 = [
+        ['1', '4'], ['1', '4', '5'],
+        ['4', '5'], ['4', '5', '1'],
+        ['5', '1', '4'],
+        ];
+    var filteredC13S5 = [['1'], ['5', '1']];
+    var filteredC13T3 = [['1'], ['5', '1']];
+    var filteredE1S5 = [['1'], ['5', '1']];
+    var filteredE1T5 = [['1'], ['1', '4']];
+    var filteredS3T5 = [['4']];
+    var filteredC13E1S1T3 = [['1']];
+    assert.deepEqual(pwsC1E3, filteredC1E3, 'filter correct C1 E3');
+    assert.deepEqual(pwsC13S5, filteredC13S5, 'filter correct C13 S5');
+    assert.deepEqual(pwsC13T3, filteredC13T3, 'filter correct C13 T3');
+    assert.deepEqual(pwsE1S5, filteredE1S5, 'filter correct E1 S5');
+    assert.deepEqual(pwsE1T5, filteredE1T5, 'filter correct E1 T5');
+    assert.deepEqual(pwsS3T5, filteredS3T5, 'filter correct S3 T5');
+    assert.deepEqual(pwsC13E1S1T3, filteredC13E1S1T3, 'filter correct C13 E1 S1 T3');
+});
 
 
-QUnit.module('TestFindPathway');
+QUnit.module('testFindPathway');
+QUnit.test('testCatchErrors', function(assert) {
+    var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS)
+    assert.notOk(findPathway(G, 'source', null), 'return undefined')
+    assert.notOk(findPathway(G, null, 'target'), 'return undefined')
+    assert.notOk(findPathway(G, '1', '6'), 'return undefined')
+});
+QUnit.test('testFindCorrectPathways', function(assert) {
+    var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS)
+    var source1Target5 = [['1', '4', '5']];
+    var source1TargetNull = [['1'], ['1', '4'], ['1', '4', '5']];
+    var source5Target1 = [['5', '1']];
+    var sourceNullTarget5 = [['1', '4', '5'], ['4', '5'], ['5']];
+    var pws1To5 = findPathway(G, '1', '5');
+    var pws1ToNull = findPathway(G, '1', null);
+    var pws5To1 = findPathway(G, '5', '1');
+    var pwsNullTo5 = findPathway(G, null, '5');
+    assert.deepEqual(pws1To5, source1Target5, 'correct pathways S1T5');
+    assert.deepEqual(pws1ToNull, source1TargetNull, 'correct pathways S1Tnull');
+    assert.deepEqual(pws5To1, source5Target1, 'correct pathways S5T1');
+    assert.deepEqual(pwsNullTo5, sourceNullTarget5, 'correct pathways SnullT5');
+});
 
 
-QUnit.module('TestFormatCompound');
+QUnit.module('testFormatCompound');
 
 
-QUnit.module('TestFormatPathway');
+QUnit.module('testFormatPathway');
 
 
-QUnit.module('TestFormatOutput');
+QUnit.module('testFormatOutput');
 
 
-QUnit.module('TestFormatReaction');
+QUnit.module('testFormatReaction');
 
 
-QUnit.module('TestGetInputValues');
-QUnit.test('TestGetCorrectValues', function(assert) {
+QUnit.module('testGetInputValues');
+QUnit.test('testGetCorrectValues', function(assert) {
     var form = createInputForm();
     var values = getInputValues(form);
     var correct = {
-        'nResults': '10',
-        'compounds': ['c1', 'c2'],
-        'enzymes': ['e1', 'e2'],
+        nResults: '10',
+        compounds: ['c1', 'c2'],
+        enzymes: ['e1', 'e2'],
     };
-    assert.deepEqual(values, correct, 'return correct values');
+    assert.deepEqual(values, correct, 'return correct values: n10, Cc1c2 Ee1e2');
 });
 
 
-QUnit.module('TestGetMultiselectValues');
+QUnit.module('testGetMultiselectValues');
 
 
-QUnit.module('TestInitializeGraph');
+QUnit.module('testInitializeGraph');
+QUnit.test('testCorrectOutputs', function(assert) {
+    var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
+    var correctNodes = ['1', '2', '3', '4', '5', '6'];
+    var correctEdges = [
+        ['1', '4'], ['2', '6'], ['3', '2'],
+        ['4', '5'], ['5', '1'], ['6', '3']
+    ];
+    assert.deepEqual(G.nodes(), correctNodes, 'correct nodes');
+    assert.deepEqual(G.edges(), correctEdges, 'correct edges');
+});
+QUnit.test('testCorrectIgnores', function(assert) {
+    var I1 = ['1', '3', '6'];
+    var I2 = ['1', '2'];
+    var G1 = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS, I1);
+    var G2 = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS, I2);
+    var correctNodes1 = ['1', '2', '3', '4', '5', '6'];
+    var correctNodes2 = ['1', '2', '3', '4', '5', '6'];
+    var correctEdges1 = [
+        ['1', '4'], ['2', '6'], ['3', '2'],
+        ['4', '5'], ['5', '1'], ['6', '3']
+    ];
+    var correctEdges2 = [['1', '4'], ['2', '6'], ['4', '5'], ['6', '3']];
+    assert.deepEqual(G1.nodes(), correctNodes1, 'correct nodes I136');
+    assert.deepEqual(G1.edges(), correctEdges1, 'correct edges I136');
+    assert.deepEqual(G2.nodes(), correctNodes2, 'correct nodes I12');
+    assert.deepEqual(G2.edges(), correctEdges2, 'correct edges I12');
+});
 
 
-QUnit.module('TestIntersectDict');
+QUnit.module('testIntersectDict');
 
 
-QUnit.module('TestNBestItems');
+QUnit.module('testNBestItems');
 
 
-QUnit.module('TestOrderPathwayData');
+QUnit.module('testOrderPathwayData');
