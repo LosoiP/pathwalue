@@ -28,6 +28,124 @@ function createHTMLElement(documentObject, tagName, attributes) {
     return element;
 }
 
+
+/**
+ *
+ */
+function evaluateInput(G, n, C, E, context) {
+    var pathways = [];
+    var ecReactions = context['ec_reactions'];
+    var compoundReactions = context['compound_reactions'];
+    var complexities = context['complexities'];
+    var demands = context['demands'];
+    var prices = context['prices'];
+    var stoichiometrics = context['stoichiometrics'];
+    var start = null;
+    var goal = null;
+    var sources = [null];
+    var targets = [null];
+    var pws;
+    var filterPws;
+    // Determine search and filter parameters.
+    if (C.length !== 0) {
+        start = C[0];
+        goal = _.last(C);
+        if (start === 'any') {
+            C = C.slice(1);
+            if (goal === 'any') {
+                ;
+            } else {
+                targets = compoundReactions[goal][1];
+            }
+        } else {
+            sources = compoundReactions[start][0];
+            if (goal === 'any') {
+                C = C.slice(0, -1);
+            } else {
+                targets = compoundReactions[goal][1];
+            }
+        }
+    } else {
+        _.forEach(E, function(ec) {
+            sources.push.apply(sources, ecReactions[ec]);
+        });
+        targets = sources;
+    }
+    // Find pathways.
+    _.forEach(sources, function(s) {
+        _.forEach(targets, function(t) {
+            pws = findPathway(G, s, t);
+            filterPws = filterPathways(pws, C, E, start, goal, context);
+            pathways.push(_.uniq(_.flatten(filterPws)));  // REMOVING REDUNDANT ARRAY OBJECTS?
+        });
+    });
+    /*
+    for source, target in it.product(sources, targets):
+        pws = find_pathway(graph, source, target)
+        filtered_pws = filter_pathways(
+            pws, source=start, target=goal, compounds=compounds,
+            enzymes=enzymes, context=context)
+        pathways.update(filtered_pws)
+
+    // Evaluate pathways.
+    pathways = list(pathways)
+    pathway_data = order_pathway_data(pathways, stoichiometrics,
+                                      complexities, demands, prices)
+    values = [evaluate_pathway(s, c) for s, c in pathway_data]
+    return nbest_items(n, values, pathways)
+    */
+    console.log(pathways)
+    return _.sortBy(pathways, function (pw) {return pw[0];}).slice(0, n);
+    /*
+    ec_reactions = context['ec_reactions']
+    compound_reactions = context['compound_reactions']
+    complexities = context['complexities']
+    demands = context['demands']
+    prices = context['prices']
+    stoichiometrics = context['stoichiometrics']
+
+    pathways = set()
+    start = None
+    goal = None
+    sources = [None]
+    targets = [None]
+    # Determine search and filter parameters.
+    if compounds:
+        start = compounds[0]
+        goal = compounds[-1]
+        if start == 'any':
+            compounds = compounds[1:]
+            if goal == 'any':
+                pass
+            else:
+                targets = compound_reactions[goal][1]
+        else:
+            sources = compound_reactions[start][0]
+            if goal == 'any':
+                compounds = compounds[:-1]
+            else:
+                targets = compound_reactions[goal][1]
+    else:
+        sources.extend(e for ec in enzymes for e in ec_reactions[ec])
+        targets = sources
+    # Find pathways.
+    for source, target in it.product(sources, targets):
+        pws = find_pathway(graph, source, target)
+        filtered_pws = filter_pathways(
+            pws, source=start, target=goal, compounds=compounds,
+            enzymes=enzymes, context=context)
+        pathways.update(filtered_pws)
+
+    # Evaluate pathways.
+    pathways = list(pathways)
+    pathway_data = order_pathway_data(pathways, stoichiometrics,
+                                      complexities, demands, prices)
+    values = [evaluate_pathway(s, c) for s, c in pathway_data]
+    return nbest_items(n, values, pathways)
+    */
+}
+
+
 /**
  * Return pathway value.
  * @param {array} steps
@@ -53,16 +171,6 @@ function evaluatePathway(steps, compounds) {
         pros.push(compounds[p][0] * compounds[p][1]);
     });
     return Math.ceil((_.sum(pros)-_.sum(subs))*(_.sum(rxns)+1)/steps.length);
-    /*
-    values_reactions = (data[0] for data in steps.values())
-    substrates_all = set(s for step in steps.values() for s in step[1])
-    products_all = set(p for step in steps.values() for p in step[2])
-    substrates = substrates_all - products_all
-    products = products_all - substrates_all
-    values_reactants = (compounds[s][1] * compounds[s][0] for s in substrates)
-    values_products = (compounds[p][1] * compounds[p][0] for p in products)
-    amount_reactions = len(steps)
-    */
 }
 
 

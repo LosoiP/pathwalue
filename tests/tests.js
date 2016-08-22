@@ -191,6 +191,70 @@ QUnit.test('testValidateInputFields', function(assert) {
     assert.strictEqual(cValidEEmpty, true, 'true for valid input empty E');
     assert.strictEqual(cValidEValid, true, 'true for valid input C and E');
 });
+QUnit.test('testReturnCorrectAmountResults', function(assert) {
+    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
+    var results1 = evaluateInput(GRAPH, 1, ['1', '3'], [], CONTEXT);
+    var results2 = evaluateInput(GRAPH, 2, ['1', '3'], [], CONTEXT);
+    assert.strictEqual(results1.length, 1, 'return 1 result');
+    assert.strictEqual(results2.length, 2, 'return 2 results');
+});
+QUnit.test('testReturnCorrectCompoundResults', function(assert) {
+    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
+    var resultsC1Any = evaluateInput(GRAPH, 100, ['1', 'any'], [], CONTEXT);
+    var resultsCAny1 = evaluateInput(GRAPH, 100, ['any', '1'], [], CONTEXT);
+    var resultsC13 = evaluateInput(GRAPH, 100, ['1', '3'], [], CONTEXT);
+    var resultsC135 = evaluateInput(GRAPH, 100, ['1', '3', '5'], [], CONTEXT);
+    var C1Any = [['1'], ['1', '4'], ['2'], ['2', '6']];
+    var CAny1 = [['3'], ['4', '5'], ['5'], ['6', '3']];
+    var C13 = [['1'], ['2', '6']];
+    var C135 = [['1', '4']];
+    assert.deepEqual(resultsC1Any[1], C1Any, 'C1Any');
+    assert.deepEqual(resultsCAny1[1], CAny1, 'CAny1');
+    assert.deepEqual(resultsC13[1], C13, 'C13');
+    assert.deepEqual(resultsC135[1], C135, 'C135');
+});
+QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
+    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
+    var resultsE1 = evaluateInput(GRAPH, 100, [], ['1'], CONTEXT);
+    var resultsE12 = evaluateInput(GRAPH, 100, [], ['1', '2'], CONTEXT);
+    var resultsE123 = evaluateInput(GRAPH, 100, [], ['1', '2', '3'], CONTEXT);
+    var E1 = [
+        ['1'], ['1', '4'], ['1', '4', '5'],
+        ['2'], ['2', '6'], ['2', '6', '3'],
+        ['3'], ['3', '2'], ['3', '2', '6'],
+        ['4', '5', '1'],
+        ['5', '1'],
+        ['6', '3'], ['6', '3', '2'],
+    ];
+    var E12 = [
+        ['1', ], ['1', '4'], ['1', '4', '5'],
+        ['4', '5', '1'],
+        ['5', '1'], ['5', '1', '4'],
+    ];
+    var E123 = [
+        ['1', '4'], ['1', '4', '5'],
+        ['4', '5', '1'],
+        ['5', '1', '4'],
+    ];
+    assert.deepEqual(resultsE1[1], E1, 'E1');
+    assert.deepEqual(resultsE12[1], E12, 'E12');
+    assert.deepEqual(resultsE123[1], E123, 'E123');
+});
+QUnit.test('testReturnCorrectCombinationResults', function(assert) {
+    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
+    var resultsC1AnyE1 = evaluateInput(GRAPH, 100, ['1', 'any'], ['1'], CONTEXT);
+    var resultsCAny1E1 = evaluateInput(GRAPH, 100, ['any', '1'], ['1'], CONTEXT);
+    var resultsC13E12 = evaluateInput(GRAPH, 100, ['1', '3'], ['1', '2'], CONTEXT);
+    var resultsC135E123 = evaluateInput(GRAPH, 100, ['1', '3', '5'], ['1', '2', '3'], CONTEXT);
+    var C1AnyE1 = [['1'], ['1', '4'], ['2'], ['2', '6']];
+    var CAny1E1 = [['3'], ['6', '3']];
+    var C13E12 = [['1']];
+    var C135E123 = [['1', '4']];
+    assert.deepEqual(resultsC1AnyE1[1], C1AnyE1, 'C1any E1');
+    assert.deepEqual(resultsCAny1E1[1], CAny1E1, 'Cany1 E1');
+    assert.deepEqual(resultsC13E12[1], C13E12, 'C13 E12');
+    assert.deepEqual(resultsC135E123[1], C135E123, 'C135 E123');
+});
 
 
 QUnit.module('testEvaluatePathway');
@@ -214,7 +278,7 @@ QUnit.test('testCorrectResults', function(assert) {
     var value3 = evaluatePathway(steps3, compounds);
     assert.strictEqual(value1, 56, 'steps 1 -> 56');
     assert.strictEqual(value2, 36, 'steps 2 -> 36');
-    assert.strictEqual(value3, Math.ceil(16*14/3), 'steps 3 -> ceil(16 * 14 / 3)');
+    assert.strictEqual(value3, Math.ceil(16*14/3), 'steps 3 -> ceil(16*14/3)');
 });
 
 
