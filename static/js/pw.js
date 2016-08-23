@@ -306,6 +306,21 @@ function getMultiselectValues(select) {
 
 
 /**
+ *
+ */
+function initializeData() {
+    var stoichiometrics;
+    $.getJSON('./static/json/rxn_stoichiometrics.txt', function(response) {
+        stoichiometrics = response;
+    });
+    var data = {
+        'stoichiometrics': stoichiometrics,
+    };
+    return data;
+}
+
+
+/**
  * Return an initialized jsnx.DiGraph.
  * @param {object} S stoichiometrics object.
  * @param {object} C compounds object.
