@@ -193,10 +193,15 @@ QUnit.test('testValidateInputFields', function(assert) {
 });
 QUnit.test('testReturnCorrectAmountResults', function(assert) {
     var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
-    var results1 = evaluateInput(GRAPH, 1, ['1', '3'], [], CONTEXT);
-    var results2 = evaluateInput(GRAPH, 2, ['1', '3'], [], CONTEXT);
+    var results1 = evaluateInput(GRAPH, 1, ['1', 'any'], [], CONTEXT);
+    var results2 = evaluateInput(GRAPH, 2, ['1', 'any'], [], CONTEXT);
     assert.strictEqual(results1.length, 1, 'return 1 result');
     assert.strictEqual(results2.length, 2, 'return 2 results');
+});
+QUnit.test('testReturnCorrectOrdering', function(assert) {
+    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
+    var results = _.unzip(evaluateInput(GRAPH, 100, ['1', 'any'], [], CONTEXT))[0];
+    assert.ok(results[0] >= results[1] >= results[2] >= results[3], 'correct ordering');
 });
 QUnit.test('testReturnCorrectCompoundResults', function(assert) {
     var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
@@ -208,10 +213,10 @@ QUnit.test('testReturnCorrectCompoundResults', function(assert) {
     var CAny1 = [['3'], ['4', '5'], ['5'], ['6', '3']];
     var C13 = [['1'], ['2', '6']];
     var C135 = [['1', '4']];
-    assert.deepEqual(resultsC1Any[1], C1Any, 'C1Any');
-    assert.deepEqual(resultsCAny1[1], CAny1, 'CAny1');
-    assert.deepEqual(resultsC13[1], C13, 'C13');
-    assert.deepEqual(resultsC135[1], C135, 'C135');
+    assert.deepEqual(_.unzip(resultsC1Any)[1].sort(), C1Any, 'C1Any');
+    assert.deepEqual(_.unzip(resultsCAny1)[1].sort(), CAny1, 'CAny1');
+    assert.deepEqual(_.unzip(resultsC13)[1].sort(), C13, 'C13');
+    assert.deepEqual(_.unzip(resultsC135)[1].sort(), C135, 'C135');
 });
 QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
     var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
@@ -236,9 +241,9 @@ QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
         ['4', '5', '1'],
         ['5', '1', '4'],
     ];
-    assert.deepEqual(resultsE1[1], E1, 'E1');
-    assert.deepEqual(resultsE12[1], E12, 'E12');
-    assert.deepEqual(resultsE123[1], E123, 'E123');
+    assert.deepEqual(_.unzip(resultsE1)[1].sort(), E1, 'E1');
+    assert.deepEqual(_.unzip(resultsE12)[1].sort(), E12, 'E12');
+    assert.deepEqual(_.unzip(resultsE123)[1].sort(), E123, 'E123');
 });
 QUnit.test('testReturnCorrectCombinationResults', function(assert) {
     var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
@@ -250,10 +255,10 @@ QUnit.test('testReturnCorrectCombinationResults', function(assert) {
     var CAny1E1 = [['3'], ['6', '3']];
     var C13E12 = [['1']];
     var C135E123 = [['1', '4']];
-    assert.deepEqual(resultsC1AnyE1[1], C1AnyE1, 'C1any E1');
-    assert.deepEqual(resultsCAny1E1[1], CAny1E1, 'Cany1 E1');
-    assert.deepEqual(resultsC13E12[1], C13E12, 'C13 E12');
-    assert.deepEqual(resultsC135E123[1], C135E123, 'C135 E123');
+    assert.deepEqual(_.unzip(resultsC1AnyE1)[1].sort(), C1AnyE1, 'C1any E1');
+    assert.deepEqual(_.unzip(resultsCAny1E1)[1].sort(), CAny1E1, 'Cany1 E1');
+    assert.deepEqual(_.unzip(resultsC13E12)[1].sort(), C13E12, 'C13 E12');
+    assert.deepEqual(_.unzip(resultsC135E123)[1].sort(), C135E123, 'C135 E123');
 });
 
 
@@ -476,3 +481,32 @@ QUnit.module('testNBestItems');
 
 
 QUnit.module('testOrderPathwayData');
+QUnit.test('testReturnCorrectData', function(assert) {
+    var pathways = [['1', '2', '3'], ['4', '5', '6']];
+    var output = orderPathwayData(
+        pathways, STOICHIOMETRICS, COMPLEXITIES, DEMANDS, PRICES);
+    var steps = [
+        [
+            [1, ['1', '2'], ['3', '4']],
+            [2, ['1', '2'], ['5', '6']],
+            [3, ['3', '4'], ['1', '2']]
+        ],
+        [
+            [4, ['3', '4'], ['5', '6']],
+            [5, ['5', '6'], ['1', '2']],
+            [6, ['5', '6'], ['3', '4']]
+        ],
+    ];
+    var compounds = [
+        {
+            '1': [1, 6], '2': [2, 5], '3': [3, 4],
+            '4': [4, 3], '5': [5, 2], '6': [6, 1],
+        },
+        {
+            '1': [1, 6], '2': [2, 5], '3': [3, 4],
+            '4': [4, 3], '5': [5, 2], '6': [6, 1],
+        },
+    ];
+    assert.deepEqual(output[0], steps, 'correct step data');
+    assert.deepEqual(output[1], compounds, 'correct compound data');
+});

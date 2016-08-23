@@ -30,7 +30,14 @@ function createHTMLElement(documentObject, tagName, attributes) {
 
 
 /**
+ * Search and return best scoring pathways.
+ * @param {jsnx.DiGraph} G
+ * @param {number} n
+ * @param {array} C
+ * @param {array} E
+ * @param {object} context
  *
+ * @returns {array}
  */
 function evaluateInput(G, n, C, E, context) {
     var pathways = [];
@@ -46,14 +53,18 @@ function evaluateInput(G, n, C, E, context) {
     var targets = [null];
     var pws;
     var filterPws;
+    var pathway;
+    var data;
+    var values = [];
     // Determine search and filter parameters.
     if (C.length !== 0) {
         start = C[0];
         goal = _.last(C);
         if (start === 'any') {
             C = C.slice(1);
+            start = null;
             if (goal === 'any') {
-                ;
+                return [];
             } else {
                 targets = compoundReactions[goal][1];
             }
@@ -61,6 +72,7 @@ function evaluateInput(G, n, C, E, context) {
             sources = compoundReactions[start][0];
             if (goal === 'any') {
                 C = C.slice(0, -1);
+                goal = null;
             } else {
                 targets = compoundReactions[goal][1];
             }
@@ -76,73 +88,17 @@ function evaluateInput(G, n, C, E, context) {
         _.forEach(targets, function(t) {
             pws = findPathway(G, s, t);
             filterPws = filterPathways(pws, C, E, start, goal, context);
-            pathways.push(_.uniq(_.flatten(filterPws)));  // REMOVING REDUNDANT ARRAY OBJECTS?
+            pathways.push(filterPws);
         });
     });
-    /*
-    for source, target in it.product(sources, targets):
-        pws = find_pathway(graph, source, target)
-        filtered_pws = filter_pathways(
-            pws, source=start, target=goal, compounds=compounds,
-            enzymes=enzymes, context=context)
-        pathways.update(filtered_pws)
-
     // Evaluate pathways.
-    pathways = list(pathways)
-    pathway_data = order_pathway_data(pathways, stoichiometrics,
-                                      complexities, demands, prices)
-    values = [evaluate_pathway(s, c) for s, c in pathway_data]
-    return nbest_items(n, values, pathways)
-    */
-    console.log(pathways)
-    return _.sortBy(pathways, function (pw) {return pw[0];}).slice(0, n);
-    /*
-    ec_reactions = context['ec_reactions']
-    compound_reactions = context['compound_reactions']
-    complexities = context['complexities']
-    demands = context['demands']
-    prices = context['prices']
-    stoichiometrics = context['stoichiometrics']
-
-    pathways = set()
-    start = None
-    goal = None
-    sources = [None]
-    targets = [None]
-    # Determine search and filter parameters.
-    if compounds:
-        start = compounds[0]
-        goal = compounds[-1]
-        if start == 'any':
-            compounds = compounds[1:]
-            if goal == 'any':
-                pass
-            else:
-                targets = compound_reactions[goal][1]
-        else:
-            sources = compound_reactions[start][0]
-            if goal == 'any':
-                compounds = compounds[:-1]
-            else:
-                targets = compound_reactions[goal][1]
-    else:
-        sources.extend(e for ec in enzymes for e in ec_reactions[ec])
-        targets = sources
-    # Find pathways.
-    for source, target in it.product(sources, targets):
-        pws = find_pathway(graph, source, target)
-        filtered_pws = filter_pathways(
-            pws, source=start, target=goal, compounds=compounds,
-            enzymes=enzymes, context=context)
-        pathways.update(filtered_pws)
-
-    # Evaluate pathways.
-    pathways = list(pathways)
-    pathway_data = order_pathway_data(pathways, stoichiometrics,
-                                      complexities, demands, prices)
-    values = [evaluate_pathway(s, c) for s, c in pathway_data]
-    return nbest_items(n, values, pathways)
-    */
+    pathways = _.uniqWith(_.flatten(pathways), _.isEqual);
+    data = orderPathwayData(
+        pathways, stoichiometrics, complexities, demands,prices);
+    _.forEach(_.zip(data[0], data[1]), function(SC) {
+        values.push(evaluatePathway(SC[0], SC[1]));
+    });
+    return _.sortBy(_.zip(values, pathways), function (pw) {return - pw[0];}).slice(0, n);
 }
 
 
@@ -165,10 +121,20 @@ function evaluatePathway(steps, compounds) {
         productsAll.push.apply(productsAll, step[2]);
     });
     _.forEach(_.difference(substratesAll, productsAll), function(s) {
-        subs.push(compounds[s][0] * compounds[s][1]);
+        try {  // FIND OUT WHY COMPOUND[X] CAN BE UNDEFINED.
+            subs.push(compounds[s][0] * compounds[s][1]);
+        }
+        catch (error) {
+            ;
+        }
     });
     _.forEach(_.difference(productsAll, substratesAll), function(p) {
-        pros.push(compounds[p][0] * compounds[p][1]);
+        try {
+            pros.push(compounds[p][0] * compounds[p][1]);
+        }
+        catch (error) {
+            ;
+        }
     });
     return Math.ceil((_.sum(pros)-_.sum(subs))*(_.sum(rxns)+1)/steps.length);
 }
@@ -199,7 +165,7 @@ function filterPathways(pathways, C, E, s, t, context) {
     var discard2;
     pathways = _.filter(pathways, function(pathway, index, array) {
         approved = true;
-        compounds = [];
+        compounds = ['any'];
         enzymes = [];
         _.forEach(pathway, function(reaction, i, pw) {
             substrates = _.keys(S[reaction][0]);
@@ -363,6 +329,47 @@ function initializeGraph(S, C, I) {
         });
     });
     return G;
+}
+
+
+/**
+ * Return data for pathway evaluation.
+ * @param {array} pathways
+ * @param {object} S
+ * @param {object} C
+ * @param {object} D
+ * @param {object} P
+ *
+ * @returns {array}
+ */
+function orderPathwayData(pathways, S, C, D, P) {
+    var steps = [];
+    var stepsPw;
+    var compounds = [];
+    var compoundsPw;
+    var reaction = [];
+    var substrates = [];
+    var products = [];
+    var subs;
+    var pros;
+    _.forEach(pathways, function(pw) {
+        stepsPw = [];
+        compoundsPw = {};
+        _.forEach(pw, function (rxn) {
+            substrates = _.keys(S[rxn][0]);
+            products = _.keys(S[rxn][1]);
+            _.forEach(substrates, function(s) {
+                compoundsPw[s] = [D[s], P[s]];
+            });
+            _.forEach(products, function(p) {
+                compoundsPw[p] = [D[p], P[p]];
+            });
+            stepsPw.push([C[rxn], substrates, products]);
+        });
+        steps.push(stepsPw);
+        compounds.push(compoundsPw);
+    });
+    return [steps, compounds];
 }
 
 
