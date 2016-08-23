@@ -9,6 +9,25 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 <link href="static/css/styles.css" rel="stylesheet" type="text/css" />
 <script>var CONTEXT={};</script>
+<script src="static/json/cmp_demands.txt"></script>
+<script src="static/json/cmp_prices.txt"></script>
+<script src="static/json/cmp_names.txt"></script>
+<script src="static/json/cmp_reactions.txt"></script>
+<script src="static/json/ec_names.txt"></script>
+<script src="static/json/ec_reactions.txt"></script>
+<script src="static/json/rxn_complexities.txt"></script>
+<script src="static/json/rxn_ecs.txt"></script>
+<script src="static/json/rxn_equations.txt"></script>
+<script src="static/json/rxn_stoichiometrics.txt"></script>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/lodash/4.15.0/lodash.min.js"></script>
+<script src="static/js/jsnetworkx.js"></script>
+<script src="static/js/pw.js"></script>
+<script>
+var GRAPH = initializeGraph(CONTEXT.stoichiometrics, CONTEXT.compound_reactions, IGNORED_COMPOUNDS)
+//document.getElementById('test').innerHTML = GRAPH.edges().slice(1,10);
+</script>
 </head>
 
 
@@ -25,19 +44,27 @@
 <div class="mainInput">
 <hr>
 <h2>Input</h2>
-<form>
-<p><input name="nResults" type="number" value="10" min="1" max="20"></p>
-<p><select class="select2Multi" name="compounds">
-    <option value="1">Compound 1</option>
-    <option value="2">Compound 2</option>
-    <option value="3">Compound 3</option>
-    </select></p>
-<p><select class="select2Multi" name="enzymes">
-    <option value="1">Enzyme 1</option>
-    <option value="2">Enzyme 2</option>
-    <option value="3">Enzyme 3</option>
-    </select></p>
-<p><button type="button" onclick="submitSearch()">Search</button></p>
+<form id="inputForm">
+<p>
+<input name="nResults" type="number" value="10" min="1" max="20">
+</p>
+<p>
+<select class="select2Multi" name="compounds" multiple="" style="width: 100%">
+    <option value="4167">D-glucopyranose</option>
+    <option value="16236">ethanol</option>
+    <option value="15343">acetaldehyde</option>
+</select>
+</p>
+<p>
+<select class="select2Multi" name="enzymes" multiple="" style="width: 100%">
+    <option value="1.1.1.1">Alcohol dehydrogenase</option>
+    <option value="1.1.1.1">Alcohol dehydrogenase</option>
+    <option value="1.1.1.1">Alcohol dehydrogenase</option>
+</select>
+</p>
+<p>
+<button type="button" onclick="submitSearch()">Search</button>
+</p>
 </form>
 </div>
 
@@ -45,35 +72,18 @@
 <div class="mainOutput">
 <hr>
 <h2>Results</h2>
-<p id='test'></p>
+<p id="pOutput"></p>
 </div>
 
-
+<!--
 <div class="mainFooter">
 <br>
 <hr>
 <h2>Powered by:</h2>
 </div>
+-->
 
-
-<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/lodash/4.15.0/lodash.min.js"></script>
 <script src="static/js/multiselect.js"></script>
-<script src="static/js/jsnetworkx.js"></script>
-<script src="static/js/pw.js"></script>
-<script src="static/json/cmp_demands.txt"></script>
-<script src="static/json/cmp_prices.txt"></script>
-<script src="static/json/cmp_names.txt"></script>
-<script src="static/json/cmp_reactions.txt"></script>
-<script src="static/json/ec_names.txt"></script>
-<script src="static/json/ec_reactions.txt"></script>
-<script src="static/json/rxn_complexities.txt"></script>
-<script src="static/json/rxn_ecs.txt"></script>
-<script src="static/json/rxn_equations.txt"></script>
-<script src="static/json/rxn_stoichiometrics.txt"></script>
-
-
 </body>
 
 
