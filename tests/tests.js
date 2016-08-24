@@ -103,11 +103,6 @@ var CONTEXT = {
     'reaction_ecs': REACTION_ECS,
     'ec_reactions': EC_REACTIONS,
 };
-var PATHWAYS = [
-    ['1'], ['1', '4'], ['1', '4', '5'],
-    ['4'], ['4', '5'], ['4', '5', '1'],
-    ['5'], ['5', '1'], ['5', '1', '4'],
-];
 
 
 
@@ -142,7 +137,13 @@ function createMultiselect(documentObject, elementName) {
     multiselect.appendChild(option2);
     return multiselect
 }
-
+function createPathways() {
+    return [
+        ['1'], ['1', '4'], ['1', '4', '5'],
+        ['4'], ['4', '5'], ['4', '5', '1'],
+        ['5'], ['5', '1'], ['5', '1', '4'],
+    ];
+}
 
 
 // --------------------------
@@ -251,14 +252,19 @@ QUnit.test('testReturnCorrectCombinationResults', function(assert) {
     var resultsCAny1E1 = evaluateInput(GRAPH, 100, ['any', '1'], ['1'], CONTEXT);
     var resultsC13E12 = evaluateInput(GRAPH, 100, ['1', '3'], ['1', '2'], CONTEXT);
     var resultsC135E123 = evaluateInput(GRAPH, 100, ['1', '3', '5'], ['1', '2', '3'], CONTEXT);
+    var resultsC5E12 = evaluateInput(GRAPH, 100, ['5'], ['1', '2'], CONTEXT);
     var C1AnyE1 = [['1'], ['1', '4'], ['2'], ['2', '6']];
     var CAny1E1 = [['3'], ['6', '3']];
     var C13E12 = [['1']];
     var C135E123 = [['1', '4']];
+    var C5E12 = [
+        ['1', '4'], ['1', '4', '5'], ['4', '5', '1'],
+        ['5', '1'], ['5', '1', '4'],];
     assert.deepEqual(_.unzip(resultsC1AnyE1)[1].sort(), C1AnyE1, 'C1any E1');
     assert.deepEqual(_.unzip(resultsCAny1E1)[1].sort(), CAny1E1, 'Cany1 E1');
     assert.deepEqual(_.unzip(resultsC13E12)[1].sort(), C13E12, 'C13 E12');
     assert.deepEqual(_.unzip(resultsC135E123)[1].sort(), C135E123, 'C135 E123');
+    assert.deepEqual(_.unzip(resultsC5E12)[1].sort(), C5E12, 'C5 E12');
 });
 
 
@@ -289,14 +295,14 @@ QUnit.test('testCorrectResults', function(assert) {
 
 QUnit.module('testFilterPathway');
 QUnit.test('testFilterAll', function(assert) {
-    var pws = filterPathways(PATHWAYS, ['1', '3', '5'], ['1', '2', '3', '4'],
+    var pws = filterPathways(createPathways(), ['1', '3', '5'], ['1', '2', '3', '4'],
         '1', '3', CONTEXT);
     assert.deepEqual(pws, [], 'filter all pathways');
 });
 QUnit.test('testFilterCompounds', function(assert) {
-    var pws1 = filterPathways(PATHWAYS, ['1'], [], '', '', CONTEXT);
-    var pws13 = filterPathways(PATHWAYS, ['1', '3'], [], '', '', CONTEXT);
-    var pws135 = filterPathways(PATHWAYS, ['1', '3', '5'], [], '', '', CONTEXT);
+    var pws1 = filterPathways(createPathways(), ['1'], [], '', '', CONTEXT);
+    var pws13 = filterPathways(createPathways(), ['1', '3'], [], '', '', CONTEXT);
+    var pws135 = filterPathways(createPathways(), ['1', '3', '5'], [], '', '', CONTEXT);
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4', '5'], ['4', '5', '1'],
@@ -317,9 +323,9 @@ QUnit.test('testFilterCompounds', function(assert) {
     assert.deepEqual(pws135, filtered135, 'filter correct compounds 1, 3 and 5');
 });
 QUnit.test('testFilterEnzymes', function(assert) {
-    var pws1 = filterPathways(PATHWAYS, [], ['1'], '', '', CONTEXT);
-    var pws13 = filterPathways(PATHWAYS, [], ['1', '3'], '', '', CONTEXT);
-    var pws135 = filterPathways(PATHWAYS, [], ['1', '3', '4'], '', '', CONTEXT);
+    var pws1 = filterPathways(createPathways(), [], ['1'], '', '', CONTEXT);
+    var pws13 = filterPathways(createPathways(), [], ['1', '3'], '', '', CONTEXT);
+    var pws135 = filterPathways(createPathways(), [], ['1', '3', '4'], '', '', CONTEXT);
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4', '5', '1'],
@@ -336,41 +342,41 @@ QUnit.test('testFilterEnzymes', function(assert) {
     assert.deepEqual(pws135, filtered135, 'filter correct enzymes 1, 3 and 5');
 });
 QUnit.test('testSources', function(assert) {
-    var pws3 = filterPathways(PATHWAYS, [], [], '3', '', CONTEXT);
-    var pws5 = filterPathways(PATHWAYS, [], [], '5', '', CONTEXT);
+    var pws3 = filterPathways(createPathways(), [], [], '3', '', CONTEXT);
+    var pws5 = filterPathways(createPathways(), [], [], '5', '', CONTEXT);
     var filtered3 = [['4'], ['4', '5'], ['5']];
     var filtered5 = [['1'], ['5'], ['5', '1']];
     assert.deepEqual(pws3, filtered3, 'filter correct source 3');
     assert.deepEqual(pws5, filtered5, 'filter correct source 5');
 });
 QUnit.test('testTargets', function(assert) {
-    var pws3 = filterPathways(PATHWAYS, [], [], '', '3', CONTEXT);
-    var pws5 = filterPathways(PATHWAYS, [], [], '', '5', CONTEXT);
+    var pws3 = filterPathways(createPathways(), [], [], '', '3', CONTEXT);
+    var pws5 = filterPathways(createPathways(), [], [], '', '5', CONTEXT);
     var filtered3 = [['1'], ['5'], ['5', '1']];
     var filtered5 = [['1'], ['1', '4'], ['4']];
     assert.deepEqual(pws3, filtered3, 'filter correct target 3');
     assert.deepEqual(pws5, filtered5, 'filter correct target 5');
 });
 QUnit.test('testNoFilters', function(assert) {
-    var pws = filterPathways(PATHWAYS, [], [], '', '', CONTEXT);
+    var pws = filterPathways(createPathways(), [], [], '', '', CONTEXT);
     var pws132 = filterPathways([['1', '3', '2']], [], [], '', '', CONTEXT);
     var pws513 = filterPathways([['5', '1', '3']], [], [], '', '', CONTEXT);
     var pws5132 = filterPathways([['5', '1', '3', '2']], [], [], '', '', CONTEXT);
     var pws6135 = filterPathways([['6', '1', '3', '5']], [], [], '', '', CONTEXT);
-    assert.deepEqual(pws, PATHWAYS, "don't filter pathways");
+    assert.deepEqual(pws, createPathways(), "don't filter pathways");
     assert.deepEqual(pws132, [], 'filter cycle 1, 3, 2');
     assert.deepEqual(pws513, [], 'filter cycle 5, 1, 3');
     assert.deepEqual(pws5132, [], 'filter cycle 5, 1, 3, 2');
     assert.deepEqual(pws6135, [['6', '1', '3', '5']], "don't filter 6, 1, 3, 5");
 });
 QUnit.test('testPairedFilters', function(assert) {
-    var pwsC1E3 = filterPathways(PATHWAYS, ['1'], ['3'], '', '', CONTEXT);
-    var pwsC13S5 = filterPathways(PATHWAYS, ['1', '3'], [], '5', '', CONTEXT);
-    var pwsC13T3 = filterPathways(PATHWAYS, ['1', '3'], [], '', '3', CONTEXT);
-    var pwsE1S5 = filterPathways(PATHWAYS, [], ['1'], '5', '', CONTEXT);
-    var pwsE1T5 = filterPathways(PATHWAYS, [], ['1'], '', '5', CONTEXT);
-    var pwsS3T5 = filterPathways(PATHWAYS, [], [], '3', '5', CONTEXT);
-    var pwsC13E1S1T3 = filterPathways(PATHWAYS, ['1', '3'], ['1'], '1', '3', CONTEXT);
+    var pwsC1E3 = filterPathways(createPathways(), ['1'], ['3'], '', '', CONTEXT);
+    var pwsC13S5 = filterPathways(createPathways(), ['1', '3'], [], '5', '', CONTEXT);
+    var pwsC13T3 = filterPathways(createPathways(), ['1', '3'], [], '', '3', CONTEXT);
+    var pwsE1S5 = filterPathways(createPathways(), [], ['1'], '5', '', CONTEXT);
+    var pwsE1T5 = filterPathways(createPathways(), [], ['1'], '', '5', CONTEXT);
+    var pwsS3T5 = filterPathways(createPathways(), [], [], '3', '5', CONTEXT);
+    var pwsC13E1S1T3 = filterPathways(createPathways(), ['1', '3'], ['1'], '1', '3', CONTEXT);
     var filteredC1E3 = [
         ['1', '4'], ['1', '4', '5'],
         ['4', '5'], ['4', '5', '1'],

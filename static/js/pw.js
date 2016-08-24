@@ -599,8 +599,10 @@ function evaluateInput(G, n, C, E, context) {
     var pathway;
     var data;
     var values = [];
+    var i;
+    var iLen;
     // Determine search and filter parameters.
-    if (C.length !== 0) {
+    if (C.length > 1) {
         start = C[0];
         goal = _.last(C);
         if (start === 'any') {
@@ -624,20 +626,41 @@ function evaluateInput(G, n, C, E, context) {
         _.forEach(E, function(ec) {
             sources.push.apply(sources, ecReactions[ec]);
         });
+        sources = _.uniqWith(sources, _.isEqual);
         targets = sources;
     }
     // Find pathways.
-    _.forEach(sources, function(s) {
-        _.forEach(targets, function(t) {
-            pws = findPathway(G, s, t);
-            filterPws = filterPathways(pws, C, E, start, goal, context);
-            pathways.push(filterPws);
+    _.forEach(sources, function(s, i) {
+        if (pathways.length > 100) {
+            return false;
+        }
+        _.forEach(targets, function(t, j) {
+            console.log(i, j);
+            if (pathways.length > 100) {
+            return false;
+            }
+            pws = _.take(findPathway(G, s, t), 50);
+            filterPws = _.take(
+                filterPathways(pws, C, E, start, goal, context), 10);
+            pathways.push.apply(pathways, filterPws);
+            console.log(pathways.length);
         });
     });
     // Evaluate pathways.
-    pathways = _.uniqWith(_.flatten(pathways), _.isEqual);
+    pathways = _.uniqWith(pathways, function(a, b) {
+        if (a.length === b.length) {
+            for (i = 0, iLen = a.length; i < iLen; i++) {
+                if (a[i] !== b[i]) {
+                    return false
+                }
+            }
+            return true
+        } else {
+            return false;
+        }
+    });
     data = orderPathwayData(
-        pathways, stoichiometrics, complexities, demands,prices);
+        pathways, stoichiometrics, complexities, demands, prices);
     _.forEach(_.zip(data[0], data[1]), function(SC) {
         values.push(evaluatePathway(SC[0], SC[1]));
     });
@@ -706,7 +729,7 @@ function filterPathways(pathways, C, E, s, t, context) {
     var preC;
     var discard1;
     var discard2;
-    pathways = _.filter(pathways, function(pathway, index, array) {
+    return _.remove(pathways, function(pathway) {
         approved = true;
         compounds = ['any'];
         enzymes = [];
@@ -745,16 +768,16 @@ function filterPathways(pathways, C, E, s, t, context) {
             enzymes.push(rxnEcs[reaction]);
             });
         // Check for compounds and enzymes.
-        if (! _.isEqual(_.intersection(C, _.flattenDeep(compounds)), C)) {
+        if (_.intersection(C, _.flattenDeep(compounds)).length !== C.length) {
             approved = false;
-        } else if (! _.isEqual(_.intersection(E, _.flattenDeep(enzymes)), E)) {
+        } else if (_.intersection(E, _.flattenDeep(enzymes)).length !== E.length) {
             approved = false;
         }
         if (approved) {
             return true;
         }
     });
-    return pathways;
+    //return pathways;
 }
 
 
