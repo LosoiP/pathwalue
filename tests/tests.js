@@ -395,9 +395,10 @@ QUnit.test('testPairedFilters', function(assert) {
 QUnit.module('testFindPathway');
 QUnit.test('testCatchErrors', function(assert) {
     var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS)
-    assert.notOk(findPathway(G, 'source', null), 'return undefined')
-    assert.notOk(findPathway(G, null, 'target'), 'return undefined')
-    assert.notOk(findPathway(G, '1', '6'), 'return undefined')
+    assert.notOk(findPathway(G, 'source', null), 'return undefined');
+    assert.notOk(findPathway(G, null, 'target'), 'return undefined');
+    assert.notOk(findPathway(G, '1', '6'), 'return undefined');
+    assert.notOk(findPathway(G, null, null), 'return undefined');
 });
 QUnit.test('testFindCorrectPathways', function(assert) {
     var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS)

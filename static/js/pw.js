@@ -809,18 +809,131 @@ function findPathway(G, source, target) {
  */
 function formatOutput(document, results, context) {
     var ol = createHTMLElement(document, 'OL');
-    var li = createHTMLElement(document, 'LI');
     if (results === undefined) {
-        li.innerHTML = 'test undefined';
-        ol.appendChild(li);
+        ol.innerHTML = 'Invalid search parameters.';
     } else if (results.length === 0) {
-        li.innerHTML = 'test length 0';
-        ol.appendChild(li);
+        ol.innerHTML = 'No pathways were found.';
     } else {
-        li.innerHTML = 'test output';
-        ol.appendChild(li);
+        _.forEach(results, function(pw) {
+            ol.appendChild(formatPathway(document, pw, context));
+        });
     }
     return ol;
+}
+
+
+/**
+ *
+ */
+function formatCompound(document, chebi, context) {
+    var liMain = createHTMLElement(document, 'LI');
+    liMain.innerHTML = 'ChEBI:' + chebi + ' ' + context.compounds[chebi];
+    return liMain;
+}
+
+
+/**
+ *
+ */
+function formatList(document, listTag, title, container, f, context) {
+    var liMain = createHTMLElement(document, 'LI');
+    var list = createHTMLElement(document, listTag);
+    liMain.innerHTML = title;
+    _.forEach(container, function(c) {
+        list.appendChild(f(document, c, context));
+    });
+    liMain.appendChild(list);
+    return liMain;
+}
+
+
+/**
+ *
+ */
+function formatPathway(document, pathway, context) {
+    var li;
+    var ul;
+    var ol;
+    var liMain = createHTMLElement(document, 'LI');
+    var ulMain = createHTMLElement(document, 'UL');
+    var S = [];
+    var I;
+    var P = [];
+    var namesS;
+    var namesP;
+    var totalReaction = 'totalReaction';
+    var pwPoints = pathway[0];
+    // Group compounds to S, I and P.
+    _.forEach(pathway[1], function(rhea) {
+        S.push.apply(S, _.keys(context.stoichiometrics[rhea][0]));
+    });
+    _.forEach(pathway[1], function(rhea) {
+        P.push.apply(P, _.keys(context.stoichiometrics[rhea][1]));
+    });
+    I = _.uniq(_.intersection(S, P));
+    S = _.uniq(_.difference(S, I));
+    P = _.uniq(_.difference(P, I));
+    // Total reaction
+    namesS = _.map(S, function(chebi) {return context.compounds[chebi];});
+    namesP = _.map(P, function(chebi) {return context.compounds[chebi];});
+    totalReaction = namesS.join(' + ') + ' => ' + namesP.join(' + ');
+    liMain.innerHTML = 'Total reaction: <b>' + totalReaction + '</b>';
+    // Points
+    li = createHTMLElement(document, 'LI');
+    li.innerHTML = 'Points: ' + pwPoints;
+    ulMain.appendChild(li);
+    // Substrates
+    li = formatList(document, 'UL', 'Substrates:', S, formatCompound, context);
+    ulMain.appendChild(li);
+    // Intermediates
+    li = formatList(document, 'UL', 'Intermediates:', I, formatCompound, context);
+    ulMain.appendChild(li);
+    // Products
+    li = formatList(document, 'UL', 'Products:', P, formatCompound, context);
+    ulMain.appendChild(li);
+    // Reaction steps
+    li = formatList(document, 'OL', 'Reaction steps:', pathway[1],
+        formatReaction, context);
+    ulMain.appendChild(li);
+    
+    liMain.appendChild(ulMain);
+    liMain.innerHTML += '<br>'
+    return liMain;
+}
+
+
+/**
+ *
+ */
+function formatReaction(document, rhea, context) {
+    var liMain = createHTMLElement(document, 'LI');
+    var dl = createHTMLElement(document, 'DL');
+    var dt = createHTMLElement(document, 'DT');
+    var dd = createHTMLElement(document, 'DD');
+    var enzymes = context.reaction_ecs[rhea];
+    var substrates = _.keys(context.stoichiometrics[rhea][0]);
+    var products = _.keys(context.stoichiometrics[rhea][1]);
+    dt.innerHTML = '<b>' + context.equations[rhea] + '</b>';
+    dl.appendChild(dt);
+    dd.innerHTML = 'Rhea:' + rhea;
+    dl.appendChild(dd);
+    _.forEach(enzymes, function(ec) {
+        dd = createHTMLElement(document, 'DD');
+        dd.innerHTML = 'EC:' + ec + ' ' + context.enzymes[ec];
+        dl.appendChild(dd);
+    });
+    _.forEach(substrates, function(chebi) {
+        dd = createHTMLElement(document, 'DD');
+        dd.innerHTML = 'Substrate ChEBI:' + chebi + ' ' + context.compounds[chebi];
+        dl.appendChild(dd);
+    });
+    _.forEach(products, function(chebi) {
+        dd = createHTMLElement(document, 'DD');
+        dd.innerHTML = 'Product ChEBI:' + chebi + ' ' + context.compounds[chebi];
+        dl.appendChild(dd);
+    });
+    liMain.appendChild(dl)
+    return liMain;
 }
 
 
@@ -941,7 +1054,7 @@ function orderPathwayData(pathways, S, C, D, P) {
  * Submit and evaluate input and return output.
  */
 function submitSearch() {
-    var outputSlot = document.getElementById('pOutput');
+    var outputSlot = document.getElementById('outputDiv');
     var form = document.getElementById('inputForm');
     var tmp = document.createElement('div');
     var input = getInputValues(form);
@@ -951,6 +1064,7 @@ function submitSearch() {
         results = evaluateInput(
             GRAPH, input.nResults, input.compounds, input.enzymes, CONTEXT);
     }
+    console.log(results);
     tmp.appendChild(formatOutput(document, results, CONTEXT));
     outputSlot.innerHTML = tmp.innerHTML;
     return;
