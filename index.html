@@ -24,8 +24,9 @@
 <script src="https://cdn.jsdelivr.net/lodash/4.15.0/lodash.min.js"></script>
 <script src="static/js/jsnetworkx.js"></script>
 <script src="static/js/pw.js"></script>
-<script>
-var GRAPH = initializeGraph(CONTEXT.stoichiometrics, CONTEXT.compound_reactions, IGNORED_COMPOUNDS)
+<script>  // slow
+var GRAPH = initializeGraph(
+    CONTEXT.stoichiometrics, CONTEXT.compound_reactions, IGNORED_COMPOUNDS)
 //document.getElementById('test').innerHTML = GRAPH.edges().slice(1,10);
 </script>
 </head>
@@ -38,6 +39,7 @@ var GRAPH = initializeGraph(CONTEXT.stoichiometrics, CONTEXT.compound_reactions,
 <h1>PathWalue - pathways with value</h1>
 <hr>
 <h2>Instructions</h2>
+<br>
 </div>
 
 
@@ -49,23 +51,18 @@ var GRAPH = initializeGraph(CONTEXT.stoichiometrics, CONTEXT.compound_reactions,
 <input name="nResults" type="number" value="10" min="1" max="20">
 </p>
 <p>
-<select class="select2Multi" name="compounds" multiple="" style="width: 100%">
-    <option value="4167">D-glucopyranose</option>
-    <option value="16236">ethanol</option>
-    <option value="15343">acetaldehyde</option>
+<select id="selectCompounds" class="select2Multi" name="compounds" multiple="" style="width: 100%">
 </select>
 </p>
 <p>
-<select class="select2Multi" name="enzymes" multiple="" style="width: 100%">
-    <option value="1.1.1.1">Alcohol dehydrogenase</option>
-    <option value="1.1.1.1">Alcohol dehydrogenase</option>
-    <option value="1.1.1.1">Alcohol dehydrogenase</option>
+<select id="selectEnzymes" class="select2Multi" name="enzymes" multiple="" style="width: 100%">
 </select>
 </p>
 <p>
 <button type="button" onclick="submitSearch()">Search</button>
 </p>
 </form>
+<br>
 </div>
 
 
@@ -73,16 +70,21 @@ var GRAPH = initializeGraph(CONTEXT.stoichiometrics, CONTEXT.compound_reactions,
 <hr>
 <h2>Results</h2>
 <div id="outputDiv"></div>
+<br>
 </div>
 
-<!--
+
 <div class="mainFooter">
-<br>
 <hr>
 <h2>Powered by:</h2>
+<br>
 </div>
--->
 
+<script>
+initializeForm(
+    _.keys(CONTEXT.compound_reactions), CONTEXT.compounds,
+    _.keys(CONTEXT.ec_reactions), CONTEXT.enzymes);
+</script>
 <script src="static/js/multiselect.js"></script>
 </body>
 

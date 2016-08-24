@@ -1010,6 +1010,30 @@ function initializeGraph(S, C, I) {
 
 
 /**
+ *
+ */
+function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
+    var compounds = [{id: 'any', text: 'any ChEBI'}];
+    var enzymes = [];
+    _.forEach(rheaChebis, function(chebi) {
+        compounds.push({id: chebi, text: chebi + ' ' + chebiNames[chebi]});
+    });
+    _.forEach(rheaEcs, function(ec) {
+        enzymes.push({id: ec, text: ec + ' ' + ecNames[ec]});
+    });
+    $('#selectCompounds').select2({
+        data: compounds,
+    });
+    $('#selectEnzymes').select2({
+        data: enzymes,
+    });
+    return;
+}
+
+
+
+
+/**
  * Return data for pathway evaluation.
  * @param {array} pathways
  * @param {object} S
@@ -1064,7 +1088,6 @@ function submitSearch() {
         results = evaluateInput(
             GRAPH, input.nResults, input.compounds, input.enzymes, CONTEXT);
     }
-    console.log(results);
     tmp.appendChild(formatOutput(document, results, CONTEXT));
     outputSlot.innerHTML = tmp.innerHTML;
     return;
