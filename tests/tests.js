@@ -440,7 +440,7 @@ QUnit.test('testGetCorrectValues', function(assert) {
     var form = createInputForm();
     var values = getInputValues(form);
     var correct = {
-        nResults: '10',
+        nResults: 10,
         compounds: ['c1', 'c2'],
         enzymes: ['e1', 'e2'],
     };
