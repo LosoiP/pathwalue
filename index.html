@@ -26,8 +26,7 @@
 <script src="static/js/pw.js"></script>
 <script>  // slow
 var GRAPH = initializeGraph(
-    CONTEXT.stoichiometrics, CONTEXT.compound_reactions, IGNORED_COMPOUNDS)
-//document.getElementById('test').innerHTML = GRAPH.edges().slice(1,10);
+    CONTEXT.stoichiometrics, CONTEXT.compound_reactions, IGNORED_COMPOUNDS);
 </script>
 </head>
 
@@ -37,9 +36,34 @@ var GRAPH = initializeGraph(
 
 <div class="mainHeader">
 <h1>PathWalue - pathways with value</h1>
+<p>
+Welcome to try the test version of the PathWalue-application!
+</p>
 <hr>
 <h2>Instructions</h2>
+<p>
+Search for pathways by specifying which compounds and enzymes must be present.
+A search is valid if you enter either at least 2 compounds or at least 1 enzyme in the corresponding fields.
+The application returns only such pathways that include all the given compounds and enzymes.
+</p>
+<p>
+To perform a directed search from a source compound to a target compound, enter at least 2 compounds.
+The leftmost compound is treated as the source and the righmost compound as the target.
+You may use the wildcard compound "any ChEBI" if you don't wish to specify either the source or the target compound.
+</p>
+<p>
+Search parameter examples:
+<dl>
+<dt>Compounds: "Any ChEBI", "15361 pyruvate" and "36208 shikimate".</dt>
+    <dd>Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.</dd>
 <br>
+<dt>Compounds: "4167 D-glucopyranose" and "16236 ethanol", enzymes: "1.1.1.1 Alcohol dehydrogenase".</dt>
+    <dd>Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.</dd>
+<br>
+<dt>Enzymes: "1.2.1.10 Acetaldehyde dehydrogenase (acetylating)" and "4.1.1.4 Acetoacetate decarboxylase".</dt>
+    <dd>Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.</dd>
+</dl>
+</p>
 </div>
 
 
@@ -48,21 +72,23 @@ var GRAPH = initializeGraph(
 <h2>Input</h2>
 <form id="inputForm">
 <p>
-<input name="nResults" type="number" value="10" min="1" max="20">
+<label for="idNResults">Maximum amount of results:</label>
+<input id="idNResults" name="nResults" type="number" value="10" min="1" max="20" style="width: 100%">
 </p>
 <p>
-<select id="selectCompounds" class="select2Multi" name="compounds" multiple="" style="width: 100%">
+<label for="idSelectCompounds">Compounds:</label>
+<select id="idSelectCompounds" class="select2Multi" name="compounds" multiple="" style="width: 100%">
 </select>
 </p>
 <p>
-<select id="selectEnzymes" class="select2Multi" name="enzymes" multiple="" style="width: 100%">
+<label for="idSelectEnzymes">Enzymes:</label>
+<select id="idSelectEnzymes" class="select2Multi" name="enzymes" multiple="" style="width: 100%">
 </select>
 </p>
 <p>
 <button type="button" onclick="submitSearch()">Search</button>
 </p>
 </form>
-<br>
 </div>
 
 
@@ -70,14 +96,25 @@ var GRAPH = initializeGraph(
 <hr>
 <h2>Results</h2>
 <div id="outputDiv"></div>
-<br>
 </div>
 
 
 <div class="mainFooter">
 <hr>
 <h2>Powered by:</h2>
-<br>
+<dl>
+<dt>Databases:</dt>
+    <dd><a href="https://www.ebi.ac.uk/chebi/">ChEBI</a></dd>
+    <dd><a href="http://www.ebi.ac.uk/intenz/">IntEnz</a></dd>
+    <dd><a href="http://www.rhea-db.org/">Rhea</a></dd>
+<dt>JavaScript:</dt>
+    <dd><a href="http://jsnetworkx.org/">JSNetworkX</a></dd>
+    <dd><a href="https://jquery.com/">jQuery</a></dd>
+    <dd><a href="https://select2.github.io/">Select2</a></dd>
+    <dd><a href="http://qunitjs.com/">QUnit</a></dd>
+<dt>Python:</dt>
+    <dd><a href="https://networkx.github.io/">NetworkX</a></dd>
+</ul>
 </div>
 
 <script>

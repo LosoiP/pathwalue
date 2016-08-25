@@ -1,4 +1,5 @@
 'use strict';
+// Requires:
 // lodash
 // jsnetworkx
 
@@ -601,6 +602,15 @@ function evaluateInput(G, n, C, E, context) {
     var values = [];
     var i;
     var iLen;
+    var lenSources;
+    var lenTargets;
+    var maxSources;
+    var maxTargets;
+    var maxPw;
+    var maxFilter;
+    var a = 1000;
+    var b = 1000;
+    var c = 5;
     // Determine search and filter parameters.
     if (C.length > 1) {
         start = C[0];
@@ -630,20 +640,30 @@ function evaluateInput(G, n, C, E, context) {
         targets = sources;
     }
     // Find pathways.
-    _.forEach(sources, function(s, i) {
-        if (pathways.length > 100) {
-            return false;
-        }
-        _.forEach(targets, function(t, j) {
-            console.log(i, j);
-            if (pathways.length > 100) {
-            return false;
-            }
-            pws = _.take(findPathway(G, s, t), 50);
+    lenSources = sources.length;
+    lenTargets = targets.length;
+    maxSources = Math.ceil(Math.sqrt(a * lenSources / lenTargets));
+    maxTargets = Math.ceil(Math.sqrt(a * lenTargets / lenSources));
+    if (maxSources > 50) {
+        maxSources = 50;
+    }
+    if (maxTargets > 50) {
+        maxTargets > 50;
+    }
+    if (lenSources > maxSources) {
+        lenSources = maxSources;
+    }
+    if (lenTargets > maxTargets) {
+        lenTargets = maxTargets;
+    }
+    maxPw = Math.ceil(b / (lenSources * lenTargets));
+    maxFilter = n + Math.ceil(maxPw / c);
+    _.forEach(sources.slice(0, maxSources), function(s, i) {
+        _.forEach(targets.slice(0, maxTargets), function(t, j) {
+            pws = _.take(findPathway(G, s, t), maxPw);
             filterPws = _.take(
-                filterPathways(pws, C, E, start, goal, context), 10);
+                filterPathways(pws, C, E, start, goal, context), maxFilter);
             pathways.push.apply(pathways, filterPws);
-            console.log(pathways.length);
         });
     });
     // Evaluate pathways.
@@ -973,7 +993,7 @@ function getInputValues(form) {
     var nodeNResults = inputNodes[0];
     var nodeCompounds = selectNodes[0];
     var nodeEnzymes = selectNodes[1];
-    var nResults = nodeNResults.value;
+    var nResults = Number(nodeNResults.value);
     var compounds = getMultiselectValues(nodeCompounds);
     var enzymes = getMultiselectValues(nodeEnzymes);
     var result = {
@@ -1044,10 +1064,10 @@ function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
     _.forEach(rheaEcs, function(ec) {
         enzymes.push({id: ec, text: ec + ' ' + ecNames[ec]});
     });
-    $('#selectCompounds').select2({
+    $('#idSelectCompounds').select2({
         data: compounds,
     });
-    $('#selectEnzymes').select2({
+    $('#idSelectEnzymes').select2({
         data: enzymes,
     });
     return;
