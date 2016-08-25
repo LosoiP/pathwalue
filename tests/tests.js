@@ -15,7 +15,7 @@
 // Test data constants
 // -------------------
 
-var STOICHIOMETRICS = {
+var RHEA_CHEBIS = {
     '1': [{'1': 1, '2': 1}, {'3': 1, '4': 1}],
     '2': [{'1': 2, '2': 2}, {'5': 2, '6': 2}],
     '3': [{'3': 1, '4': 1}, {'1': 1, '2': 1}],
@@ -31,7 +31,7 @@ var COMPLEXITIES = {
     '5': 5,
     '6': 6,
 };
-var COMPOUND_REACTIONS = {
+var CHEBI_RHEAS = {
     '1': [['1', '2'], ['3', '5']],
     '2': [['1', '2'], ['3', '5']],
     '3': [['3', '4'], ['1', '6']],
@@ -77,7 +77,7 @@ var EQUATIONS = {
     '5': 'eq5',
     '6': 'eq6',
 };
-var REACTION_ECS = {
+var RHEA_ECS = {
     '1': ['1', '2'],
     '2': ['1', '3'],
     '3': ['1', '4'],
@@ -85,23 +85,23 @@ var REACTION_ECS = {
     '5': ['2', '4'],
     '6': ['3', '4'],
 };
-var EC_REACTIONS = {
+var EC_RHEAS = {
     '1': ['1', '2', '3'],
     '2': ['1', '4', '5'],
     '3': ['2', '4', '6'],
     '4': ['3', '5', '6'],
 };
-var CONTEXT = {
-    'stoichiometrics': STOICHIOMETRICS,
+var DATA = {
+    'stoichiometrics': RHEA_CHEBIS,
     'complexities': COMPLEXITIES,
-    'compound_reactions': COMPOUND_REACTIONS,
+    'compound_reactions': CHEBI_RHEAS,
     'demands': DEMANDS,
     'prices': PRICES,
     'compounds': COMPOUNDS,
     'enzymes': ENZYMES,
     'equations': EQUATIONS,
-    'reaction_ecs': REACTION_ECS,
-    'ec_reactions': EC_REACTIONS,
+    'reaction_ecs': RHEA_ECS,
+    'ec_reactions': EC_RHEAS,
 };
 
 
@@ -112,11 +112,12 @@ var CONTEXT = {
 
 function createInputForm() {
     var form = document.createElement('FORM');
-    var nResults = document.createElement('INPUT');
+    var attrNResults = {type: 'number', value: 10};
+    var nResults = createHTMLElement(document, 'INPUT', attrNResults);
     var compounds = createMultiselect(document, 'c');
     var enzymes = createMultiselect(document, 'e');
-    nResults.type = 'number';
-    nResults.value = '10';
+    //nResults.type = 'number';
+    //nResults.value = '10';
     form.appendChild(nResults);
     form.appendChild(compounds);
     form.appendChild(enzymes);
@@ -137,6 +138,8 @@ function createMultiselect(documentObject, elementName) {
     multiselect.appendChild(option2);
     return multiselect
 }
+
+
 function createPathways() {
     return [
         ['1'], ['1', '4'], ['1', '4', '5'],
@@ -171,10 +174,6 @@ QUnit.test('testOptionElement', function(assert) {
 });
 
 
-
-QUnit.module('testDetermineIntermediates');
-
-
 QUnit.module('testEvaluateInput');
 QUnit.test('testValidateInputFields', function(assert) {
     var cEmptyEEmptyInvalid = validateInputCE([], []);
@@ -184,32 +183,32 @@ QUnit.test('testValidateInputFields', function(assert) {
     var nInvalid0 = validateInputN(0);
     var nInvalid21 = validateInputN(21);
     var nValid10 = validateInputN(10);
-    assert.strictEqual(nInvalid0, false, 'false for invalid input n = 0');
-    assert.strictEqual(nInvalid21, false, 'false for invalid input n = 21');
-    assert.strictEqual(nValid10, true, 'true for valid input n = 10');
-    assert.strictEqual(cEmptyEEmptyInvalid, false, 'false for invalid input empty C empty E');
-    assert.strictEqual(cEmptyEValid, true, 'true for valid input empty C');
-    assert.strictEqual(cValidEEmpty, true, 'true for valid input empty E');
-    assert.strictEqual(cValidEValid, true, 'true for valid input C and E');
+    assert.strictEqual(nInvalid0, false, 'false, n = 0');
+    assert.strictEqual(nInvalid21, false, 'false, n = 21');
+    assert.strictEqual(nValid10, true, 'true, n = 10');
+    assert.strictEqual(cEmptyEEmptyInvalid, false, 'false, empty C empty E');
+    assert.strictEqual(cEmptyEValid, true, 'true, empty C');
+    assert.strictEqual(cValidEEmpty, true, 'true, empty E');
+    assert.strictEqual(cValidEValid, true, 'true, valid C and E');
 });
 QUnit.test('testReturnCorrectAmountResults', function(assert) {
-    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
-    var results1 = evaluateInput(GRAPH, 1, ['1', 'any'], [], CONTEXT);
-    var results2 = evaluateInput(GRAPH, 2, ['1', 'any'], [], CONTEXT);
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var results1 = evaluateInput(G, 1, ['1', 'any'], [], DATA);
+    var results2 = evaluateInput(G, 2, ['1', 'any'], [], DATA);
     assert.strictEqual(results1.length, 1, 'return 1 result');
     assert.strictEqual(results2.length, 2, 'return 2 results');
 });
 QUnit.test('testReturnCorrectOrdering', function(assert) {
-    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
-    var results = _.unzip(evaluateInput(GRAPH, 100, ['1', 'any'], [], CONTEXT))[0];
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var results = _.unzip(evaluateInput(G, 100, ['1', 'any'], [], DATA))[0];
     assert.ok(results[0] >= results[1] >= results[2] >= results[3], 'correct ordering');
 });
 QUnit.test('testReturnCorrectCompoundResults', function(assert) {
-    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
-    var resultsC1Any = evaluateInput(GRAPH, 100, ['1', 'any'], [], CONTEXT);
-    var resultsCAny1 = evaluateInput(GRAPH, 100, ['any', '1'], [], CONTEXT);
-    var resultsC13 = evaluateInput(GRAPH, 100, ['1', '3'], [], CONTEXT);
-    var resultsC135 = evaluateInput(GRAPH, 100, ['1', '3', '5'], [], CONTEXT);
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var resultsC1Any = evaluateInput(G, 100, ['1', 'any'], [], DATA);
+    var resultsCAny1 = evaluateInput(G, 100, ['any', '1'], [], DATA);
+    var resultsC13 = evaluateInput(G, 100, ['1', '3'], [], DATA);
+    var resultsC135 = evaluateInput(G, 100, ['1', '3', '5'], [], DATA);
     var C1Any = [['1'], ['1', '4'], ['2'], ['2', '6']];
     var CAny1 = [['3'], ['4', '5'], ['5'], ['6', '3']];
     var C13 = [['1'], ['2', '6']];
@@ -220,10 +219,10 @@ QUnit.test('testReturnCorrectCompoundResults', function(assert) {
     assert.deepEqual(_.unzip(resultsC135)[1].sort(), C135, 'C135');
 });
 QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
-    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
-    var resultsE1 = evaluateInput(GRAPH, 100, [], ['1'], CONTEXT);
-    var resultsE12 = evaluateInput(GRAPH, 100, [], ['1', '2'], CONTEXT);
-    var resultsE123 = evaluateInput(GRAPH, 100, [], ['1', '2', '3'], CONTEXT);
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var resultsE1 = evaluateInput(G, 100, [], ['1'], DATA);
+    var resultsE12 = evaluateInput(G, 100, [], ['1', '2'], DATA);
+    var resultsE123 = evaluateInput(G, 100, [], ['1', '2', '3'], DATA);
     var E1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['2'], ['2', '6'], ['2', '6', '3'],
@@ -247,12 +246,12 @@ QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
     assert.deepEqual(_.unzip(resultsE123)[1].sort(), E123, 'E123');
 });
 QUnit.test('testReturnCorrectCombinationResults', function(assert) {
-    var GRAPH = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
-    var resultsC1AnyE1 = evaluateInput(GRAPH, 100, ['1', 'any'], ['1'], CONTEXT);
-    var resultsCAny1E1 = evaluateInput(GRAPH, 100, ['any', '1'], ['1'], CONTEXT);
-    var resultsC13E12 = evaluateInput(GRAPH, 100, ['1', '3'], ['1', '2'], CONTEXT);
-    var resultsC135E123 = evaluateInput(GRAPH, 100, ['1', '3', '5'], ['1', '2', '3'], CONTEXT);
-    var resultsC5E12 = evaluateInput(GRAPH, 100, ['5'], ['1', '2'], CONTEXT);
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var resultsC1AnyE1 = evaluateInput(G, 100, ['1', 'any'], ['1'], DATA);
+    var resultsCAny1E1 = evaluateInput(G, 100, ['any', '1'], ['1'], DATA);
+    var resultsC13E12 = evaluateInput(G, 100, ['1', '3'], ['1', '2'], DATA);
+    var resultsC135E123 = evaluateInput(G, 100, ['1', '3', '5'], ['1', '2', '3'], DATA);
+    var resultsC5E12 = evaluateInput(G, 100, ['5'], ['1', '2'], DATA);
     var C1AnyE1 = [['1'], ['1', '4'], ['2'], ['2', '6']];
     var CAny1E1 = [['3'], ['6', '3']];
     var C13E12 = [['1']];
@@ -296,13 +295,13 @@ QUnit.test('testCorrectResults', function(assert) {
 QUnit.module('testFilterPathway');
 QUnit.test('testFilterAll', function(assert) {
     var pws = filterPathways(createPathways(), ['1', '3', '5'], ['1', '2', '3', '4'],
-        '1', '3', CONTEXT);
+        '1', '3', DATA);
     assert.deepEqual(pws, [], 'filter all pathways');
 });
 QUnit.test('testFilterCompounds', function(assert) {
-    var pws1 = filterPathways(createPathways(), ['1'], [], '', '', CONTEXT);
-    var pws13 = filterPathways(createPathways(), ['1', '3'], [], '', '', CONTEXT);
-    var pws135 = filterPathways(createPathways(), ['1', '3', '5'], [], '', '', CONTEXT);
+    var pws1 = filterPathways(createPathways(), ['1'], [], '', '', DATA);
+    var pws13 = filterPathways(createPathways(), ['1', '3'], [], '', '', DATA);
+    var pws135 = filterPathways(createPathways(), ['1', '3', '5'], [], '', '', DATA);
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4', '5'], ['4', '5', '1'],
@@ -323,9 +322,9 @@ QUnit.test('testFilterCompounds', function(assert) {
     assert.deepEqual(pws135, filtered135, 'filter correct compounds 1, 3 and 5');
 });
 QUnit.test('testFilterEnzymes', function(assert) {
-    var pws1 = filterPathways(createPathways(), [], ['1'], '', '', CONTEXT);
-    var pws13 = filterPathways(createPathways(), [], ['1', '3'], '', '', CONTEXT);
-    var pws135 = filterPathways(createPathways(), [], ['1', '3', '4'], '', '', CONTEXT);
+    var pws1 = filterPathways(createPathways(), [], ['1'], '', '', DATA);
+    var pws13 = filterPathways(createPathways(), [], ['1', '3'], '', '', DATA);
+    var pws135 = filterPathways(createPathways(), [], ['1', '3', '4'], '', '', DATA);
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4', '5', '1'],
@@ -342,27 +341,27 @@ QUnit.test('testFilterEnzymes', function(assert) {
     assert.deepEqual(pws135, filtered135, 'filter correct enzymes 1, 3 and 5');
 });
 QUnit.test('testSources', function(assert) {
-    var pws3 = filterPathways(createPathways(), [], [], '3', '', CONTEXT);
-    var pws5 = filterPathways(createPathways(), [], [], '5', '', CONTEXT);
+    var pws3 = filterPathways(createPathways(), [], [], '3', '', DATA);
+    var pws5 = filterPathways(createPathways(), [], [], '5', '', DATA);
     var filtered3 = [['4'], ['4', '5'], ['5']];
     var filtered5 = [['1'], ['5'], ['5', '1']];
     assert.deepEqual(pws3, filtered3, 'filter correct source 3');
     assert.deepEqual(pws5, filtered5, 'filter correct source 5');
 });
 QUnit.test('testTargets', function(assert) {
-    var pws3 = filterPathways(createPathways(), [], [], '', '3', CONTEXT);
-    var pws5 = filterPathways(createPathways(), [], [], '', '5', CONTEXT);
+    var pws3 = filterPathways(createPathways(), [], [], '', '3', DATA);
+    var pws5 = filterPathways(createPathways(), [], [], '', '5', DATA);
     var filtered3 = [['1'], ['5'], ['5', '1']];
     var filtered5 = [['1'], ['1', '4'], ['4']];
     assert.deepEqual(pws3, filtered3, 'filter correct target 3');
     assert.deepEqual(pws5, filtered5, 'filter correct target 5');
 });
 QUnit.test('testNoFilters', function(assert) {
-    var pws = filterPathways(createPathways(), [], [], '', '', CONTEXT);
-    var pws132 = filterPathways([['1', '3', '2']], [], [], '', '', CONTEXT);
-    var pws513 = filterPathways([['5', '1', '3']], [], [], '', '', CONTEXT);
-    var pws5132 = filterPathways([['5', '1', '3', '2']], [], [], '', '', CONTEXT);
-    var pws6135 = filterPathways([['6', '1', '3', '5']], [], [], '', '', CONTEXT);
+    var pws = filterPathways(createPathways(), [], [], '', '', DATA);
+    var pws132 = filterPathways([['1', '3', '2']], [], [], '', '', DATA);
+    var pws513 = filterPathways([['5', '1', '3']], [], [], '', '', DATA);
+    var pws5132 = filterPathways([['5', '1', '3', '2']], [], [], '', '', DATA);
+    var pws6135 = filterPathways([['6', '1', '3', '5']], [], [], '', '', DATA);
     assert.deepEqual(pws, createPathways(), "don't filter pathways");
     assert.deepEqual(pws132, [], 'filter cycle 1, 3, 2');
     assert.deepEqual(pws513, [], 'filter cycle 5, 1, 3');
@@ -370,13 +369,13 @@ QUnit.test('testNoFilters', function(assert) {
     assert.deepEqual(pws6135, [['6', '1', '3', '5']], "don't filter 6, 1, 3, 5");
 });
 QUnit.test('testPairedFilters', function(assert) {
-    var pwsC1E3 = filterPathways(createPathways(), ['1'], ['3'], '', '', CONTEXT);
-    var pwsC13S5 = filterPathways(createPathways(), ['1', '3'], [], '5', '', CONTEXT);
-    var pwsC13T3 = filterPathways(createPathways(), ['1', '3'], [], '', '3', CONTEXT);
-    var pwsE1S5 = filterPathways(createPathways(), [], ['1'], '5', '', CONTEXT);
-    var pwsE1T5 = filterPathways(createPathways(), [], ['1'], '', '5', CONTEXT);
-    var pwsS3T5 = filterPathways(createPathways(), [], [], '3', '5', CONTEXT);
-    var pwsC13E1S1T3 = filterPathways(createPathways(), ['1', '3'], ['1'], '1', '3', CONTEXT);
+    var pwsC1E3 = filterPathways(createPathways(), ['1'], ['3'], '', '', DATA);
+    var pwsC13S5 = filterPathways(createPathways(), ['1', '3'], [], '5', '', DATA);
+    var pwsC13T3 = filterPathways(createPathways(), ['1', '3'], [], '', '3', DATA);
+    var pwsE1S5 = filterPathways(createPathways(), [], ['1'], '5', '', DATA);
+    var pwsE1T5 = filterPathways(createPathways(), [], ['1'], '', '5', DATA);
+    var pwsS3T5 = filterPathways(createPathways(), [], [], '3', '5', DATA);
+    var pwsC13E1S1T3 = filterPathways(createPathways(), ['1', '3'], ['1'], '1', '3', DATA);
     var filteredC1E3 = [
         ['1', '4'], ['1', '4', '5'],
         ['4', '5'], ['4', '5', '1'],
@@ -400,14 +399,14 @@ QUnit.test('testPairedFilters', function(assert) {
 
 QUnit.module('testFindPathway');
 QUnit.test('testCatchErrors', function(assert) {
-    var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS)
-    assert.notOk(findPathway(G, 'source', null), 'return undefined');
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
+    assert.notOk(findPathway(G, 'source', null), 'source to null, return undefined');
     assert.notOk(findPathway(G, null, 'target'), 'return undefined');
     assert.notOk(findPathway(G, '1', '6'), 'return undefined');
     assert.notOk(findPathway(G, null, null), 'return undefined');
 });
 QUnit.test('testFindCorrectPathways', function(assert) {
-    var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS)
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
     var source1Target5 = [['1', '4', '5']];
     var source1TargetNull = [['1'], ['1', '4'], ['1', '4', '5']];
     var source5Target1 = [['5', '1']];
@@ -424,15 +423,111 @@ QUnit.test('testFindCorrectPathways', function(assert) {
 
 
 QUnit.module('testFormatCompound');
+QUnit.test('testCorrectResults', function(assert) {
+    var compoundElement = formatCompound(document, '1', DATA);
+    var text = compoundElement.innerHTML;
+    var correct = 'ChEBI:1 a';
+    assert.deepEqual(text, correct, "return element with innerHTML 'ChEBI:1 a'");
+});
+
+
+QUnit.module('testFormatList');
+QUnit.test('testCorrectCompoundResults', function(assert) {
+    var listElement = formatList(document, 'OL', 'title', ['1', '2'], formatCompound, DATA);
+    var html = listElement.innerHTML;
+    var correct = 'title<ol><li>ChEBI:1 a</li><li>ChEBI:2 b</li></ol>';
+    assert.ok(_.includes(html, 'title'), "include 'title'");
+    assert.ok(_.includes(html, '<ol>'), "include '<ol>'");
+    assert.ok(_.includes(html, '</ol>'), "include '</ol>'");
+    assert.ok(_.includes(html, '<li>'), "include '<li>'");
+    assert.ok(_.includes(html, '</li>'), "include '</li>'");
+    assert.ok(_.includes(html, 'ChEBI:1 a'), "include 'ChEBI:1 a'");
+    assert.ok(_.includes(html, 'ChEBI:2 b'), "include 'ChEBI:2 b'");
+    assert.deepEqual(html, correct, 'return element with correct innerHTLM');
+});
 
 
 QUnit.module('testFormatPathway');
-
+QUnit.test('testCorrectCompoundResults', function(assert) {
+    var listElement = formatPathway(document, [1, ['1', '4']], DATA);
+    var html = listElement.innerHTML;
+    // var correct = 'title<ol><li>ChEBI:1 a</li><li>ChEBI:2 b</li></ol>';
+    assert.ok(_.includes(html, 'Total reaction:'), "include 'Total reaction:'");
+    assert.ok(_.includes(html, '<b>'), "include '<b>'");
+    assert.ok(_.includes(html, '</b>'), "include '</b>'");
+    assert.ok(_.includes(html, _.escape('a + b => e + f')), 'include total reaction');
+    assert.ok(_.includes(html, '<li>'), "include '<li>'");
+    assert.ok(_.includes(html, '</li>'), "include '</li>'");
+    assert.ok(_.includes(html, 'Points: 1'), "include 'Points: 1'");
+    assert.ok(_.includes(html, '<ul>'), "include '<ul>'");
+    assert.ok(_.includes(html, '</ul>'), "include '</ul>'");
+    assert.ok(_.includes(html, '<ol>'), "include '<ol>'");
+    assert.ok(_.includes(html, '</ol>'), "include '</ol>'");
+    assert.ok(_.includes(html, '<br>'), "include '<br>'");
+    assert.ok(_.includes(html, 'Substrates:'), "include 'Substrates:'");
+    assert.ok(_.includes(html, 'Intermediates:'), "include 'Intermediates:'");
+    assert.ok(_.includes(html, 'Products:'), "include 'Products:'");
+    assert.ok(_.includes(html, 'Reaction steps:'), "include 'Reaction steps:'");
+    // assert.deepEqual(html, correct, 'return element with correct innerHTLM');
+});
 
 QUnit.module('testFormatOutput');
+QUnit.test('testReturnInvalidParameterMessage', function(assert) {
+    var listElement = formatOutput(document, undefined, DATA);
+    var html = listElement.innerHTML;
+    var correct = 'Invalid search parameters.';
+    assert.deepEqual(html, correct, 'return element with correct innerHTLM');
+});
+QUnit.test('testReturnNoPathways', function(assert) {
+    var listElement = formatOutput(document, [], DATA);
+    var html = listElement.innerHTML;
+    var correct = 'No pathways were found.';
+    assert.deepEqual(html, correct, 'return element with correct innerHTLM');
+});
+QUnit.test('testReturnOutput', function(assert) {
+    var listElement = formatOutput(document, [[1, ['1', '4']], [2, ['2', '6']]], DATA);
+    var html = listElement.innerHTML;
+    assert.ok(_.includes(html, 'Total reaction:'), "include 'Total reaction:'");
+    assert.ok(_.includes(html, '<b>'), "include '<b>'");
+    assert.ok(_.includes(html, '</b>'), "include '</b>'");
+    assert.ok(_.includes(html, _.escape('a + b => e + f')), 'include total reaction');
+    assert.ok(_.includes(html, _.escape('a + b => c + d')), 'include total reaction');
+    assert.ok(_.includes(html, '<li>'), "include '<li>'");
+    assert.ok(_.includes(html, '</li>'), "include '</li>'");
+    assert.ok(_.includes(html, 'Points: 1'), "include 'Points: 1'");
+    assert.ok(_.includes(html, 'Points: 2'), "include 'Points: 2'");
+    assert.ok(_.includes(html, '<ul>'), "include '<ul>'");
+    assert.ok(_.includes(html, '</ul>'), "include '</ul>'");
+    assert.ok(_.includes(html, '<ol>'), "include '<ol>'");
+    assert.ok(_.includes(html, '</ol>'), "include '</ol>'");
+    assert.ok(_.includes(html, '<br>'), "include '<br>'");
+    assert.ok(_.includes(html, 'Substrates:'), "include 'Substrates:'");
+    assert.ok(_.includes(html, 'Intermediates:'), "include 'Intermediates:'");
+    assert.ok(_.includes(html, 'Products:'), "include 'Products:'");
+    assert.ok(_.includes(html, 'Reaction steps:'), "include 'Reaction steps:'");
+});
 
 
 QUnit.module('testFormatReaction');
+QUnit.test('testReturnCorrectResults', function(assert) {
+    var listElement = formatReaction(document, '1', DATA);
+    var html = listElement.innerHTML;
+    assert.ok(_.includes(html, '<dl>'), "include '<dl>'");
+    assert.ok(_.includes(html, '</dl>'), "include '</dl>'");
+    assert.ok(_.includes(html, '<dt>'), "include '<dt>'");
+    assert.ok(_.includes(html, '</dt>'), "include '</dt>'");
+    assert.ok(_.includes(html, '<dd>'), "include '<dd>'");
+    assert.ok(_.includes(html, '</dd>'), "include '</dd>'");
+    assert.ok(_.includes(html, '<b>'), "include '<b>'");
+    assert.ok(_.includes(html, '</b>'), "include '</b>'");
+    assert.ok(_.includes(html, 'Rhea:1'), "include 'Rhea:1'");
+    assert.ok(_.includes(html, 'EC:1 aase'), "include 'EC:1 aase'");
+    assert.ok(_.includes(html, 'EC:2 base'), "include 'EC:2 base'");
+    assert.ok(_.includes(html, 'Substrate ChEBI:1 a'), "include 'Substrate ChEBI:1 a'");
+    assert.ok(_.includes(html, 'Substrate ChEBI:2 b'), "include 'Substrate ChEBI:2 b'");
+    assert.ok(_.includes(html, 'Product ChEBI:3 c'), "include 'Product ChEBI:3 c'");
+    assert.ok(_.includes(html, 'Product ChEBI:4 d'), "include 'Product ChEBI:4 d'");
+});
 
 
 QUnit.module('testGetInputValues');
@@ -449,11 +544,18 @@ QUnit.test('testGetCorrectValues', function(assert) {
 
 
 QUnit.module('testGetMultiselectValues');
+QUnit.test('testGetCorrectValues', function(assert) {
+    var multiselect = createMultiselect(document, 'e');
+    var values = getMultiselectValues(multiselect);
+    var correct = ['e1', 'e2'];
+    assert.deepEqual(values, correct, "return ['e1', 'e2']");
+});
+
 
 
 QUnit.module('testInitializeGraph');
 QUnit.test('testCorrectOutputs', function(assert) {
-    var G = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS);
+    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
     var correctNodes = ['1', '2', '3', '4', '5', '6'];
     var correctEdges = [
         ['1', '4'], ['2', '6'], ['3', '2'],
@@ -465,8 +567,8 @@ QUnit.test('testCorrectOutputs', function(assert) {
 QUnit.test('testCorrectIgnores', function(assert) {
     var I1 = ['1', '3', '6'];
     var I2 = ['1', '2'];
-    var G1 = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS, I1);
-    var G2 = initializeGraph(STOICHIOMETRICS, COMPOUND_REACTIONS, I2);
+    var G1 = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I1);
+    var G2 = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I2);
     var correctNodes1 = ['1', '2', '3', '4', '5', '6'];
     var correctNodes2 = ['1', '2', '3', '4', '5', '6'];
     var correctEdges1 = [
@@ -481,17 +583,11 @@ QUnit.test('testCorrectIgnores', function(assert) {
 });
 
 
-QUnit.module('testIntersectDict');
-
-
-QUnit.module('testNBestItems');
-
-
 QUnit.module('testOrderPathwayData');
 QUnit.test('testReturnCorrectData', function(assert) {
     var pathways = [['1', '2', '3'], ['4', '5', '6']];
     var output = orderPathwayData(
-        pathways, STOICHIOMETRICS, COMPLEXITIES, DEMANDS, PRICES);
+        pathways, RHEA_CHEBIS, COMPLEXITIES, DEMANDS, PRICES);
     var steps = [
         [
             [1, ['1', '2'], ['3', '4']],
