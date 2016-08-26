@@ -853,7 +853,7 @@ function findPathway(G, source, target) {
 function formatOutput(document, results, context) {
     var ol = createHTMLElement(document, 'OL');
     if (results === undefined) {
-        ol.innerHTML = 'Invalid search parameters.';
+        ol.innerHTML = 'Invalid search parameters. Please enter either at least 2 compounds or at least 1 enzyme.';
     } else if (results.length === 0) {
         ol.innerHTML = 'No pathways were found.';
     } else {
@@ -988,12 +988,11 @@ function formatReaction(document, rhea, context) {
    'enzymes' and 'nResults'.
  */
 function getInputValues(form) {
-    var inputNodes = form.getElementsByTagName('INPUT');
     var selectNodes = form.getElementsByTagName('SELECT');
-    var nodeNResults = inputNodes[0];
-    var nodeCompounds = selectNodes[0];
-    var nodeEnzymes = selectNodes[1];
-    var nResults = Number(nodeNResults.value);
+    var nodeNResults = selectNodes[0];
+    var nodeCompounds = selectNodes[1];
+    var nodeEnzymes = selectNodes[2];
+    var nResults = Number(getMultiselectValues(nodeNResults));
     var compounds = getMultiselectValues(nodeCompounds);
     var enzymes = getMultiselectValues(nodeEnzymes);
     var result = {
@@ -1058,11 +1057,20 @@ function initializeGraph(S, C, I) {
 function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
     var compounds = [{id: 'any', text: 'any ChEBI'}];
     var enzymes = [];
+    var nResults = [];
+    var i = 1;
+    var iLen = 20;
+    for (; i <= iLen; i++) {
+        nResults.push({id:i, text:i});
+    }
     _.forEach(rheaChebis, function(chebi) {
         compounds.push({id: chebi, text: chebi + ' ' + chebiNames[chebi]});
     });
     _.forEach(rheaEcs, function(ec) {
         enzymes.push({id: ec, text: ec + ' ' + ecNames[ec]});
+    });
+    $('#idNResults').select2({
+        data: nResults,
     });
     $('#idSelectCompounds').select2({
         data: compounds,

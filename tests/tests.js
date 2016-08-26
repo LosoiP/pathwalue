@@ -112,12 +112,12 @@ var DATA = {
 
 function createInputForm() {
     var form = document.createElement('FORM');
-    var attrNResults = {type: 'number', value: 10};
-    var nResults = createHTMLElement(document, 'INPUT', attrNResults);
+    var attrOption = {value:10, text:'10', selected:true};
+    var option = createHTMLElement(document, 'OPTION', attrOption);
+    var nResults = createHTMLElement(document, 'SELECT');
     var compounds = createMultiselect(document, 'c');
     var enzymes = createMultiselect(document, 'e');
-    //nResults.type = 'number';
-    //nResults.value = '10';
+    nResults.appendChild(option);
     form.appendChild(nResults);
     form.appendChild(compounds);
     form.appendChild(enzymes);
@@ -475,7 +475,7 @@ QUnit.module('testFormatOutput');
 QUnit.test('testReturnInvalidParameterMessage', function(assert) {
     var listElement = formatOutput(document, undefined, DATA);
     var html = listElement.innerHTML;
-    var correct = 'Invalid search parameters.';
+    var correct = 'Invalid search parameters. Please enter either at least 2 compounds or at least 1 enzyme.';
     assert.deepEqual(html, correct, 'return element with correct innerHTLM');
 });
 QUnit.test('testReturnNoPathways', function(assert) {

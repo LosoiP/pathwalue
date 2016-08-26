@@ -81,7 +81,9 @@ Welcome to try the test version of the PathWalue-application!
 <form id="inputForm">
 <p>
 <label for="idNResults">Maximum amount of results:</label>
-<input id="idNResults" name="nResults" type="number" value="10" min="1" max="20" style="width: 100%">
+<select id="idNResults" class="select2" name="nResults" style="width: 100%">
+<option value=10 selected='selected'>10</option>
+</select>
 </p>
 <p>
 <label for="idSelectCompounds">Compounds:</label>
@@ -102,7 +104,9 @@ Welcome to try the test version of the PathWalue-application!
 <hr class="sectionLine">
 
 <h2>Results</h2>
-<div id="outputDiv">Please enter a search.</div>
+<div id="outputDiv">
+<ol>Please enter a search.</ol>
+</div>
 </div>
 
 
@@ -156,7 +160,7 @@ initializeForm(
     _.keys(CONTEXT.compound_reactions), CONTEXT.compounds,
     _.keys(CONTEXT.ec_reactions), CONTEXT.enzymes);
 </script>
-<script src="static/js/multiselect.js"></script>
+<!-- <script src="static/js/multiselect.js"></script> -->
 </body>
 
 
