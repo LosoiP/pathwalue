@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
 
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0;">
 <title>PathWalue</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 <link href="static/css/styles.css" rel="stylesheet" type="text/css" />
@@ -24,7 +23,7 @@
 <script src="https://cdn.jsdelivr.net/lodash/4.15.0/lodash.min.js"></script>
 <script src="static/js/jsnetworkx.js"></script>
 <script src="static/js/pw.js"></script>
-<script>  // slow
+<script>
 var GRAPH = initializeGraph(
     CONTEXT.stoichiometrics, CONTEXT.compound_reactions, IGNORED_COMPOUNDS);
 </script>
@@ -33,13 +32,14 @@ var GRAPH = initializeGraph(
 
 <body>
 
+<div class="header">
+<img src="static/png/logo.png" alt="Tampere University of Technology">
+</div>
 
-<div class="mainHeader">
-<h1>PathWalue - pathways with value</h1>
-<p>
-Welcome to try the test version of the PathWalue-application!
-</p>
-<hr>
+
+<div class="row">
+
+<div class="col-m-3 col-3">
 <h2>Instructions</h2>
 <p>
 Search for pathways by specifying which compounds and enzymes must be present.
@@ -51,24 +51,32 @@ To perform a directed search from a source compound to a target compound, enter 
 The leftmost compound is treated as the source and the righmost compound as the target.
 You may use the wildcard compound "any ChEBI" if you don't wish to specify either the source or the target compound.
 </p>
+<h3>Search parameter examples</h3>
 <p>
-Search parameter examples:
-<dl>
-<dt>Compounds: "Any ChEBI", "15361 pyruvate" and "36208 shikimate".</dt>
-    <dd>Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.</dd>
+Compounds: "Any ChEBI", "15361 pyruvate" and "36208 shikimate".
 <br>
-<dt>Compounds: "4167 D-glucopyranose" and "16236 ethanol", enzymes: "1.1.1.1 Alcohol dehydrogenase".</dt>
-    <dd>Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.</dd>
+Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.</li>
+</p>
+<p>
+Compounds: "4167 D-glucopyranose" and "16236 ethanol", enzymes: "1.1.1.1 Alcohol dehydrogenase".
 <br>
-<dt>Enzymes: "1.2.1.10 Acetaldehyde dehydrogenase (acetylating)" and "4.1.1.4 Acetoacetate decarboxylase".</dt>
-    <dd>Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.</dd>
-</dl>
+Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.</li>
+</p>
+<p>
+Enzymes: "1.2.1.10 Acetaldehyde dehydrogenase (acetylating)" and "4.1.1.4 Acetoacetate decarboxylase".
+<br>
+Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.</li>
 </p>
 </div>
 
+<div class="col-m-9 col-6">
+<h1>PathWalue - pathways with value</h1>
+<p>
+Welcome to try the test version of the PathWalue-application!
+</p>
 
-<div class="mainInput">
-<hr>
+<hr class="sectionLine">
+
 <h2>Input</h2>
 <form id="inputForm">
 <p>
@@ -89,33 +97,59 @@ Search parameter examples:
 <button type="button" onclick="submitSearch()">Search</button>
 </p>
 </form>
-</div>
 
 
-<div class="mainOutput">
-<hr>
+<hr class="sectionLine">
+
 <h2>Results</h2>
-<div id="outputDiv"></div>
+<div id="outputDiv">Please enter a search.</div>
 </div>
 
 
-<div class="mainFooter">
-<hr>
-<h2>Powered by:</h2>
-<dl>
-<dt>Databases:</dt>
-    <dd><a href="https://www.ebi.ac.uk/chebi/">ChEBI</a></dd>
-    <dd><a href="http://www.ebi.ac.uk/intenz/">IntEnz</a></dd>
-    <dd><a href="http://www.rhea-db.org/">Rhea</a></dd>
-<dt>JavaScript:</dt>
-    <dd><a href="http://jsnetworkx.org/">JSNetworkX</a></dd>
-    <dd><a href="https://jquery.com/">jQuery</a></dd>
-    <dd><a href="https://select2.github.io/">Select2</a></dd>
-    <dd><a href="http://qunitjs.com/">QUnit</a></dd>
-<dt>Python:</dt>
-    <dd><a href="https://networkx.github.io/">NetworkX</a></dd>
+<div class="col-m-12 col-3">
+<h2>Details</h2>
+<p>
+PathWalue scores pathways according to the values of the compounds and
+complexities of the reaction steps.
+</p>
+<p>
+Compound values are based on a synthetic database of market demands and prices.
+The value of a compound is evaluated as a product of its demand and price.
+</p>
+<p>
+Reaction complexities are based on the amount and types of biochemically
+important cofactors involved in the reaction step.
+PathWalue considers reactions involving cofactors less complex than those that
+don't involve.
+</p>
+<p>
+A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
+</p>
+<p>
+A longer and more thorough description will be added in future.
+</p>
+</div>
+
+</div>
+
+<div class="footer">
+<h2>Powered by</h2>
+<ul class="inline">
+<li class="inline"><a href="https://www.ebi.ac.uk/chebi/">ChEBI</a></li>
+<li class="inline"><a href="http://www.ebi.ac.uk/intenz/">IntEnz</a></li>
+<li class="inline"><a href="http://www.rhea-db.org/">Rhea</a></li>
+</ul>
+<ul class="inline">
+<li class="inline"><a href="http://jsnetworkx.org/">JSNetworkX</a></li>
+<li class="inline"><a href="https://jquery.com/">jQuery</a></li>
+<li class="inline"><a href="https://select2.github.io/">Select2</a></li>
+<li class="inline"><a href="http://qunitjs.com/">QUnit</a></li>
+</ul>
+<ul class="inline">
+<li class="inline"><a href="https://networkx.github.io/">NetworkX</a></li>
 </ul>
 </div>
+
 
 <script>
 initializeForm(

@@ -458,7 +458,7 @@ QUnit.test('testCorrectCompoundResults', function(assert) {
     assert.ok(_.includes(html, _.escape('a + b => e + f')), 'include total reaction');
     assert.ok(_.includes(html, '<li>'), "include '<li>'");
     assert.ok(_.includes(html, '</li>'), "include '</li>'");
-    assert.ok(_.includes(html, 'Points: 1'), "include 'Points: 1'");
+    assert.ok(_.includes(html, 'Score: 1'), "include 'Score: 1'");
     assert.ok(_.includes(html, '<ul>'), "include '<ul>'");
     assert.ok(_.includes(html, '</ul>'), "include '</ul>'");
     assert.ok(_.includes(html, '<ol>'), "include '<ol>'");
@@ -494,8 +494,8 @@ QUnit.test('testReturnOutput', function(assert) {
     assert.ok(_.includes(html, _.escape('a + b => c + d')), 'include total reaction');
     assert.ok(_.includes(html, '<li>'), "include '<li>'");
     assert.ok(_.includes(html, '</li>'), "include '</li>'");
-    assert.ok(_.includes(html, 'Points: 1'), "include 'Points: 1'");
-    assert.ok(_.includes(html, 'Points: 2'), "include 'Points: 2'");
+    assert.ok(_.includes(html, 'Score: 1'), "include 'Score: 1'");
+    assert.ok(_.includes(html, 'Score: 2'), "include 'Score: 2'");
     assert.ok(_.includes(html, '<ul>'), "include '<ul>'");
     assert.ok(_.includes(html, '</ul>'), "include '</ul>'");
     assert.ok(_.includes(html, '<ol>'), "include '<ol>'");

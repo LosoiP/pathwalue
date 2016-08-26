@@ -923,7 +923,7 @@ function formatPathway(document, pathway, context) {
     liMain.innerHTML = 'Total reaction: <b>' + totalReaction + '</b>';
     // Points
     li = createHTMLElement(document, 'LI');
-    li.innerHTML = 'Points: ' + pwPoints;
+    li.innerHTML = 'Score: ' + pwPoints;
     ulMain.appendChild(li);
     // Substrates
     li = formatList(document, 'UL', 'Substrates:', S, formatCompound, context);
