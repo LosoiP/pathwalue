@@ -13,6 +13,7 @@ li.inline {
 }
 .header {
     background-color: rgb(70, 200, 255);
+    min-width: 380px;
     padding: 26px 0px 26px 26px;
 }
 .footer {
