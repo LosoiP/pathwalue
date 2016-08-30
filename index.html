@@ -1,9 +1,9 @@
-<!doctype html>
+<!doctype html />
 <html>
 
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0;">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0;" />
 <title>PathWalue</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 <link href="static/css/styles.css" rel="stylesheet" type="text/css" />
@@ -33,7 +33,7 @@ var GRAPH = initializeGraph(
 <body>
 
 <div class="header">
-<img src="static/png/logo.png" alt="Tampere University of Technology">
+<img src="static/png/logo.png" alt="Tampere University of Technology" />
 </div>
 
 
@@ -54,17 +54,17 @@ You may use the wildcard compound "any ChEBI" if you don't wish to specify eithe
 <h3>Search parameter examples</h3>
 <p>
 Compounds: "Any ChEBI", "15361 pyruvate" and "36208 shikimate".
-<br>
+<br />
 Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.</li>
 </p>
 <p>
 Compounds: "4167 D-glucopyranose" and "16236 ethanol", enzymes: "1.1.1.1 Alcohol dehydrogenase".
-<br>
+<br />
 Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.</li>
 </p>
 <p>
 Enzymes: "1.2.1.10 Acetaldehyde dehydrogenase (acetylating)" and "4.1.1.4 Acetoacetate decarboxylase".
-<br>
+<br />
 Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.</li>
 </p>
 </div>
@@ -75,7 +75,7 @@ Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylat
 Welcome to try the test version of the PathWalue-application!
 </p>
 
-<hr class="sectionLine">
+<hr class="sectionLine" />
 
 <h2>Input</h2>
 <form id="inputForm">
@@ -101,7 +101,7 @@ Welcome to try the test version of the PathWalue-application!
 </form>
 
 
-<hr class="sectionLine">
+<hr class="sectionLine" />
 
 <h2>Results</h2>
 <div id="outputDiv">
@@ -131,6 +131,89 @@ A pathway's score is evaluated as the ratio of the total value of compounds to t
 </p>
 <p>
 A longer and more thorough description will be added in future.
+</p>
+
+
+<h2>Detailed details</h2>
+<p>
+PathWalue conducts the following steps as it processes the user input:
+<ol>
+<li>
+Determine what kind of a search shall be conducted.
+</li>
+<li>
+Determine source and target reactions.
+</li>
+<li>
+Find pathways from sources to targets.
+</li>
+<li>
+Filter pathways.
+</li>
+<li>
+Evaluate pathways.
+</li>
+<li>
+Return and show the best scoring pathways in the Results-section.
+</li>
+</ol>
+</p>
+
+<p>
+Pathway search in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
+</p>
+
+
+<h3>Determination of the search type</h3>
+<p>
+PathWalue first determines what kind of a search it is conducting: a directed search from or to a compound or an undirected search of enzymes.
+</p>
+
+<h3>Determination of source and target reactions</h3>
+<p>
+If directed search of compounds has a defined source compound, PathWalue searches for pathways that begin with reactions that have the compound as a substrate.
+If directed search of compounds has a defined target compound, PathWalue searches for pathways that end in reactions that produce the compound.
+If either the source or target compound is the wildcard "Any ChEBI", PathWalue finds a pathway from all possible sources or targets to the specified targets or sources.
+</p>
+<p>
+An undirected enzyme search looks for pathways that start or end with one of the given enzymes.
+</p>
+
+
+<h3>Finding pathways</h3>
+<p>
+Pathway search in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
+</p>
+
+
+<h3>Filtering pathways</h3>
+<p>
+Accept only pathways that include the compound and enzymes specified by the user.
+Don't accept pathways that produce the pathway's substrate or consume the pathway's product.
+Don't accept pathways that include 3-reaction cycles.
+</p>
+
+
+<h3>Evaluating pathways</h3>
+<p>
+SAME AS ABOVE!
+</p>
+<p>
+PathWalue scores pathways according to the values of the compounds and
+complexities of the reaction steps.
+</p>
+<p>
+Compound values are based on a synthetic database of market demands and prices.
+The value of a compound is evaluated as a product of its demand and price.
+</p>
+<p>
+Reaction complexities are based on the amount and types of biochemically
+important cofactors involved in the reaction step.
+PathWalue considers reactions involving cofactors less complex than those that
+don't involve.
+</p>
+<p>
+A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
 </p>
 </div>
 
