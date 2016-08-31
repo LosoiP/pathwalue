@@ -51,6 +51,10 @@ To perform a directed search from a source compound to a target compound, enter 
 The leftmost compound is treated as the source and the righmost compound as the target.
 You may use the wildcard compound "any ChEBI" if you don't wish to specify either the source or the target compound.
 </p>
+<p>
+Searching with only enzymes performs a search to and from the reactions that are catalyzed by the given enzymes.
+</p>
+
 <h3>Search parameter examples</h3>
 <p>
 Compounds: "Any ChEBI", "15361 pyruvate" and "36208 shikimate".
@@ -111,6 +115,7 @@ Welcome to try the test version of the PathWalue-application!
 
 
 <div class="col-m-12 col-3">
+<!--
 <h2>Details</h2>
 <p>
 PathWalue scores pathways according to the values of the compounds and
@@ -132,44 +137,80 @@ A pathway's score is evaluated as the ratio of the total value of compounds to t
 <p>
 A longer and more thorough description will be added in future.
 </p>
+-->
 
 
-<h2>Detailed details</h2>
+<h2>Description</h2>
 <p>
-PathWalue conducts the following steps as it processes the user input:
+The PathWalue application is intended to find biochemical pathways that have commercial potential.
+The commercial potential of a pathway is estimated by the value of the compounds involved in the pathway and the complexity of the reaction steps needed.
+</p>
+<p>
+A pathway is considered to have a good commercial potential if its reaction steps are not too complex to implement and its products are more valuable than its substrates.
+</p>
+<p>
+PathWalue is meant to serve as a tool in preliminary analysis of the profitability of biochemical pathways.
+</p>
+
+
+
+<h3>Concepts</h3>
+<p>
 <ol>
-<li>
-Determine what kind of a search shall be conducted.
-</li>
-<li>
-Determine source and target reactions.
-</li>
-<li>
-Find pathways from sources to targets.
-</li>
-<li>
-Filter pathways.
-</li>
-<li>
-Evaluate pathways.
-</li>
-<li>
-Return and show the best scoring pathways in the Results-section.
-</li>
+<li>Commerical potential of </li>
 </ol>
 </p>
 
+<h4>Reaction and pathway complexity</h4>
 <p>
+</p>
+
+<h4>Compound value</h4>
+<p>
+</p>
+
+<h4>Directed graph</h4>
+<p>
+REACTIONS EXIST IN BOTH DIRECTIONS!
 Pathway search in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
+Any two reaction nodes are connected by an edge if the first reaction produces a substrate for the second reaction.
+Connections based on certain compounds such as water are forbidden and not present in the graph.
+The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
 </p>
 
 
-<h3>Determination of the search type</h3>
+
+<h3>Static data</h3>
+<p>
+PathWalue uses following static data that has been created separately and that is loaded at startup.
+<ol>
+<li>Reaction stoichiometry data</li>
+<li>Reaction complexity data</li>
+<li>Compound demand and price data</li>
+<li></li>
+</ol>
+</p>
+
+
+<h3>Generating results</h3>
+<p>
+PathWalue goes trough the following steps as it processes the user input:
+<ol>
+<li>Determine what kind of a search shall be conducted.</li>
+<li>Determine source and target reactions.</li>
+<li>Find pathways from sources to targets.</li>
+<li>Filter pathways.</li>
+<li>Evaluate pathways.</li>
+<li>Return and show the best scoring pathways in the Results-section.</li>
+</ol>
+</p>
+
+<h4>Determination of the search type</h4>
 <p>
 PathWalue first determines what kind of a search it is conducting: a directed search from or to a compound or an undirected search of enzymes.
 </p>
 
-<h3>Determination of source and target reactions</h3>
+<h4>Determination of source and target reactions</h4>
 <p>
 If directed search of compounds has a defined source compound, PathWalue searches for pathways that begin with reactions that have the compound as a substrate.
 If directed search of compounds has a defined target compound, PathWalue searches for pathways that end in reactions that produce the compound.
@@ -179,22 +220,19 @@ If either the source or target compound is the wildcard "Any ChEBI", PathWalue f
 An undirected enzyme search looks for pathways that start or end with one of the given enzymes.
 </p>
 
-
-<h3>Finding pathways</h3>
+<h4>Finding pathways</h4>
 <p>
-Pathway search in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
+The algorithm returns a pathway from each source to each pair.
 </p>
 
-
-<h3>Filtering pathways</h3>
+<h4>Filtering pathways</h4>
 <p>
 Accept only pathways that include the compound and enzymes specified by the user.
 Don't accept pathways that produce the pathway's substrate or consume the pathway's product.
 Don't accept pathways that include 3-reaction cycles.
 </p>
 
-
-<h3>Evaluating pathways</h3>
+<h4>Evaluating pathways</h4>
 <p>
 SAME AS ABOVE!
 </p>
@@ -215,6 +253,8 @@ don't involve.
 <p>
 A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
 </p>
+
+
 </div>
 
 </div>
