@@ -144,6 +144,7 @@ A longer and more thorough description will be added in future.
 <p>
 The PathWalue application is intended to find biochemical pathways that have commercial potential.
 The commercial potential of a pathway is estimated by the value of the compounds involved in the pathway and the complexity of the reaction steps needed.
+The price and demand data of compounds and complexity data of reactions are synthetic in the test version and they aren't necessarily realistic.
 </p>
 <p>
 A pathway is considered to have a good commercial potential if its reaction steps are not too complex to implement and its products are more valuable than its substrates.
@@ -157,7 +158,9 @@ PathWalue is meant to serve as a tool in preliminary analysis of the profitabili
 <h3>Concepts</h3>
 <p>
 <ol>
-<li>Commerical potential of </li>
+<li>Commerical potential of pathway</li>
+<li>Complexity of reaction</li>
+<li>Value of compound</li>
 </ol>
 </p>
 
@@ -168,16 +171,6 @@ PathWalue is meant to serve as a tool in preliminary analysis of the profitabili
 <h4>Compound value</h4>
 <p>
 </p>
-
-<h4>Directed graph</h4>
-<p>
-REACTIONS EXIST IN BOTH DIRECTIONS!
-Pathway search in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
-Any two reaction nodes are connected by an edge if the first reaction produces a substrate for the second reaction.
-Connections based on certain compounds such as water are forbidden and not present in the graph.
-The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
-</p>
-
 
 
 <h3>Static data</h3>
@@ -203,6 +196,15 @@ PathWalue goes trough the following steps as it processes the user input:
 <li>Evaluate pathways.</li>
 <li>Return and show the best scoring pathways in the Results-section.</li>
 </ol>
+</p>
+
+<h4>Directed graph</h4>
+<p>
+REACTIONS EXIST IN BOTH DIRECTIONS!
+Pathway search in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
+Any two reaction nodes are connected by an edge if the first reaction produces a substrate for the second reaction.
+Connections based on certain compounds such as water are forbidden and not present in the graph.
+The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
 </p>
 
 <h4>Determination of the search type</h4>
