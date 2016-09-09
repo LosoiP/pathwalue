@@ -19,7 +19,7 @@
 <div class="row">
 
 <div class="col-m-3 col-3">
-<h2></h2>
+<hr class="sectionLine" />
 <h2>Summary</h2>
 <p>
 The PathWalue application is intended to find biochemical pathways that have commercial potential.
@@ -40,17 +40,20 @@ Return to
 </div>
 
 <div class="col-m-9 col-6">
+<hr class="sectionLine" />
 <h1>PathWalue - pathways with value</h1>
 <p>
-Welcome to read a more detailed description of the PathWalue application!
+Welcome to read the description of PathWalue application!
 </p>
+<hr class="sectionLine" />
+<h2>Details of user input processing</h2>
 <p>
 The processing of user input in PathWalue can be divided to five distinct steps:
 <ol>
-<li>Determination of the search type.</li>
-<li>Generating pathways.</li>
-<li>Filtering pathways.</li>
-<li>Evaluating pathways.</li>
+<li>Determination of the search type</li>
+<li>Generating pathways</li>
+<li>Filtering pathways</li>
+<li>Evaluating pathways</li>
 <li>Formatting results.</li>
 </ol>
 </p>
@@ -59,7 +62,7 @@ The processing of user input in PathWalue can be divided to five distinct steps:
 
 <hr class="sectionLine" />
 
-<h3>1. Determination of the search type.</h3>
+<h3>1 Determination of the search type</h3>
 <p>
 PathWalue first determines what kind of a search it is conducting: a directed search from or to a compound or an undirected search of enzyme-catalyzed reactions.
 The decision is based on user input in the Compound and Enzymes fields in the Input-section.
@@ -99,7 +102,7 @@ Examples:
 
 <hr class="sectionLine" />
 
-<h3>2. Generating pathways.</h3>
+<h3>2 Generating pathways</h3>
 <p>
 PathWalue generates pathways using a shortest path algorithm to a directed graph representation of Rhea reactions.
 </p>
@@ -131,20 +134,20 @@ At the moment the edges are unweighted which means that all edges are equal in l
 
 <hr class="sectionLine" />
 
-<h3>3. Filtering pathways.</h3>
+<h3>3 Filtering pathways</h3>
 <p>
 PathWalue filters all generated pathways according to these criteria:
 <ul>
-<li>All the given compounds must be present in the pathway</li>
-<li>All the given enzymes must be present in the pathway</li>
-<li>Successive producing and consuming of a compound in three successive reactions is forbidden. Example: a pathway is filterd away if its reaction 1 produces A, reaction 2 consumes A and reaction 3 produces A again.</li>
+<li>All the given compounds must be present in the pathway.</li>
+<li>All the given enzymes must be present in the pathway.</li>
+<li>Repetitive producing and consuming of a compound in three successive reactions is forbidden.
+    <br />Example: a pathway is filtered if its reaction 1 produces compound A, reaction 2 consumes A and reaction 3 produces A again.</li>
 </ul>
 PathWalue uses additionally these criteria when a directed search is conducted from or to a compound:
 <ul>
-<li>The specified source compound must not be produced by any of the pathway's reactions</li>
-<li>The specified target compound must not be consumed by any of the pathway's reactions</li>
+<li>The specified source compound must not be produced by any of the pathway's reactions.</li>
+<li>The specified target compound must not be consumed by any of the pathway's reactions.</li>
 </ul>
-<p>
 Only such pathways that fulfill the necessary criteria will be evaluated.
 </p>
 
@@ -152,7 +155,7 @@ Only such pathways that fulfill the necessary criteria will be evaluated.
 
 <hr class="sectionLine" />
 
-<h3>4. Evaluating pathways.</h3>
+<h3>4 Evaluating pathways</h3>
 <p>
 PathWalue scores pathways according to the values of the compounds and
 complexities of the reaction steps.
@@ -175,29 +178,62 @@ A pathway's score is evaluated as the ratio of the total value of compounds to t
 
 <hr class="sectionLine" />
 
-<h3>5. Formatting results.</h3>
+<h3>5 Formatting results</h3>
 <p>
 PathWalue returns the best scoring pathways and shows additional details of it.
 The output is divided into the pathway's total reaction, score, substrates, intermediates, products and reaction steps.
 <ul>
 <li>Total reaction: pathway substrates => pathway products</li>
-<li>Score: pathway's total score evaluated as described in section 4. Evaluating pathways</li>
-<li>Substrates: a list of those compounds that are used only as substrates in the pathways reaction steps</li>
+<li>Score: pathway's total score evaluated as described in section 4 Evaluating pathways</li>
+<li>Substrates: a list of those compounds that are used only as substrates in the pathway's reaction steps</li>
 <li>Intermediates: a list of those compounds that are consumed by a reaction but also produced by some other reaction</li>
-<li>Products: a list of those compounds that are only produced in the reaction steps.</li>
-<li>Reaction steps: a list of individual Rhea reactions that constitute the pathway. Each reaction step has a list of its substrates, products and also possible enzyme catalysts if applicable.</li>
+<li>Products: a list of those compounds that are only produced in the reaction steps</li>
+<li>Reaction steps: a list of the individual Rhea reactions that constitute the pathway. Each reaction step has a list of its substrates, products and also possible enzyme catalysts if applicable.</li>
 </ul>
 </p>
 </div>
 
 <div class="col-m-12 col-3">
+<hr class="sectionLine" />
+<h2>Implementation</h2>
+<p>
+The test version of PathWalue is implemented as a single page web application to enable an easy review of the idea.
+The application code is a set of JavaScript functions that read the input fields of the web page and process the input as described in Details of user input processing.
+JavaScript was chosen for the test version because it's executed reasonably well by major up-to-date web browsers.
+</p>
+<p>
+The static data for PathWalue has been prepared with Python modules that read data from ChEBI, IntEnz and Rhea databases.
+The relevant data are converted to JSON formatted files for the JavaScript functions to use.
+</p>
+<p>
+The Python-generated static data in JSON files are used to construct the directed graph described in section 2 Generating pathways.
+They are also used as the synthetic market database of compound prices and demands.
 </div>
 </div>
 
 
 
 <div class="footer">
-Author: Pauli Losoi
+<p>Author: Pauli Losoi</p>
+<h2>Powered by</h2>
+<ul class="inline">
+EMBL-EBI databases:
+<li class="inline"><a href="https://www.ebi.ac.uk/chebi/">ChEBI</a></li>
+<li class="inline"><a href="http://www.ebi.ac.uk/intenz/">IntEnz</a></li>
+<li class="inline"><a href="http://www.rhea-db.org/">Rhea</a></li>
+</ul>
+<ul class="inline">
+JavaScript:
+<li class="inline"><a href="http://jsnetworkx.org/">JSNetworkX</a></li>
+<li class="inline"><a href="https://jquery.com/">jQuery</a></li>
+<li class="inline"><a href="https://lodash.com/">Lodash</a></li>
+<li class="inline"><a href="https://select2.github.io/">Select2</a></li>
+<li class="inline"><a href="http://qunitjs.com/">QUnit</a></li>
+</ul>
+<ul class="inline">
+Python:
+<li class="inline"><a href="https://networkx.github.io/">NetworkX</a></li>
+</ul>
 </div>
 </body>
 </html>
