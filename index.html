@@ -1,9 +1,9 @@
-<!doctype html>
+<!doctype html />
 <html>
 
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0;">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0;" />
 <title>PathWalue</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 <link href="static/css/styles.css" rel="stylesheet" type="text/css" />
@@ -33,13 +33,14 @@ var GRAPH = initializeGraph(
 <body>
 
 <div class="header">
-<img src="static/png/logo.png" alt="Tampere University of Technology">
+<img src="static/png/logo.png" alt="Tampere University of Technology" />
 </div>
 
 
 <div class="row">
 
 <div class="col-m-3 col-3">
+<hr class="sectionLine" />
 <h2>Instructions</h2>
 <p>
 Search for pathways by specifying which compounds and enzymes must be present.
@@ -51,31 +52,36 @@ To perform a directed search from a source compound to a target compound, enter 
 The leftmost compound is treated as the source and the righmost compound as the target.
 You may use the wildcard compound "any ChEBI" if you don't wish to specify either the source or the target compound.
 </p>
+<p>
+Searching with only enzymes performs a search to and from the reactions that are catalyzed by the given enzymes.
+</p>
+
 <h3>Search parameter examples</h3>
 <p>
 Compounds: "Any ChEBI", "15361 pyruvate" and "36208 shikimate".
-<br>
-Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.</li>
+<br />
+Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.
 </p>
 <p>
 Compounds: "4167 D-glucopyranose" and "16236 ethanol", enzymes: "1.1.1.1 Alcohol dehydrogenase".
-<br>
-Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.</li>
+<br />
+Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.
 </p>
 <p>
 Enzymes: "1.2.1.10 Acetaldehyde dehydrogenase (acetylating)" and "4.1.1.4 Acetoacetate decarboxylase".
-<br>
-Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.</li>
+<br />
+Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.
 </p>
 </div>
 
 <div class="col-m-9 col-6">
+<hr class="sectionLine" />
 <h1>PathWalue - pathways with value</h1>
 <p>
 Welcome to try the test version of the PathWalue-application!
 </p>
 
-<hr class="sectionLine">
+<hr class="sectionLine" />
 
 <h2>Input</h2>
 <form id="inputForm">
@@ -101,7 +107,7 @@ Welcome to try the test version of the PathWalue-application!
 </form>
 
 
-<hr class="sectionLine">
+<hr class="sectionLine" />
 
 <h2>Results</h2>
 <div id="outputDiv">
@@ -111,32 +117,30 @@ Welcome to try the test version of the PathWalue-application!
 
 
 <div class="col-m-12 col-3">
-<h2>Details</h2>
+<hr class="sectionLine" />
+<h2>Summary</h2>
 <p>
-PathWalue scores pathways according to the values of the compounds and
-complexities of the reaction steps.
+The PathWalue application is intended to find biochemical pathways that have commercial potential.
+The commercial potential of a pathway is estimated by the value of the compounds involved in the pathway and the complexity of the reaction steps needed.
+The price and demand data of compounds and complexity data of reactions are synthetic in the test version and they aren't necessarily realistic.
 </p>
 <p>
-Compound values are based on a synthetic database of market demands and prices.
-The value of a compound is evaluated as a product of its demand and price.
+A pathway is considered to have a good commercial potential if its reaction steps are not too complex to implement and its products are more valuable than its substrates.
 </p>
 <p>
-Reaction complexities are based on the amount and types of biochemically
-important cofactors involved in the reaction step.
-PathWalue considers reactions involving cofactors less complex than those that
-don't involve.
+PathWalue is meant to serve as a tool in preliminary analysis of the profitability of biochemical pathways.
 </p>
 <p>
-A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
+A detailed description is given at a separate
+<a href="details.html">details page</a>
+.
 </p>
-<p>
-A longer and more thorough description will be added in future.
-</p>
-</div>
 
+</div>
 </div>
 
 <div class="footer">
+<p>Author: Pauli Losoi</p>
 <h2>Powered by</h2>
 <ul class="inline">
 EMBL-EBI databases:

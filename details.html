@@ -1,0 +1,239 @@
+<!doctype html />
+<html>
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0;" />
+<title>PathWalue - Details</title>
+<link href="static/css/styles.css" rel="stylesheet" type="text/css" />
+</head>
+
+
+<body>
+
+<div class="header">
+<img src="static/png/logo.png" alt="Tampere University of Technology" />
+</div>
+
+
+<div class="row">
+
+<div class="col-m-3 col-3">
+<hr class="sectionLine" />
+<h2>Summary</h2>
+<p>
+The PathWalue application is intended to find biochemical pathways that have commercial potential.
+The commercial potential of a pathway is estimated by the value of the compounds involved in the pathway and the complexity of the reaction steps needed.
+The price and demand data of compounds and complexity data of reactions are synthetic in the test version and they aren't necessarily realistic.
+</p>
+<p>
+A pathway is considered to have a good commercial potential if its reaction steps are not too complex to implement and its products are more valuable than its substrates.
+</p>
+<p>
+PathWalue is meant to serve as a tool in preliminary analysis of the profitability of biochemical pathways.
+</p>
+<p>
+Return to
+<a href="index.html">main page</a>
+.
+</p>
+</div>
+
+<div class="col-m-9 col-6">
+<hr class="sectionLine" />
+<h1>PathWalue - pathways with value</h1>
+<p>
+Welcome to read the description of PathWalue application!
+</p>
+<hr class="sectionLine" />
+<h2>Details of user input processing</h2>
+<p>
+The processing of user input in PathWalue can be divided to five distinct steps:
+<ol>
+<li>Determination of the search type</li>
+<li>Generating pathways</li>
+<li>Filtering pathways</li>
+<li>Evaluating pathways</li>
+<li>Formatting results.</li>
+</ol>
+</p>
+
+
+
+<hr class="sectionLine" />
+
+<h3>1 Determination of the search type</h3>
+<p>
+PathWalue first determines what kind of a search it is conducting: a directed search from or to a compound or an undirected search of enzyme-catalyzed reactions.
+The decision is based on user input in the Compound and Enzymes fields in the Input-section.
+</p>
+<h4>Directed search</h4>
+<p>
+If the user has specified more than one compound, the search is always conducted from the first compound to the last compound.
+PathWalue uses as source reactions all those reactions that have the first compound as a substrate.
+Likewise PathWalue considers all reactions producing the last compound as target reactions.
+The search is then conducted using source-target -pairs of reactions.
+</p>
+<p>
+A wildcard compound "any ChEBI" can be used to leave either the source or target compound open.
+If "any ChEBI" is the source, then PathWalue generates pathways from all reactions to those reactions that produce the given target compound.
+</p>
+<p>
+Examples:
+<ul>
+<li>Searching with compounds "57629 D-glucopyranose 1-phosphate(2-)", "15589 (S)-malate(2-)", "16630 3-dehydroshikimate" generates pathways that start from a reaction consuming "57629 D-glucopyranose 1-phosphate(2-)" and end in a reaction producing "16630 3-dehydroshikimate". All the generated pathways involve "15589 (S)-malate(2-) at some reaction step."</li>
+<li>Searching with compounds "29985 L-glutamate(1-)", "57305 glycine zwitterion" and "any ChEBI" generates pathways that start in a reaction that consumes "29985 L-glutamate(1-)" and end in any reaction. All the generated pathways involve "57305 glycine zwitterion" at some reaction step.</li>
+</ul>
+</p>
+<h4>Undirected search</h4>
+<p>
+If the user hasn't specified enough compounds to conduct a directed search, PathWalue collects all reactions that the given enzymes are involved in.
+The collected reactions are then used as sources and targets to yield pathways.
+</p>
+<p>
+Examples:
+<ul>
+<li>Searching with the enzymes "1.14.13.118 Valine N-monooxygenase" and "1.14.11.45 L-isoleucine 4-hydroxylase" generates pathways that start in a reaction catalyzed by either of the enzymes and end in a reaction catalyzed by either of the enzymes.</li>
+<li>Searching with the enzyme "4.1.2.41 Vanillin synthase" and compound "30089 acetate" generates pathways that start or end in a reaction catalyzed by "4.1.2.41 Vanillin synthase" and also involve "30089 acetate" at some reaction step.</li>
+</ul>
+</p>
+
+
+
+<hr class="sectionLine" />
+
+<h3>2 Generating pathways</h3>
+<p>
+PathWalue generates pathways using a shortest path algorithm to a directed graph representation of Rhea reactions.
+</p>
+<h4>Directed graph</h4>
+<p>
+Generating pathways in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
+Every reaction exists in both directions in the graph.
+</p>
+<p>
+Any two reaction nodes are connected by an edge if the first reaction produces a substrate for the second reaction.
+Reactions are not connected to their opposite direction reactions though as that would result in unrealistic short circuiting.
+Connections based on certain compounds such as water are forbidden and not present in the graph.
+At the moment PathWalue has a predefined list of 500 compounds that are not allowed to link to successive reactions.
+</p>
+<p>
+The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
+</p>
+<h4>Search algorithm</h4>
+<p>
+The algorithm looks for the shortest paths from the source to target reaction.
+Moving from one reaction node to another occurs always trough a directed edge.
+Recall from the Directed graph -section that a reaction has an edge to another reaction if it produces a substrate for the other reaction.
+</p>
+<p>
+At the moment the edges are unweighted which means that all edges are equal in length.
+</p>
+
+
+
+<hr class="sectionLine" />
+
+<h3>3 Filtering pathways</h3>
+<p>
+PathWalue filters all generated pathways according to these criteria:
+<ul>
+<li>All the given compounds must be present in the pathway.</li>
+<li>All the given enzymes must be present in the pathway.</li>
+<li>Repetitive producing and consuming of a compound in three successive reactions is forbidden.
+    <br />Example: a pathway is filtered if its reaction 1 produces compound A, reaction 2 consumes A and reaction 3 produces A again.</li>
+</ul>
+PathWalue uses additionally these criteria when a directed search is conducted from or to a compound:
+<ul>
+<li>The specified source compound must not be produced by any of the pathway's reactions.</li>
+<li>The specified target compound must not be consumed by any of the pathway's reactions.</li>
+</ul>
+Only such pathways that fulfill the necessary criteria will be evaluated.
+</p>
+
+
+
+<hr class="sectionLine" />
+
+<h3>4 Evaluating pathways</h3>
+<p>
+PathWalue scores pathways according to the values of the compounds and
+complexities of the reaction steps.
+</p>
+<p>
+Compound values are based on a synthetic database of market demands and prices.
+The value of a compound is evaluated as a product of its demand and price.
+</p>
+<p>
+Reaction complexities are based on the amount and types of biochemically
+important cofactors involved in the reaction step.
+PathWalue considers reactions involving cofactors less complex than those that
+don't involve.
+</p>
+<p>
+A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
+</p>
+
+
+
+<hr class="sectionLine" />
+
+<h3>5 Formatting results</h3>
+<p>
+PathWalue returns the best scoring pathways and shows additional details of it.
+The output is divided into the pathway's total reaction, score, substrates, intermediates, products and reaction steps.
+<ul>
+<li>Total reaction: pathway substrates => pathway products</li>
+<li>Score: pathway's total score evaluated as described in section 4 Evaluating pathways</li>
+<li>Substrates: a list of those compounds that are used only as substrates in the pathway's reaction steps</li>
+<li>Intermediates: a list of those compounds that are consumed by a reaction but also produced by some other reaction</li>
+<li>Products: a list of those compounds that are only produced in the reaction steps</li>
+<li>Reaction steps: a list of the individual Rhea reactions that constitute the pathway. Each reaction step has a list of its substrates, products and also possible enzyme catalysts if applicable.</li>
+</ul>
+</p>
+</div>
+
+<div class="col-m-12 col-3">
+<hr class="sectionLine" />
+<h2>Implementation</h2>
+<p>
+The test version of PathWalue is implemented as a single page web application to enable an easy review of the idea.
+The application code is a set of JavaScript functions that read the input fields of the web page and process the input as described in Details of user input processing.
+JavaScript was chosen for the test version because it's executed reasonably well by major up-to-date web browsers.
+</p>
+<p>
+The static data for PathWalue has been prepared with Python modules that read data from ChEBI, IntEnz and Rhea databases.
+The relevant data are converted to JSON formatted files for the JavaScript functions to use.
+</p>
+<p>
+The Python-generated static data in JSON files are used to construct the directed graph described in section 2 Generating pathways.
+They are also used as the synthetic market database of compound prices and demands.
+</div>
+</div>
+
+
+
+<div class="footer">
+<p>Author: Pauli Losoi</p>
+<h2>Powered by</h2>
+<ul class="inline">
+EMBL-EBI databases:
+<li class="inline"><a href="https://www.ebi.ac.uk/chebi/">ChEBI</a></li>
+<li class="inline"><a href="http://www.ebi.ac.uk/intenz/">IntEnz</a></li>
+<li class="inline"><a href="http://www.rhea-db.org/">Rhea</a></li>
+</ul>
+<ul class="inline">
+JavaScript:
+<li class="inline"><a href="http://jsnetworkx.org/">JSNetworkX</a></li>
+<li class="inline"><a href="https://jquery.com/">jQuery</a></li>
+<li class="inline"><a href="https://lodash.com/">Lodash</a></li>
+<li class="inline"><a href="https://select2.github.io/">Select2</a></li>
+<li class="inline"><a href="http://qunitjs.com/">QUnit</a></li>
+</ul>
+<ul class="inline">
+Python:
+<li class="inline"><a href="https://networkx.github.io/">NetworkX</a></li>
+</ul>
+</div>
+</body>
+</html>
