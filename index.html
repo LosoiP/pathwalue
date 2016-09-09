@@ -59,17 +59,17 @@ Searching with only enzymes performs a search to and from the reactions that are
 <p>
 Compounds: "Any ChEBI", "15361 pyruvate" and "36208 shikimate".
 <br />
-Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.</li>
+Returns pathways that have 36208 shikimate as target and involve also 15361 pyruvate at some reaction step.
 </p>
 <p>
 Compounds: "4167 D-glucopyranose" and "16236 ethanol", enzymes: "1.1.1.1 Alcohol dehydrogenase".
 <br />
-Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.</li>
+Returns pathways that start from 4167 D-glucopyranose, end in 16236 ethanol and have 1.1.1.1 Alcohol dehydrogenase as a catalyst.
 </p>
 <p>
 Enzymes: "1.2.1.10 Acetaldehyde dehydrogenase (acetylating)" and "4.1.1.4 Acetoacetate decarboxylase".
 <br />
-Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.</li>
+Returns pathways that involve both 1.2.1.10 Acetaldehyde dehydrogenase (acetylating) and 4.1.14 Acetoacetate decarboxylase as catalysts.
 </p>
 </div>
 
@@ -115,32 +115,7 @@ Welcome to try the test version of the PathWalue-application!
 
 
 <div class="col-m-12 col-3">
-<!--
-<h2>Details</h2>
-<p>
-PathWalue scores pathways according to the values of the compounds and
-complexities of the reaction steps.
-</p>
-<p>
-Compound values are based on a synthetic database of market demands and prices.
-The value of a compound is evaluated as a product of its demand and price.
-</p>
-<p>
-Reaction complexities are based on the amount and types of biochemically
-important cofactors involved in the reaction step.
-PathWalue considers reactions involving cofactors less complex than those that
-don't involve.
-</p>
-<p>
-A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
-</p>
-<p>
-A longer and more thorough description will be added in future.
-</p>
--->
-
-
-<h2>Description</h2>
+<h2>Summary</h2>
 <p>
 The PathWalue application is intended to find biochemical pathways that have commercial potential.
 The commercial potential of a pathway is estimated by the value of the compounds involved in the pathway and the complexity of the reaction steps needed.
@@ -152,113 +127,13 @@ A pathway is considered to have a good commercial potential if its reaction step
 <p>
 PathWalue is meant to serve as a tool in preliminary analysis of the profitability of biochemical pathways.
 </p>
-
-
-
-<h3>Concepts</h3>
 <p>
-<ol>
-<li>Commerical potential of pathway</li>
-<li>Complexity of reaction</li>
-<li>Value of compound</li>
-</ol>
+A detailed description is given at a separate
+<a href="details.html">details page</a>
+.
 </p>
-
-<h4>Reaction and pathway complexity</h4>
-<p>
-</p>
-
-<h4>Compound value</h4>
-<p>
-</p>
-
-
-<h3>Static data</h3>
-<p>
-PathWalue uses following static data that has been created separately and that is loaded at startup.
-<ol>
-<li>Reaction stoichiometry data</li>
-<li>Reaction complexity data</li>
-<li>Compound demand and price data</li>
-<li></li>
-</ol>
-</p>
-
-
-<h3>Generating results</h3>
-<p>
-PathWalue goes trough the following steps as it processes the user input:
-<ol>
-<li>Determine what kind of a search shall be conducted.</li>
-<li>Determine source and target reactions.</li>
-<li>Find pathways from sources to targets.</li>
-<li>Filter pathways.</li>
-<li>Evaluate pathways.</li>
-<li>Return and show the best scoring pathways in the Results-section.</li>
-</ol>
-</p>
-
-<h4>Directed graph</h4>
-<p>
-REACTIONS EXIST IN BOTH DIRECTIONS!
-Pathway search in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
-Any two reaction nodes are connected by an edge if the first reaction produces a substrate for the second reaction.
-Connections based on certain compounds such as water are forbidden and not present in the graph.
-The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
-</p>
-
-<h4>Determination of the search type</h4>
-<p>
-PathWalue first determines what kind of a search it is conducting: a directed search from or to a compound or an undirected search of enzymes.
-</p>
-
-<h4>Determination of source and target reactions</h4>
-<p>
-If directed search of compounds has a defined source compound, PathWalue searches for pathways that begin with reactions that have the compound as a substrate.
-If directed search of compounds has a defined target compound, PathWalue searches for pathways that end in reactions that produce the compound.
-If either the source or target compound is the wildcard "Any ChEBI", PathWalue finds a pathway from all possible sources or targets to the specified targets or sources.
-</p>
-<p>
-An undirected enzyme search looks for pathways that start or end with one of the given enzymes.
-</p>
-
-<h4>Finding pathways</h4>
-<p>
-The algorithm returns a pathway from each source to each pair.
-</p>
-
-<h4>Filtering pathways</h4>
-<p>
-Accept only pathways that include the compound and enzymes specified by the user.
-Don't accept pathways that produce the pathway's substrate or consume the pathway's product.
-Don't accept pathways that include 3-reaction cycles.
-</p>
-
-<h4>Evaluating pathways</h4>
-<p>
-SAME AS ABOVE!
-</p>
-<p>
-PathWalue scores pathways according to the values of the compounds and
-complexities of the reaction steps.
-</p>
-<p>
-Compound values are based on a synthetic database of market demands and prices.
-The value of a compound is evaluated as a product of its demand and price.
-</p>
-<p>
-Reaction complexities are based on the amount and types of biochemically
-important cofactors involved in the reaction step.
-PathWalue considers reactions involving cofactors less complex than those that
-don't involve.
-</p>
-<p>
-A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
-</p>
-
 
 </div>
-
 </div>
 
 <div class="footer">
