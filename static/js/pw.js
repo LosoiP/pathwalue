@@ -768,7 +768,7 @@ function filterPathways(pathways, C, E, s, t, Fl, context) {
             // Check for forbidden links.
             } else if (i >= 1) {
                 preC = _.keys(S[pw[i - 1]][1]);  // products
-                if (_.intersection(preC, Fl).length !== 0) {
+                if (_.intersection(preC, Fl).length >= _.intersection(preC, substrates).length) {
                     approved = false;
                     return false;
                 }

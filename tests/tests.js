@@ -342,22 +342,29 @@ QUnit.test('testFilterEnzymes', function(assert) {
     assert.deepEqual(pws13, filtered13, 'filter correct enzymes 1 and 3');
     assert.deepEqual(pws134, filtered134, 'filter correct enzymes 1, 3 and 4');
 });
-// TODO filterLinks tests
-// TODO combination tests with filterLinks and others
 QUnit.test('testFilterLinks', function(assert) {
     var pws1 = filterPathways(createPathways(), [], [], '', '', ['1'], DATA);
+    var pws12 = filterPathways(createPathways(), [], [], '', '', ['1', '2'], DATA);
     var pws13 = filterPathways(createPathways(), [], [], '', '', ['1', '3'], DATA);
+    var pws1234 = filterPathways(createPathways(), [], [], '', '', ['1', '2', '3', '4'], DATA);
     var pws135 = filterPathways(createPathways(), [], [], '', '', ['1', '3', '5'], DATA);
-    var filtered1 = [
+    var pws123456 = filterPathways(createPathways(), [], [], '', '', ['1', '2', '3', '4', '5', '6'], DATA);
+    var filtered1 = createPathways();
+    var filtered12 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4'], ['4', '5'],
         ['5'],
     ];
-    var filtered13 = [['1'], ['4'], ['4', '5'], ['5']];
-    var filtered135 = [['1'], ['4'], ['5']];
-    assert.deepEqual(pws1, filtered1, 'filter correct links 1');
-    assert.deepEqual(pws13, filtered13, 'filter correct links 1 and 3');
-    assert.deepEqual(pws135, filtered135, 'filter correct links 1, 3 and 5');
+    var filtered13 = createPathways();
+    var filtered1234 = [['1'], ['4'], ['4', '5'], ['5']];
+    var filtered135 = createPathways();
+    var filtered123456 = [['1'], ['4'], ['5']];
+    assert.deepEqual(pws1, filtered1, 'filter nothing links 1');
+    assert.deepEqual(pws12, filtered12, 'filter correct links 1 and 2');
+    assert.deepEqual(pws13, filtered13, 'filter nothing links 1 and 3');
+    assert.deepEqual(pws1234, filtered1234, 'filter correct links 1, 2, 3 and 4');
+    assert.deepEqual(pws135, filtered135, 'filter nothing links 1, 3 and 5');
+    assert.deepEqual(pws123456, filtered123456, 'filter correct links 1, 2, 3, 4, 5 and 6');
 });
 QUnit.test('testSources', function(assert) {
     var pws3 = filterPathways(createPathways(), [], [], '3', '', [], DATA);
@@ -389,42 +396,42 @@ QUnit.test('testNoFilters', function(assert) {
 });
 QUnit.test('testPairedFilters', function(assert) {
     var pwsC1E3 = filterPathways(createPathways(), ['1'], ['3'], '', '', [], DATA);
-    var pwsC1L1 = filterPathways(createPathways(), ['1'], [], '', '', ['1'], DATA);
+    var pwsC1L12 = filterPathways(createPathways(), ['1'], [], '', '', ['1', '2'], DATA);
     var pwsC13S5 = filterPathways(createPathways(), ['1', '3'], [], '5', '', [], DATA);
     var pwsC13T3 = filterPathways(createPathways(), ['1', '3'], [], '', '3', [], DATA);
-    var pwsE1L1 = filterPathways(createPathways(), [], ['1'], '', '', ['1'], DATA);
+    var pwsE1L12 = filterPathways(createPathways(), [], ['1'], '', '', ['1', '2'], DATA);
     var pwsE1S5 = filterPathways(createPathways(), [], ['1'], '5', '', [], DATA);
     var pwsE1T5 = filterPathways(createPathways(), [], ['1'], '', '5', [], DATA);
-    var pwsS3L5 = filterPathways(createPathways(), [], [], '3', '', ['5'], DATA);
+    var pwsS3L56 = filterPathways(createPathways(), [], [], '3', '', ['5', '6'], DATA);
     var pwsS3T5 = filterPathways(createPathways(), [], [], '3', '5', [], DATA);
-    var pwsT5L3 = filterPathways(createPathways(), [], [], '', '5', ['3'], DATA);
-    var pwsC13E1S1T3L1 = filterPathways(createPathways(), ['1', '3'], ['1'], '1', '3', ['1'], DATA);
+    var pwsT5L34 = filterPathways(createPathways(), [], [], '', '5', ['3', '4'], DATA);
+    var pwsC13E1S1T3L12 = filterPathways(createPathways(), ['1', '3'], ['1'], '1', '3', ['1', '2'], DATA);
     var filteredC1E3 = [
         ['1', '4'], ['1', '4', '5'],
         ['4', '5'], ['4', '5', '1'],
         ['5', '1', '4'],
         ];
-    var filteredC1L1 = [['1'], ['1', '4'], ['1', '4', '5'], ['4', '5'], ['5']];
+    var filteredC1L12 = [['1'], ['1', '4'], ['1', '4', '5'], ['4', '5'], ['5']];
     var filteredC13S5 = [['1'], ['5', '1']];
     var filteredC13T3 = [['1'], ['5', '1']];
-    var filteredE1L1 = [['1'], ['1', '4'], ['1', '4', '5']];
+    var filteredE1L12 = [['1'], ['1', '4'], ['1', '4', '5']];
     var filteredE1S5 = [['1'], ['5', '1']];
     var filteredE1T5 = [['1'], ['1', '4']];
-    var filteredS3L5 = [['4'], ['5']];
+    var filteredS3L56 = [['4'], ['5']];
     var filteredS3T5 = [['4']];
-    var filteredT5L3 = [['1'], ['4']];
-    var filteredC13E1S1T3L1 = [['1']];
+    var filteredT5L34 = [['1'], ['4']];
+    var filteredC13E1S1T3L12 = [['1']];
     assert.deepEqual(pwsC1E3, filteredC1E3, 'filter correct C1 E3');
-    assert.deepEqual(pwsC1L1, filteredC1L1, 'filter correct C1 L1');
+    assert.deepEqual(pwsC1L12, filteredC1L12, 'filter correct C1 L12');
     assert.deepEqual(pwsC13S5, filteredC13S5, 'filter correct C13 S5');
     assert.deepEqual(pwsC13T3, filteredC13T3, 'filter correct C13 T3');
-    assert.deepEqual(pwsE1L1, filteredE1L1, 'filter correct E1 L1');
+    assert.deepEqual(pwsE1L12, filteredE1L12, 'filter correct E1 L12');
     assert.deepEqual(pwsE1S5, filteredE1S5, 'filter correct E1 S5');
     assert.deepEqual(pwsE1T5, filteredE1T5, 'filter correct E1 T5');
-    assert.deepEqual(pwsS3L5, filteredS3L5, 'filter correct S3 L5');
+    assert.deepEqual(pwsS3L56, filteredS3L56, 'filter correct S3 L56');
     assert.deepEqual(pwsS3T5, filteredS3T5, 'filter correct S3 T5');
-    assert.deepEqual(pwsT5L3, filteredT5L3, 'filter correct T5 L3');
-    assert.deepEqual(pwsC13E1S1T3L1, filteredC13E1S1T3L1, 'filter correct C13 E1 S1 T3 L3');
+    assert.deepEqual(pwsT5L34, filteredT5L34, 'filter correct T5 L34');
+    assert.deepEqual(pwsC13E1S1T3L12, filteredC13E1S1T3L12, 'filter correct C13 E1 S1 T3 L12');
 });
 
 
