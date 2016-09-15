@@ -1089,6 +1089,9 @@ function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
     $('#idSelectEnzymes').select2({
         data: enzymes,
     });
+    $('#idSelectFilterLinks').select2({
+        data: compounds,
+    });
     return;
 }
 
