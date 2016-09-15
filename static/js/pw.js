@@ -583,7 +583,7 @@ function createHTMLElement(documentObject, tagName, attributes) {
  *
  * @returns {array}
  */
-function evaluateInput(G, n, C, E, context) {
+function evaluateInput(G, n, C, E, Fl, context) {
     var pathways = [];
     var ecReactions = context['ec_reactions'];
     var compoundReactions = context['compound_reactions'];
@@ -662,7 +662,7 @@ function evaluateInput(G, n, C, E, context) {
         _.forEach(targets.slice(0, maxTargets), function(t, j) {
             pws = _.take(findPathway(G, s, t), maxPw);
             filterPws = _.take(
-                filterPathways(pws, C, E, start, goal, context), maxFilter);
+                filterPathways(pws, C, E, start, goal, Fl, context), maxFilter);
             pathways.push.apply(pathways, filterPws);
         });
     });
@@ -737,7 +737,7 @@ function evaluatePathway(steps, compounds) {
  *
  * @returns {array} Approved pathways.
  */
-function filterPathways(pathways, C, E, s, t, context) {
+function filterPathways(pathways, C, E, s, t, Fl, context) {
     var rxnEcs = context.reaction_ecs;
     var S = context.stoichiometrics;
     var compounds;
@@ -992,12 +992,15 @@ function getInputValues(form) {
     var nodeNResults = selectNodes[0];
     var nodeCompounds = selectNodes[1];
     var nodeEnzymes = selectNodes[2];
+    var nodeFilterLinks = selectNodes[3];
     var nResults = Number(getMultiselectValues(nodeNResults));
     var compounds = getMultiselectValues(nodeCompounds);
     var enzymes = getMultiselectValues(nodeEnzymes);
+    var filterLinks = getMultiselectValues(nodeFilterLinks);
     var result = {
         compounds: compounds,
         enzymes: enzymes,
+        filterLinks: filterLinks,
         nResults: nResults,
     };
     return result;
@@ -1137,7 +1140,7 @@ function submitSearch() {
     var lenChildren = outputSlot.childNodes.length;
     if (validateInputN(input.nResults) && validateInputCE(input.compounds, input.enzymes)) {
         results = evaluateInput(
-            GRAPH, input.nResults, input.compounds, input.enzymes, CONTEXT);
+            GRAPH, input.nResults, input.compounds, input.enzymes, input.filterLinks, CONTEXT);
     }
     tmp.appendChild(formatOutput(document, results, CONTEXT));
     outputSlot.innerHTML = tmp.innerHTML;
