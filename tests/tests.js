@@ -326,7 +326,7 @@ QUnit.test('testFilterCompounds', function(assert) {
 QUnit.test('testFilterEnzymes', function(assert) {
     var pws1 = filterPathways(createPathways(), [], ['1'], '', '', [], DATA);
     var pws13 = filterPathways(createPathways(), [], ['1', '3'], '', '', [], DATA);
-    var pws135 = filterPathways(createPathways(), [], ['1', '3', '4'], '', '', [], DATA);
+    var pws134 = filterPathways(createPathways(), [], ['1', '3', '4'], '', '', [], DATA);
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4', '5', '1'],
@@ -337,10 +337,27 @@ QUnit.test('testFilterEnzymes', function(assert) {
         ['4', '5', '1'],
         ['5', '1', '4'],
     ];
-    var filtered135 = [['1', '4', '5'], ['4', '5', '1'], ['5', '1', '4']];
+    var filtered134 = [['1', '4', '5'], ['4', '5', '1'], ['5', '1', '4']];
     assert.deepEqual(pws1, filtered1, 'filter correct enzymes 1');
     assert.deepEqual(pws13, filtered13, 'filter correct enzymes 1 and 3');
-    assert.deepEqual(pws135, filtered135, 'filter correct enzymes 1, 3 and 5');
+    assert.deepEqual(pws134, filtered134, 'filter correct enzymes 1, 3 and 4');
+});
+// TODO filterLinks tests
+// TODO combination tests with filterLinks and others
+QUnit.test('testFilterLinks', function(assert) {
+    var pws1 = filterPathways(createPathways(), [], [], '', '', ['1'], DATA);
+    var pws13 = filterPathways(createPathways(), [], [], '', '', ['1', '3'], DATA);
+    var pws135 = filterPathways(createPathways(), [], [], '', '', ['1', '3', '5'], DATA);
+    var filtered1 = [
+        ['1'], ['1', '4'], ['1', '4', '5'],
+        ['4'], ['4', '5'],
+        ['5'],
+    ];
+    var filtered13 = [['1'], ['4'], ['4', '5'], ['5']];
+    var filtered135 = [['1'], ['4'], ['5']];
+    assert.deepEqual(pws1, filtered1, 'filter correct links 1');
+    assert.deepEqual(pws13, filtered13, 'filter correct links 1 and 3');
+    assert.deepEqual(pws135, filtered135, 'filter correct links 1, 3 and 5');
 });
 QUnit.test('testSources', function(assert) {
     var pws3 = filterPathways(createPathways(), [], [], '3', '', [], DATA);

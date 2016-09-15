@@ -737,6 +737,7 @@ function evaluatePathway(steps, compounds) {
  *
  * @returns {array} Approved pathways.
  */
+// TODO Parameters C, E, s, t, Fl to a single filter object parameter?
 function filterPathways(pathways, C, E, s, t, Fl, context) {
     var rxnEcs = context.reaction_ecs;
     var S = context.stoichiometrics;
@@ -764,23 +765,30 @@ function filterPathways(pathways, C, E, s, t, Fl, context) {
             } else if (_.includes(products, s)) {
                 approved = false;
                 return false;
-            // Check for futile cycles.
-            } else if (i >= 2) {
-                prepreC = _.keys(S[pw[i - 2]][0]);  // substrates
+            // Check for forbidden links.
+            } else if (i >= 1) {
                 preC = _.keys(S[pw[i - 1]][1]);  // products
-                discard1 = _.intersection(prepreC, substrates);
-                discard2 = _.intersection(preC, substrates);
-                if (discard1.length !== 0 && discard2.length !== 0) {
+                if (_.intersection(preC, Fl).length !== 0) {
                     approved = false;
                     return false;
                 }
-                prepreC = _.keys(S[pw[i - 2]][1]);  // products
-                preC = _.keys(S[pw[i - 1]][0]);  // substrates
-                discard1 = _.intersection(prepreC, products);
-                discard2 = _.intersection(preC, products);
-                if (discard1.length !== 0 && discard2.length !== 0) {
-                    approved = false;
-                    return false;
+                // Check for futile cycles.
+                if (i >= 2) {
+                    prepreC = _.keys(S[pw[i - 2]][0]);  // substrates
+                    discard1 = _.intersection(prepreC, substrates);
+                    discard2 = _.intersection(preC, substrates);  // products
+                    if (discard1.length !== 0 && discard2.length !== 0) {
+                        approved = false;
+                        return false;
+                    }
+                    prepreC = _.keys(S[pw[i - 2]][1]);  // products
+                    preC = _.keys(S[pw[i - 1]][0]);  // substrates
+                    discard1 = _.intersection(prepreC, products);
+                    discard2 = _.intersection(preC, products);
+                    if (discard1.length !== 0 && discard2.length !== 0) {
+                        approved = false;
+                        return false;
+                    }
                 }
             }
             compounds.push(substrates);
