@@ -43,7 +43,7 @@ Return to
 <hr class="sectionLine" />
 <h1>PathWalue - pathways with value</h1>
 <p>
-Welcome to read the description of PathWalue application!
+Welcome to read the description of the PathWalue application!
 </p>
 <hr class="sectionLine" />
 <h2>Details of user input processing</h2>
@@ -109,13 +109,14 @@ PathWalue generates pathways using a shortest path algorithm to a directed graph
 <h4>Directed graph</h4>
 <p>
 Generating pathways in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
-Every reaction exists in both directions in the graph.
+Every reaction exists in both directions in the graph as separate nodes, just as the different directions exist in separate entries in the Rhea database.
 </p>
 <p>
 Any two reaction nodes are connected by an edge if the first reaction produces a substrate for the second reaction.
-Reactions are not connected to their opposite direction reactions though as that would result in unrealistic short circuiting.
+Reactions are not connected to their opposite direction reactions though, as that would result in unrealistic short circuiting.
 Connections based on certain compounds such as water are forbidden and not present in the graph.
 At the moment PathWalue has a predefined list of 500 compounds that are not allowed to link to successive reactions.
+The list inclues inorganic ions, cofactors and protein residues among others.
 </p>
 <p>
 The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
@@ -123,8 +124,9 @@ The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
 <h4>Search algorithm</h4>
 <p>
 The algorithm looks for the shortest paths from the source to target reaction.
+The source and target reactions are determined as described in section 1 Determination of the search type.
 Moving from one reaction node to another occurs always trough a directed edge.
-Recall from the Directed graph -section that a reaction has an edge to another reaction if it produces a substrate for the other reaction.
+Recall from the Directed graph section that a reaction has an edge to another reaction if it produces a substrate for the other reaction.
 </p>
 <p>
 At the moment the edges are unweighted which means that all edges are equal in length.
@@ -138,8 +140,8 @@ At the moment the edges are unweighted which means that all edges are equal in l
 <p>
 PathWalue filters all generated pathways according to these criteria:
 <ul>
-<li>All the given compounds must be present in the pathway.</li>
-<li>All the given enzymes must be present in the pathway.</li>
+<li>All the given compounds in the Compounds field at the Input section must be present in the pathway.</li>
+<li>All the given enzymes in the Enzymes field at the Input section must be present in the pathway.</li>
 <li>Repetitive producing and consuming of a compound in three successive reactions is forbidden.
     <br />Example: a pathway is filtered if its reaction 1 produces compound A, reaction 2 consumes A and reaction 3 produces A again.</li>
 </ul>
@@ -147,6 +149,10 @@ PathWalue uses additionally these criteria when a directed search is conducted f
 <ul>
 <li>The specified source compound must not be produced by any of the pathway's reactions.</li>
 <li>The specified target compound must not be consumed by any of the pathway's reactions.</li>
+</ul>
+If the user has specified link filters then the following criterion is also used:
+<ul>
+<li>A compound in the Filter linking compounds field at the Input section must not be the only connection from one reaction to another.</li>
 </ul>
 Only such pathways that fulfill the necessary criteria will be evaluated.
 </p>
@@ -163,12 +169,14 @@ complexities of the reaction steps.
 <p>
 Compound values are based on a synthetic database of market demands and prices.
 The value of a compound is evaluated as a product of its demand and price.
+The synthetic database has been prepared by using ChEBI compound ontology that also includes classifications related to compound applications and functional groups.
 </p>
 <p>
 Reaction complexities are based on the amount and types of biochemically
 important cofactors involved in the reaction step.
 PathWalue considers reactions involving cofactors less complex than those that
 don't involve.
+This mechanism favours pathways that involve biologically meaningful cofactors.
 </p>
 <p>
 A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
@@ -183,10 +191,12 @@ A pathway's score is evaluated as the ratio of the total value of compounds to t
 PathWalue returns the best scoring pathways and shows additional details of it.
 The output is divided into the pathway's total reaction, score, substrates, intermediates, products and reaction steps.
 <ul>
-<li>Total reaction: pathway substrates => pathway products</li>
+<li>Total reaction: pathway substrates => pathway products.
+    <br />Pathway substrates and products are defined below.</li>
 <li>Score: pathway's total score evaluated as described in section 4 Evaluating pathways</li>
 <li>Substrates: a list of those compounds that are used only as substrates in the pathway's reaction steps</li>
-<li>Intermediates: a list of those compounds that are consumed by a reaction but also produced by some other reaction</li>
+<li>Intermediates: a list of those compounds that are consumed by a reaction but also produced by some other reaction.
+    <br />Compounds classified here as intermediates contain all the links between successive reactions, but also all other such compounds that are both produced and consumed during the pathway.</li>
 <li>Products: a list of those compounds that are only produced in the reaction steps</li>
 <li>Reaction steps: a list of the individual Rhea reactions that constitute the pathway. Each reaction step has a list of its substrates, products and also possible enzyme catalysts if applicable.</li>
 </ul>
@@ -197,7 +207,7 @@ The output is divided into the pathway's total reaction, score, substrates, inte
 <hr class="sectionLine" />
 <h2>Implementation</h2>
 <p>
-The test version of PathWalue is implemented as a single page web application to enable an easy review of the idea.
+The test version of PathWalue is implemented as a single page web application to enable an easy review of the idea, even though performance had to be partly compromised.
 The application code is a set of JavaScript functions that read the input fields of the web page and process the input as described in Details of user input processing.
 JavaScript was chosen for the test version because it's executed reasonably well by major up-to-date web browsers.
 </p>
@@ -207,14 +217,18 @@ The relevant data are converted to JSON formatted files for the JavaScript funct
 </p>
 <p>
 The Python-generated static data in JSON files are used to construct the directed graph described in section 2 Generating pathways.
-They are also used as the synthetic market database of compound prices and demands.
+They are also used as the synthetic market database of compound prices and demands (section 4 Evaluating pathways).
+</p>
+<p>
+The test version has been tested using Firefox 45 and Internet Explorer 11 web browsers.
+</p>
 </div>
 </div>
 
 
 
 <div class="footer">
-<p>Author: Pauli Losoi</p>
+<p><small>Author: Pauli Losoi<br />Updated: 16.9.2016</small></p>
 <h2>Powered by</h2>
 <p>
 <ul class="inline">
@@ -225,8 +239,8 @@ EMBL-EBI databases:
 </ul>
 <ul class="inline">
 JavaScript:
-<li class="inline"><a href="http://jsnetworkx.org/">JSNetworkX</a></li>
 <li class="inline"><a href="https://jquery.com/">jQuery</a></li>
+<li class="inline"><a href="http://jsnetworkx.org/">JSNetworkX</a></li>
 <li class="inline"><a href="https://lodash.com/">Lodash</a></li>
 <li class="inline"><a href="https://select2.github.io/">Select2</a></li>
 </ul>
