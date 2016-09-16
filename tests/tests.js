@@ -15,6 +15,10 @@
 // Test data constants
 // -------------------
 
+// Triplets 1, 4, 5 and 2, 3, 6.
+// 2 links to 7 and 7 to 3.
+// 4 links to 7 and vice versa.
+// 8 links to  9.
 var RHEA_CHEBIS = {
     '1': [{'1': 1, '2': 1}, {'3': 1, '4': 1}],
     '2': [{'1': 2, '2': 2}, {'5': 2, '6': 2}],
@@ -22,6 +26,9 @@ var RHEA_CHEBIS = {
     '4': [{'3': 3, '4': 3}, {'5': 3, '6': 3}],
     '5': [{'5': 2, '6': 2}, {'1': 2, '2': 2}],
     '6': [{'5': 3, '6': 3}, {'3': 3, '4': 3}],
+    '7': [{'5': 4, '6': 4}, {'3': 4, '4': 4}],
+    '8': [{'7': 4}, {'8': 4}],
+    '9': [{'8': 4}, {'9': 4}],
 };
 var COMPLEXITIES = {
     '1': 1,
@@ -34,10 +41,13 @@ var COMPLEXITIES = {
 var CHEBI_RHEAS = {
     '1': [['1', '2'], ['3', '5']],
     '2': [['1', '2'], ['3', '5']],
-    '3': [['3', '4'], ['1', '6']],
-    '4': [['3', '4'], ['1', '6']],
-    '5': [['5', '6'], ['2', '4']],
-    '6': [['5', '6'], ['2', '4']],
+    '3': [['3', '4'], ['1', '6', '7']],
+    '4': [['3', '4'], ['1', '6', '7']],
+    '5': [['5', '6', '7'], ['2', '4']],
+    '6': [['5', '6', '7'], ['2', '4']],
+    '7': [['8'], []],
+    '8': [['9'], ['8']],
+    '9': [[], ['9']],
 };
 var DEMANDS = {
     '1': 1,
@@ -211,9 +221,9 @@ QUnit.test('testReturnCorrectCompoundResults', function(assert) {
     var resultsCAny1 = evaluateInput(G, 100, ['any', '1'], [], [], DATA);
     var resultsC13 = evaluateInput(G, 100, ['1', '3'], [], [], DATA);
     var resultsC135 = evaluateInput(G, 100, ['1', '3', '5'], [], [], DATA);
-    var C1Any = [['1'], ['1', '4'], ['2'], ['2', '6']];
-    var CAny1 = [['3'], ['4', '5'], ['5'], ['6', '3']];
-    var C13 = [['1'], ['2', '6']];
+    var C1Any = [['1'], ['1', '4'], ['2'], ['2', '6'], ['2', '7']];
+    var CAny1 = [['3'], ['4', '5'], ['5'], ['6', '3'], ['7', '3']];
+    var C13 = [['1'], ['2', '6'], ['2', '7']];
     var C135 = [['1', '4']];
     assert.deepEqual(_.unzip(resultsC1Any)[1].sort(), C1Any, 'C1Any');
     assert.deepEqual(_.unzip(resultsCAny1)[1].sort(), CAny1, 'CAny1');
@@ -227,11 +237,12 @@ QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
     var resultsE123 = evaluateInput(G, 100, [], ['1', '2', '3'], [], DATA);
     var E1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
-        ['2'], ['2', '6'], ['2', '6', '3'],
-        ['3'], ['3', '2'], ['3', '2', '6'],
+        ['2'], ['2', '6'], ['2', '6', '3'], ['2', '7'],
+        ['3'], ['3', '2'], ['3', '2', '6'], ['3', '2', '7'],
         ['4', '5', '1'],
         ['5', '1'],
         ['6', '3'], ['6', '3', '2'],
+        ['7', '3'], ['7', '3', '2'],
     ];
     var E12 = [
         ['1', ], ['1', '4'], ['1', '4', '5'],
@@ -254,8 +265,8 @@ QUnit.test('testReturnCorrectCombinationResults', function(assert) {
     var resultsC13E12 = evaluateInput(G, 100, ['1', '3'], ['1', '2'], [], DATA);
     var resultsC135E123 = evaluateInput(G, 100, ['1', '3', '5'], ['1', '2', '3'], [], DATA);
     var resultsC5E12 = evaluateInput(G, 100, ['5'], ['1', '2'], [], DATA);
-    var C1AnyE1 = [['1'], ['1', '4'], ['2'], ['2', '6']];
-    var CAny1E1 = [['3'], ['6', '3']];
+    var C1AnyE1 = [['1'], ['1', '4'], ['2'], ['2', '6'], ['2', '7']];
+    var CAny1E1 = [['3'], ['6', '3'], ['7', '3']];
     var C13E12 = [['1']];
     var C135E123 = [['1', '4']];
     var C5E12 = [
@@ -387,12 +398,12 @@ QUnit.test('testNoFilters', function(assert) {
     var pws132 = filterPathways([['1', '3', '2']], [], [], '', '', [], DATA);
     var pws513 = filterPathways([['5', '1', '3']], [], [], '', '', [], DATA);
     var pws5132 = filterPathways([['5', '1', '3', '2']], [], [], '', '', [], DATA);
-    var pws6135 = filterPathways([['6', '1', '3', '5']], [], [], '', '', [], DATA);
+    var pws6327 = filterPathways([['6', '3', '2', '7']], [], [], '', '', [], DATA);
     assert.deepEqual(pws, createPathways(), "don't filter pathways");
     assert.deepEqual(pws132, [], 'filter cycle 1, 3, 2');
     assert.deepEqual(pws513, [], 'filter cycle 5, 1, 3');
     assert.deepEqual(pws5132, [], 'filter cycle 5, 1, 3, 2');
-    assert.deepEqual(pws6135, [['6', '1', '3', '5']], "don't filter 6, 1, 3, 5");
+    assert.deepEqual(pws6327, [['6', '3', '2', '7']], "don't filter 6, 3, 2, 7");
 });
 QUnit.test('testPairedFilters', function(assert) {
     var pwsC1E3 = filterPathways(createPathways(), ['1'], ['3'], '', '', [], DATA);
@@ -440,23 +451,30 @@ QUnit.test('testCatchErrors', function(assert) {
     var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
     assert.notOk(findPathway(G, 'source', null), 'source to null, return undefined');
     assert.notOk(findPathway(G, null, 'target'), 'return undefined');
-    assert.notOk(findPathway(G, '1', '6'), 'return undefined');
+    assert.notOk(findPathway(G, '1', '8'), 'return undefined');
     assert.notOk(findPathway(G, null, null), 'return undefined');
 });
 QUnit.test('testFindCorrectPathways', function(assert) {
     var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
     var source1Target5 = [['1', '4', '5']];
-    var source1TargetNull = [['1'], ['1', '4'], ['1', '4', '5']];
+    var source1TargetNull = [
+        ['1'], ['1', '4'], ['1', '4', '5'], ['1', '4', '7'],
+        ['1', '4', '7', '3'], ['1', '4', '7', '3', '2'],
+        ['1', '4', '7', '3', '2', '6'],
+    ];
     var source5Target1 = [['5', '1']];
-    var sourceNullTarget5 = [['1', '4', '5'], ['4', '5'], ['5']];
+    var sourceNullTarget5 = [
+        ['1', '4', '5'], ['2', '7', '4', '5'], ['3', '2', '7', '4', '5'],
+        ['4', '5'], ['5'], ['6', '3', '2', '7', '4', '5'], ['7', '4', '5'],
+    ];
     var pws1To5 = findPathway(G, '1', '5');
     var pws1ToNull = findPathway(G, '1', null);
     var pws5To1 = findPathway(G, '5', '1');
     var pwsNullTo5 = findPathway(G, null, '5');
-    assert.deepEqual(pws1To5, source1Target5, 'correct pathways S1T5');
-    assert.deepEqual(pws1ToNull, source1TargetNull, 'correct pathways S1Tnull');
-    assert.deepEqual(pws5To1, source5Target1, 'correct pathways S5T1');
-    assert.deepEqual(pwsNullTo5, sourceNullTarget5, 'correct pathways SnullT5');
+    assert.deepEqual(pws1To5.sort(), source1Target5, 'correct pathways S1T5');
+    assert.deepEqual(pws1ToNull.sort(), source1TargetNull, 'correct pathways S1Tnull');
+    assert.deepEqual(pws5To1.sort(), source5Target1, 'correct pathways S5T1');
+    assert.deepEqual(pwsNullTo5.sort(), sourceNullTarget5, 'correct pathways SnullT5');
 });
 
 
@@ -595,10 +613,10 @@ QUnit.test('testGetCorrectValues', function(assert) {
 QUnit.module('testInitializeGraph');
 QUnit.test('testCorrectOutputs', function(assert) {
     var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
-    var correctNodes = ['1', '2', '3', '4', '5', '6'];
+    var correctNodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
     var correctEdges = [
-        ['1', '4'], ['2', '6'], ['3', '2'],
-        ['4', '5'], ['5', '1'], ['6', '3']
+        ['1', '4'], ['2', '6'], ['2', '7'], ['3', '2'], ['4', '5'],
+        ['4', '7'], ['5', '1'], ['6', '3'], ['7', '3'], ['7', '4'], ['8', '9'],
     ];
     assert.deepEqual(G.nodes(), correctNodes, 'correct nodes');
     assert.deepEqual(G.edges(), correctEdges, 'correct edges');
@@ -608,13 +626,16 @@ QUnit.test('testCorrectIgnores', function(assert) {
     var I2 = ['1', '2'];
     var G1 = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I1);
     var G2 = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I2);
-    var correctNodes1 = ['1', '2', '3', '4', '5', '6'];
-    var correctNodes2 = ['1', '2', '3', '4', '5', '6'];
+    var correctNodes1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    var correctNodes2 = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
     var correctEdges1 = [
-        ['1', '4'], ['2', '6'], ['3', '2'],
-        ['4', '5'], ['5', '1'], ['6', '3']
+        ['1', '4'], ['2', '6'], ['2', '7'], ['3', '2'], ['4', '5'], ['4', '7'],
+        ['5', '1'], ['6', '3'], ['7', '3'], ['7', '4'], ['8', '9'],
     ];
-    var correctEdges2 = [['1', '4'], ['2', '6'], ['4', '5'], ['6', '3']];
+    var correctEdges2 = [
+        ['1', '4'], ['2', '6'], ['2', '7'], ['4', '5'], ['4', '7'],
+        ['6', '3'], ['7', '3'], ['7', '4'], ['8', '9'],
+    ];
     assert.deepEqual(G1.nodes(), correctNodes1, 'correct nodes I136');
     assert.deepEqual(G1.edges(), correctEdges1, 'correct edges I136');
     assert.deepEqual(G2.nodes(), correctNodes2, 'correct nodes I12');
