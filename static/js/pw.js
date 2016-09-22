@@ -611,6 +611,7 @@ function evaluateInput(G, n, C, E, Fl, context) {
     var a = 1000;
     var b = 1000;
     var c = 5;
+    var filter = {compounds: C, enzymes: E, source: '', target: '', links: Fl};
     // Determine search and filter parameters.
     if (C.length > 1) {
         start = C[0];
@@ -632,6 +633,8 @@ function evaluateInput(G, n, C, E, Fl, context) {
                 targets = compoundReactions[goal][1];
             }
         }
+        filter.source = start;
+        filter.target = goal;
     } else {
         _.forEach(E, function(ec) {
             sources.push.apply(sources, ecReactions[ec]);
@@ -662,7 +665,7 @@ function evaluateInput(G, n, C, E, Fl, context) {
         _.forEach(targets.slice(0, maxTargets), function(t, j) {
             pws = _.take(findPathway(G, s, t), maxPw);
             filterPws = _.take(
-                filterPathways(pws, C, E, start, goal, Fl, context), maxFilter);
+                filterPathways(pws, filter, context), maxFilter);
             pathways.push.apply(pathways, filterPws);
         });
     });
@@ -737,10 +740,14 @@ function evaluatePathway(steps, compounds) {
  *
  * @returns {array} Approved pathways.
  */
-// TODO Parameters C, E, s, t, Fl to a single filter object parameter?
-function filterPathways(pathways, C, E, s, t, Fl, context) {
+function filterPathways(pathways, filter, context) {
     var rxnEcs = context.reaction_ecs;
     var S = context.stoichiometrics;
+    var C = filter.compounds;
+    var E = filter.enzymes;
+    var s = filter.source;
+    var t = filter.target;
+    var Fl = filter.links;
     var compounds;
     var enzymes;
     var approved;

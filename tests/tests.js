@@ -120,6 +120,16 @@ var DATA = {
 // Test data initialize functions
 // ------------------------------
 
+function createFilter(conditions) {
+    var filter = {compounds: [], enzymes: [], source: '', target: '',
+                  links: []};
+    _.forEach(conditions, function(condition) {
+        filter[condition[0]] = condition[1];
+    });
+    return filter;
+}
+
+
 function createInputForm() {
     var form = document.createElement('FORM');
     var attrOption = {value:10, text:'10', selected:true};
@@ -307,14 +317,22 @@ QUnit.test('testCorrectResults', function(assert) {
 
 QUnit.module('testFilterPathway');
 QUnit.test('testFilterAll', function(assert) {
-    var pws = filterPathways(createPathways(), ['1', '3', '5'], ['1', '2', '3', '4'],
-        '1', '3', [], DATA);
+    var filter = createFilter([
+        ['compounds', ['1', '3', '5']],
+        ['enzymes', ['1', '2', '3', '4']],
+        ['source', '1'],
+        ['target', '3']
+    ]);
+    var pws = filterPathways(createPathways(), filter, DATA);
     assert.deepEqual(pws, [], 'filter all pathways');
 });
 QUnit.test('testFilterCompounds', function(assert) {
-    var pws1 = filterPathways(createPathways(), ['1'], [], '', '', [], DATA);
-    var pws13 = filterPathways(createPathways(), ['1', '3'], [], '', '', [], DATA);
-    var pws135 = filterPathways(createPathways(), ['1', '3', '5'], [], '', '', [], DATA);
+    var pws1 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1']]]), DATA);
+    var pws13 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1', '3']]]), DATA);
+    var pws135 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1', '3', '5']]]), DATA);
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4', '5'], ['4', '5', '1'],
@@ -335,9 +353,12 @@ QUnit.test('testFilterCompounds', function(assert) {
     assert.deepEqual(pws135, filtered135, 'filter correct compounds 1, 3 and 5');
 });
 QUnit.test('testFilterEnzymes', function(assert) {
-    var pws1 = filterPathways(createPathways(), [], ['1'], '', '', [], DATA);
-    var pws13 = filterPathways(createPathways(), [], ['1', '3'], '', '', [], DATA);
-    var pws134 = filterPathways(createPathways(), [], ['1', '3', '4'], '', '', [], DATA);
+    var pws1 = filterPathways(createPathways(),
+        createFilter([['enzymes', ['1']]]), DATA);
+    var pws13 = filterPathways(createPathways(),
+        createFilter([['enzymes', ['1', '3']]]), DATA);
+    var pws134 = filterPathways(createPathways(),
+        createFilter([['enzymes', ['1', '3', '4']]]), DATA);
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
         ['4', '5', '1'],
@@ -354,12 +375,18 @@ QUnit.test('testFilterEnzymes', function(assert) {
     assert.deepEqual(pws134, filtered134, 'filter correct enzymes 1, 3 and 4');
 });
 QUnit.test('testFilterLinks', function(assert) {
-    var pws1 = filterPathways(createPathways(), [], [], '', '', ['1'], DATA);
-    var pws12 = filterPathways(createPathways(), [], [], '', '', ['1', '2'], DATA);
-    var pws13 = filterPathways(createPathways(), [], [], '', '', ['1', '3'], DATA);
-    var pws1234 = filterPathways(createPathways(), [], [], '', '', ['1', '2', '3', '4'], DATA);
-    var pws135 = filterPathways(createPathways(), [], [], '', '', ['1', '3', '5'], DATA);
-    var pws123456 = filterPathways(createPathways(), [], [], '', '', ['1', '2', '3', '4', '5', '6'], DATA);
+    var pws1 = filterPathways(createPathways(),
+        createFilter([['links', ['1']]]), DATA);
+    var pws12 = filterPathways(createPathways(),
+        createFilter([['links', ['1', '2']]]), DATA);
+    var pws13 = filterPathways(createPathways(),
+        createFilter([['links', ['1', '3']]]), DATA);
+    var pws1234 = filterPathways(createPathways(),
+        createFilter([['links', ['1', '2', '3', '4']]]), DATA);
+    var pws135 = filterPathways(createPathways(),
+        createFilter([['links', ['1', '3', '5']]]), DATA);
+    var pws123456 = filterPathways(createPathways(),
+        createFilter([['links', ['1', '2', '3', '4', '5', '6']]]), DATA);
     var filtered1 = createPathways();
     var filtered12 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
@@ -378,27 +405,31 @@ QUnit.test('testFilterLinks', function(assert) {
     assert.deepEqual(pws123456, filtered123456, 'filter correct links 1, 2, 3, 4, 5 and 6');
 });
 QUnit.test('testSources', function(assert) {
-    var pws3 = filterPathways(createPathways(), [], [], '3', '', [], DATA);
-    var pws5 = filterPathways(createPathways(), [], [], '5', '', [], DATA);
+    var pws3 = filterPathways(createPathways(),
+        createFilter([['source', '3']]), DATA);
+    var pws5 = filterPathways(createPathways(),
+        createFilter([['source', '5']]), DATA);
     var filtered3 = [['4'], ['4', '5'], ['5']];
     var filtered5 = [['1'], ['5'], ['5', '1']];
     assert.deepEqual(pws3, filtered3, 'filter correct source 3');
     assert.deepEqual(pws5, filtered5, 'filter correct source 5');
 });
 QUnit.test('testTargets', function(assert) {
-    var pws3 = filterPathways(createPathways(), [], [], '', '3', [], DATA);
-    var pws5 = filterPathways(createPathways(), [], [], '', '5', [], DATA);
+    var pws3 = filterPathways(createPathways(),
+        createFilter([['target', '3']]), DATA);
+    var pws5 = filterPathways(createPathways(),
+        createFilter([['target', '5']]), DATA);
     var filtered3 = [['1'], ['5'], ['5', '1']];
     var filtered5 = [['1'], ['1', '4'], ['4']];
     assert.deepEqual(pws3, filtered3, 'filter correct target 3');
     assert.deepEqual(pws5, filtered5, 'filter correct target 5');
 });
 QUnit.test('testNoFilters', function(assert) {
-    var pws = filterPathways(createPathways(), [], [], '', '', [], DATA);
-    var pws132 = filterPathways([['1', '3', '2']], [], [], '', '', [], DATA);
-    var pws513 = filterPathways([['5', '1', '3']], [], [], '', '', [], DATA);
-    var pws5132 = filterPathways([['5', '1', '3', '2']], [], [], '', '', [], DATA);
-    var pws6327 = filterPathways([['6', '3', '2', '7']], [], [], '', '', [], DATA);
+    var pws = filterPathways(createPathways(), createFilter(), DATA);
+    var pws132 = filterPathways([['1', '3', '2']], createFilter(), DATA);
+    var pws513 = filterPathways([['5', '1', '3']], createFilter(), DATA);
+    var pws5132 = filterPathways([['5', '1', '3', '2']], createFilter(), DATA);
+    var pws6327 = filterPathways([['6', '3', '2', '7']], createFilter(), DATA);
     assert.deepEqual(pws, createPathways(), "don't filter pathways");
     assert.deepEqual(pws132, [], 'filter cycle 1, 3, 2');
     assert.deepEqual(pws513, [], 'filter cycle 5, 1, 3');
@@ -406,17 +437,40 @@ QUnit.test('testNoFilters', function(assert) {
     assert.deepEqual(pws6327, [['6', '3', '2', '7']], "don't filter 6, 3, 2, 7");
 });
 QUnit.test('testPairedFilters', function(assert) {
-    var pwsC1E3 = filterPathways(createPathways(), ['1'], ['3'], '', '', [], DATA);
-    var pwsC1L12 = filterPathways(createPathways(), ['1'], [], '', '', ['1', '2'], DATA);
-    var pwsC13S5 = filterPathways(createPathways(), ['1', '3'], [], '5', '', [], DATA);
-    var pwsC13T3 = filterPathways(createPathways(), ['1', '3'], [], '', '3', [], DATA);
-    var pwsE1L12 = filterPathways(createPathways(), [], ['1'], '', '', ['1', '2'], DATA);
-    var pwsE1S5 = filterPathways(createPathways(), [], ['1'], '5', '', [], DATA);
-    var pwsE1T5 = filterPathways(createPathways(), [], ['1'], '', '5', [], DATA);
-    var pwsS3L56 = filterPathways(createPathways(), [], [], '3', '', ['5', '6'], DATA);
-    var pwsS3T5 = filterPathways(createPathways(), [], [], '3', '5', [], DATA);
-    var pwsT5L34 = filterPathways(createPathways(), [], [], '', '5', ['3', '4'], DATA);
-    var pwsC13E1S1T3L12 = filterPathways(createPathways(), ['1', '3'], ['1'], '1', '3', ['1', '2'], DATA);
+    var pwsC1E3 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1']], ['enzymes', ['3']]]), DATA);
+
+    var pwsC1L12 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1']], ['links', ['1', '2']]]), DATA);
+
+    var pwsC13S5 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1', '3']], ['source', '5']]), DATA);
+
+    var pwsC13T3 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1', '3']], ['target', '3']]), DATA);
+
+    var pwsE1L12 = filterPathways(createPathways(),
+        createFilter([['enzymes', ['1']], ['links', ['1', '2']]]), DATA);
+
+    var pwsE1S5 = filterPathways(createPathways(),
+        createFilter([['enzymes', ['1']], ['source', '5']]), DATA);
+
+    var pwsE1T5 = filterPathways(createPathways(),
+        createFilter([['enzymes', ['1']], ['target', '5']]), DATA);
+
+    var pwsS3L56 = filterPathways(createPathways(),
+        createFilter([['source', '3'], ['links', ['5', '6']]]), DATA);
+
+    var pwsS3T5 = filterPathways(createPathways(),
+        createFilter([['source', '3'], ['target', '5']]), DATA);
+
+    var pwsT5L34 = filterPathways(createPathways(),
+        createFilter([['target', '5'], ['links', ['3', '4']]]), DATA);
+
+    var pwsC13E1S1T3L12 = filterPathways(createPathways(),
+        createFilter([['compounds', ['1', '3']], ['enzymes', ['1']],
+            ['links', ['1', '2']], ['source', '1'], ['target', '3']]), DATA);
+
     var filteredC1E3 = [
         ['1', '4'], ['1', '4', '5'],
         ['4', '5'], ['4', '5', '1'],
