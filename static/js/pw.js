@@ -1,14 +1,12 @@
 'use strict';
-// Requires:
-// lodash
-// jsnetworkx
-
 /**
  * @fileOverview JavaScript for PathWalue-application.
  *
  * @author Pauli Losoi
  *
+ * @requires Lodash
  * @requires jQuery
+ * @requires JSNetworkX
  * @requires Select2
  */
 
