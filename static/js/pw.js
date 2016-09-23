@@ -65,12 +65,12 @@ var IGNORED_COMPOUNDS = [
     // Residues
     '65264',  // dodecanoyl-pantetheine-4-phosphorylserine(1-) residue
     '82657',  // deoxyhypusine(2+) residue
-    '78457',  // O-[S-(3R)-hydroxyhexanoylpantetheine-4'-phosphoryl]s... residue
-    '74419',  // 2-thio-N(6)-L-threonylcarbamoyladenine 5'-monophosph... residue
-    '79032',  // O-[S-(dihydromonacolin L carboxy)pantetheine-4'-phos... residue
-    '87079',  // N-acetyl-beta-D-glucosaminyl-(1->3)-N-acetyl-alpha-D... residue
-    '78461',  // O-[S-(3R)-hydroxyoctanoylpantetheine-4-phosphoryl]se... residue
-    '74455',  // 5-methylaminomethyl-2-thiouridine 5'-monophosphate z... residue
+    '78457',  // O-[S-(3R)-hydroxyhexanoylpantetheine-4'-phosphoryl]... residue
+    '74419',  // 2-thio-N(6)-L-threonylcarbamoyladenine 5'-monophosp... residue
+    '79032',  // O-[S-(dihydromonacolin L carboxy)pantetheine-4'-pho... residue
+    '87079',  // N-acetyl-beta-D-glucosaminyl-(1->3)-N-acetyl-alpha-... residue
+    '78461',  // O-[S-(3R)-hydroxyoctanoylpantetheine-4-phosphoryl]s... residue
+    '74455',  // 5-methylaminomethyl-2-thiouridine 5'-monophosphate ... residue
     '88221',  // N(omega),N('omega)-dimethyl-L-arginine(1+) residue
     '74481',  // N(2)-methylguanosine 5'-monophosphate(1-) residue
     '29950',  // L-cysteine residue
@@ -80,10 +80,10 @@ var IGNORED_COMPOUNDS = [
     '85305',  // S-3-[(2R)-phycourobilin]-L-cysteine(2-) residue
     '16044',  // L-methionine residue
     '29973',  // L-glutamate residue
-    '82693',  // 2-[(3S)-3-carboxylato-3-(methylammonio)propyl]-L-his... residue
-    '78470',  // O-[S-(3R)-hydroxydodecanoylpantetheine-4-phosphoryl]... residue
-    '85958',  // 5'-(N(7)-methyl 5'-triphosphoguanosine)-2'-O-methyla... residue
-    '78778',  // O-[S-(11Z)-hexadecenoylpantetheine-4'-phosphoryl]ser... residue
+    '82693',  // 2-[(3S)-3-carboxylato-3-(methylammonio)propyl]-L-hi... residue
+    '78470',  // O-[S-(3R)-hydroxydodecanoylpantetheine-4-phosphoryl... residue
+    '85958',  // 5'-(N(7)-methyl 5'-triphosphoguanosine)-2'-O-methyl... residue
+    '78778',  // O-[S-(11Z)-hexadecenoylpantetheine-4'-phosphoryl]se... residue
     '83111',  // N(6)-[(R)-S(8)-acetyldihydrolipoyl]-L-lysine residue
     '90675',  // ribonucleotide residue(1-)
     '83144',  // biotinyl-L-lysine residue
@@ -97,34 +97,34 @@ var IGNORED_COMPOUNDS = [
     '78598',  // N-terminal Nalpha-acetylamino-acid residue
     '82795',  // gamma-methyl L-glutamate residue
     '78454',  // O-(S-butanoylpantetheine-4'-phosphoryl)serine(1-) residue
-    '90975',  // O(4)-(N-acetyl-alpha-D-galactosaminyl)-trans-4-hydro... residue
-    '74275',  // 7-[(3S)-(3-amino-3-methoxycarbonyl)propyl]wyosine 5'... residue
-    '87080',  // N-acetyl-beta-D-glucosaminyl-(1->3)-N-acetyl-alpha-D... residue
+    '90975',  // O(4)-(N-acetyl-alpha-D-galactosaminyl)-trans-4-hydr... residue
+    '74275',  // 7-[(3S)-(3-amino-3-methoxycarbonyl)propyl]wyosine 5... residue
+    '87080',  // N-acetyl-beta-D-glucosaminyl-(1->3)-N-acetyl-alpha-... residue
     '74483',  // 5-methylcytidine 5'-monophosphate(1-) residue
     '83683',  // N-terminal N-acetyl-L-alanine residue
     '74491',  // N(1)-methyladenosine 5'-monophosphate(1-) residue
     '61976',  // N(6),N(6)-dimethyl-L-lysine(1+) residue
-    '62836',  // 2-methylthio-N(6)-(cis-4-hydroxy-Delta(2)-isopenteny... residue
+    '62836',  // 2-methylthio-N(6)-(cis-4-hydroxy-Delta(2)-isopenten... residue
     '78467',  // O-[S-(2E)-decenoylpantetheine-4-phosphoryl]serine(1-) residue
     '85644',  // UMP 2',3'-cyclic phosphate(2-) residue
     '82883',  // nucleotide 5'-phosphate(1-) residue
     '82620',  // L-tyrosine-O-phosphate(2-) residue
-    '74420',  // 2-methylthio-N(6)-L-threonylcarbamoyladenine 5'-mono... residue
+    '74420',  // 2-methylthio-N(6)-L-threonylcarbamoyladenine 5'-mon... residue
     '45764',  // L-methionine (R)-S-oxide residue
     '82696',  // diphthine betaine residue
-    '78818',  // O-(S-3-oxopentanoylpantetheine-4'-phosphoryl)serine(1-) residue
+    '78818',  // O-(S-3-oxopentanoylpantetheine-4'-phosphoryl)serine... residue
     '74447',  // 5-methyluridine 5'-monophosphate(1-) residue
     '78809',  // N(6)-octanoyl-L-lysine residue
-    '78466',  // O-[S-(3R)-hydroxydecanoylpantetheine-4-phosphoryl]se... residue
+    '78466',  // O-[S-(3R)-hydroxydecanoylpantetheine-4-phosphoryl]s... residue
     '83562',  // N-terminal L-arginyl-L-alpha-amino acid(2+) residue
     '83556',  // N-terminal L-leucyl-L-alpha-amino acid(1+) residue
     '64837',  // N(pros)-phosphonato-L-histidine residue
     '74898',  // 3'-end 2'-O-methylribonucleotide(1-) residue
-    '87131',  // O-(S-L-2-amino-6-adipoylpantetheine-4'-phosphoryl)-L... residue
-    '82695',  // 2-[(3S)-3-carboxylato-3-(dimethylammonio)propyl]-L-h... residue
-    '73550',  // 4-demethyl-7-(3-amino-3-carboxypropyl)wyosine 5'-mon... residue
-    '78779',  // O-[S-(13Z)-3-oxooctadecenoylpantetheine-4'-phosphory... residue
-    '73543',  // 7-[(3S)-3-amino-3-carboxypropyl]wyosine 5'-monophosp... residue
+    '87131',  // O-(S-L-2-amino-6-adipoylpantetheine-4'-phosphoryl)-... residue
+    '82695',  // 2-[(3S)-3-carboxylato-3-(dimethylammonio)propyl]-L-... residue
+    '73550',  // 4-demethyl-7-(3-amino-3-carboxypropyl)wyosine 5'-mo... residue
+    '78779',  // O-[S-(13Z)-3-oxooctadecenoylpantetheine-4'-phosphor... residue
+    '73543',  // 7-[(3S)-3-amino-3-carboxypropyl]wyosine 5'-monophos... residue
     '90783',  // C-terminal S-(Gly-Gly)-L-Cys zwitterion residue
     '90616',  // N(6)-methyl-dAMP(1-) residue
     '29999',  // L-serine residue
@@ -132,8 +132,8 @@ var IGNORED_COMPOUNDS = [
     '64479',  // O-(pantetheine-4'-phosphoryl)serine(1-) residue
     '83145',  // carboxybiotinyl-L-lysine(1-) residue
     '90615',  // dAMP(1-) residue
-    '78823',  // O-(S-3-oxo-4-methylhexanoylpantetheine-4'-phosphoryl... residue
-    '78599',  // (gamma-L-glutamyl) N-terminal alpha-amino-acid zwitt... residue
+    '78823',  // O-(S-3-oxo-4-methylhexanoylpantetheine-4'-phosphory... residue
+    '78599',  // (gamma-L-glutamyl) N-terminal alpha-amino-acid zwit... residue
     '85448',  // 6-O-methyl dGMP(1-) residue
     '61965',  // trans-4-hydroxy-L-proline residue
     '86021',  // S-geranylgeranyl-L-cysteine residue
@@ -143,43 +143,43 @@ var IGNORED_COMPOUNDS = [
     '78468',  // O-(S-decanoylpantetheine-4-phosphoryl)serine(1-) residue
     '74416',  // 2-thio-N(6)-dimethylallyladenine 5'-monophosphate(1-) residue
     '78450',  // O-(S-acetoacetylpantetheine-4'-phosphoryl)serine(1-) residue
-    '83441',  // O-[S-(3R)-hydroxyicosanoylpantetheine-4-phosphoryl]s... residue
+    '83441',  // O-[S-(3R)-hydroxyicosanoylpantetheine-4-phosphoryl]... residue
     '82612',  // S-methyl-L-cysteine residue
     '83100',  // N(6)-[(R)-dihydrolipoyl]-L-lysine residue
     '16692',  // diphthamide residue
     '90511',  // S-[(2E,6E)-farnesyl]-L-cysteine methyl ester residue
-    '78475',  // O-[S-(2E)-tetradecenoylpantetheine-4-phosphoryl]seri... residue
+    '78475',  // O-[S-(2E)-tetradecenoylpantetheine-4-phosphoryl]ser... residue
     '61891',  // N(5)-methyl-L-glutamine residue
     '90602',  // uridylyl-L-tyrosine(1-) residue
     '78597',  // N-terminal alpha-amino-acid(1+) residue
     '61897',  // N(omega),N(omega)-dimethyl-L-arginine(1+) residue
     '29965',  // L-argininium residue
-    '86110',  // O-[S-(6Z)-hexadecenoylpantetheine-4'-phosphoryl]seri... residue
+    '86110',  // O-[S-(6Z)-hexadecenoylpantetheine-4'-phosphoryl]ser... residue
     '74478',  // 2'-O-methyluridine 5'-monophosphate(1-) residue
-    '83143',  // N(6)-[(R)-S(8)-ammoniomethyldihydrolipoyl]-L-lysine(1+) residue
+    '83143',  // N(6)-[(R)-S(8)-ammoniomethyldihydrolipoyl]-L-lysine... residue
     '85452',  // dCMP(1-) residue
     '29969',  // L-lysinium residue
     '74851',  // 5-(2-methoxy-2-oxoethyl)uridine 5'-monophosphate residue(1-)
-    '78820',  // O-(S-3-oxo-4-methylpentanoylpantetheine-4'-phosphory... residue
+    '78820',  // O-(S-3-oxo-4-methylpentanoylpantetheine-4'-phosphor... residue
     '82697',  // N-(ADP-D-ribosyl)diphthamide(1-) residue
     '83064',  // 3'-end ribonucleotide 2',3'-cyclic phosphate(2-) residue
     '83834',  // peptidylproline (omega=180) residue
     '74493',  // N(6),N(6)-dimethyladenosine 5'-monophosphate(1-) residue
-    '82683',  // O-[2'-(5-phosphoribosyl)-3'-dephospho-CoA]-L-serine(3-) residue
+    '82683',  // O-[2'-(5-phosphoribosyl)-3'-dephospho-CoA]-L-serine... residue
     '83624',  // O-adenyl-L-tyrosine(1-) residue
     '83062',  // 3'-end ribonucleotide 3'-phosphate(3-) residue
     '87831',  // N(6)-malonyl-L-lysine(1-) residue
     '131803',  // L-allysine residue
     '65286',  // L-tyrosine-O-sulfate(1-) residue
-    '78480',  // O-[S-(3R)-hydroxyhexadecanoylpantetheine-4'-phosphor... residue
+    '78480',  // O-[S-(3R)-hydroxyhexadecanoylpantetheine-4'-phospho... residue
     '78453',  // O-[S-(2E)-butenoylpantetheine-4'-phosphoryl]serine(1-) residue
     '73544',  // wybutosine 5'-monophosphate(1-) residue
     '74480',  // N(7)-methylguanosine 5'-phosphate zwitterion residue
-    '78824',  // O-(S-3-oxoheptanoylpantetheine-4'-phosphoryl)serine(1-) residue
+    '78824',  // O-(S-3-oxoheptanoylpantetheine-4'-phosphoryl)serine... residue
     '85445',  // dGMP(1-) residue
     '74445',  // 2'-O-methylguanosine 5'-monophosphate(1-) residue
-    '74454',  // 5-aminomethyl-2-thiouridine 5'-monophosphate zwitterion residue
-    '78296',  // (3S)-3-ammonio-3-(3-chloro-4,5-dihydroxyphenyl)propa... residue
+    '74454',  // 5-aminomethyl-2-thiouridine 5'-monophosphate zwitterio residue
+    '78296',  // (3S)-3-ammonio-3-(3-chloro-4,5-dihydroxyphenyl)prop... residue
     '30013',  // L-threonine residue
     '90510',  // S-[(2E,6E)-farnesyl]-L-cysteinate residue
     '84990',  // gamma-carboxy-L-glutamate(2-) residue
@@ -193,7 +193,7 @@ var IGNORED_COMPOUNDS = [
     '131913',  // O-[S-3,5-dihydroxy-4-methylanthranilyl]serine(1-) residue
     '61929',  // N(6)-methyl-L-lysinium residue
     '78456',  // O-(S-3-oxohexanoylpantetheine-4'-phosphoryl)serine(1-) residue
-    '78822',  // O-(S-3-oxo-5-methylhexanoylpantetheine-4'-phosphoryl... residue
+    '78822',  // O-(S-3-oxo-5-methylhexanoylpantetheine-4'-phosphory... residue
     '87215',  // N-terminal 5-oxo-L-proline residue
     '90840',  // O-(N-acetyl-beta-D-glucosaminyl)-L-threonine residue
     '88222',  // N(5)-methyl-argininium(1+) residue
@@ -208,11 +208,11 @@ var IGNORED_COMPOUNDS = [
     '90420',  // N(6)-(3-O-phospho-D-ribulosyl)-L-lysinium residue
     '87169',  // S-sulfo-L-cysteine(1-) residue
     '83142',  // N(6)-[(R)-S(8)-isobutyryldihydrolipoyl]-L-lysine residue
-    '83440',  // O-(S-3-oxoicosanoylpantetheine-4'-phosphoryl)-L-seri... residue
+    '83440',  // O-(S-3-oxoicosanoylpantetheine-4'-phosphoryl)-L-ser... residue
     '82852',  // inosine 5'-phosphate(1-) residue
     '87075',  // N-acetyl-alpha-D-galactosaminyl-L-threonine residue
     '74543',  // 8-methyladenosine 5'-monophosphate(1-) residue
-    '78488',  // O-[S-(3R)-hydroxyoctadecanoylpantetheine-4'-phosphor... residue
+    '78488',  // O-[S-(3R)-hydroxyoctadecanoylpantetheine-4'-phospho... residue
     '44120',  // L-methionine (S)-S-oxide residue
     '61930',  // N(6)-acetyl-L-lysine residue
     '87828',  // N(6)-glutaryl-L-lysine(1-) residue
@@ -223,11 +223,11 @@ var IGNORED_COMPOUNDS = [
     '83960',  // N(omega)-(ADP-D-ribosyl)-L-arginine(1-) residue
     '86299',  // O-[S-5-hexynoylpantetheine-4'-phosphoryl]serine(1-) residue
     '90873',  // dehydroalanine residue
-    '90610',  // O-[S-2,3-dihydroxybenzoylpantetheine-4'-phosphoryl]-... residue
+    '90610',  // O-[S-2,3-dihydroxybenzoylpantetheine-4'-phosphoryl]... residue
     '90838',  // O-(N-acetyl-beta-D-glucosaminyl)-L-serine residue
     '87830',  // N(6)-succinyl-L-lysine(1-) residue
     '90874',  // 3,3',5-triiodo-L-thyronine residue
-    '83071',  // tRNA 3'-terminal nucleotidyl-cytidyl-cytidyl-adenosi... residue
+    '83071',  // tRNA 3'-terminal nucleotidyl-cytidyl-cytidyl-adenos... residue
     '74513',  // N(2),N(2)-dimethylguanosine 5'-monophosphate(1-) residue
     '87078',  // N-acetyl-alpha-D-galactosaminyl-L-serine residue
     '90418',  // N(6)-D-ribulosyl-L-lysinium residue
@@ -242,19 +242,19 @@ var IGNORED_COMPOUNDS = [
     '78495',  // O-(S-octadecanoylpantetheine-4'-phosphoryl)serine(1-) residue
     '50342',  // L-proline residue
     '74890',  // N(1)-methylpseudouridine 5'-monophosphate(1-) residue
-    '78489',  // O-[S-(2E)-octadecenoylpantetheine-4'-phosphoryl]seri... residue
+    '78489',  // O-[S-(2E)-octadecenoylpantetheine-4'-phosphoryl]ser... residue
     '83833',  // peptidylproline (omega=0) residue
     '74506',  // N(4)-methylcytidine 5'-monophosphate(1-) residue
-    '78481',  // O-[S-(2E)-hexadecenoylpantetheine-4'-phosphoryl]seri... residue
+    '78481',  // O-[S-(2E)-hexadecenoylpantetheine-4'-phosphoryl]ser... residue
     '74495',  // 2'-O-methylcytidine 5'-monophosphate(1-) residue
-    '78827',  // O-[S-(3R)-3-hydroxyacylpantetheine-4'-phosphoryl]ser... residue
+    '78827',  // O-[S-(3R)-3-hydroxyacylpantetheine-4'-phosphoryl]se... residue
     '82831',  // queuosine 5'-phosphate zwitterion residue
-    '74511',  // 5-carboxymethylaminomethyl-2'-O-methyluridine 5'-mon... residue
+    '74511',  // 5-carboxymethylaminomethyl-2'-O-methyluridine 5'-mo... residue
     '131710',  // S-(1-hydroxy-2-oxopropyl)-L-cysteine residue
-    '78487',  // O-(S-3-oxooctadecanoylpantetheine-4'-phosphoryl)seri... residue
+    '78487',  // O-(S-3-oxooctadecanoylpantetheine-4'-phosphoryl)ser... residue
     '131912',  // O-[S-3-hydroxy-4-methylanthranilyl]serine(1-) residue
-    '82764',  // O-[S-2-methylbutanoylpantetheine-4'-phosphoryl]serin... residue
-    '85339',  // O-[S-(L-alloisoleucyl)pantetheine-4'-phosphoryl]seri... residue
+    '82764',  // O-[S-2-methylbutanoylpantetheine-4'-phosphoryl]seri... residue
+    '85339',  // O-[S-(L-alloisoleucyl)pantetheine-4'-phosphoryl]ser... residue
     '74497',  // 2-methyladenosine 5'-monophosphate(1-) residue
     '78464',  // O-(S-3-oxodecanoylpantetheine-4-phosphoryl)serine(1-) residue
     '82930',  // 3-(3-amino-3-carboxypropyl)uridine 5'-phosphate(1-) residue
@@ -263,7 +263,7 @@ var IGNORED_COMPOUNDS = [
     '83697',  // N(5)-alkyl-L-glutamine residue
     '90676',  // 2'-O-methylribonucleotide(1-) residue
     '131610',  // O-(beta-L-arabinofuranosyl)-trans-4-hydroxy-L-proline residue
-    '85959',  // 5'-(N(7)-methyl 5'-triphosphoguanosine)-N(7),2'-O-di... residue
+    '85959',  // 5'-(N(7)-methyl 5'-triphosphoguanosine)-N(7),2'-O-d... residue
     '29979',  // L-histidine residue
     '90871',  // 3,5-diiodo-L-tyrosine residue
     '85288',  // S-3-[(2R)-phycoviolobilin]-L-cysteine(2-) residue
@@ -273,34 +273,34 @@ var IGNORED_COMPOUNDS = [
     '29998',  // D-serine residue
     '82748',  // CMP(1-) residue
     '78459',  // O-(S-hexanoylpantetheine-4'-phosphoryl)serine(1-) residue
-    '78469',  // O-(S-3-oxododecanoylpantetheine-4-phosphoryl)serine(1-) residue
+    '78469',  // O-(S-3-oxododecanoylpantetheine-4-phosphoryl)serine... residue
     '83586',  // N(tele)-phosphonato-L-histidine residue
-    '82735',  // O-[S-(6-methoxycarbonylhexanoyl)pantetheine-4'-phosp... residue
+    '82735',  // O-[S-(6-methoxycarbonylhexanoyl)pantetheine-4'-phos... residue
     '15989',  // L-methionine S-oxide residue
     '74502',  // N(3)-methyluridine 5'-monophosphate(1-) residue
     '65280',  // N(omega)-methyl-argininium(1+) residue
     '74449',  // N(6)-methyladenosine 5'-monophosphate(1-) residue
-    '83989',  // O-[S-(9Z)-hexadecenoylpantetheine-4'-phosphoryl]seri... residue
+    '83989',  // O-[S-(9Z)-hexadecenoylpantetheine-4'-phosphoryl]ser... residue
     '85961',  // 5'-triphosphoguanosine(3-) residue
-    '78472',  // O-[S-(2E)-dodecenoylpantetheine-4-phosphoryl]serine(1-) residue
+    '78472',  // O-[S-(2E)-dodecenoylpantetheine-4-phosphoryl]serine... residue
     '78798',  // O-[S-(3Z)-decenoylpantetheine-4'-phosphoryl]serine(1-) residue
     '85189',  // O-[(9Z)-hexadecenoyl]-L-serine residue
     '90619',  // C-terminal N-glycylaminoethanethioic S-acid residue
     '90872',  // L-thyroxine residue
-    '78845',  // O-[S-(methoxycarbonylacetyl)pantetheine-4'-phosphory... residue
-    '85919',  // O-[S-(4Z)-hexadecenoylpantetheine-4'-phosphoryl]seri... residue
+    '78845',  // O-[S-(methoxycarbonylacetyl)pantetheine-4'-phosphor... residue
+    '85919',  // O-[S-(4Z)-hexadecenoylpantetheine-4'-phosphoryl]ser... residue
     '61977',  // O-phosphonato-L-threonine(2-) residue
-    '78784',  // O-[S-(2E)-2-enoylpantetheine-4'-phosphoryl]-L-serine... residue
+    '78784',  // O-[S-(2E)-2-enoylpantetheine-4'-phosphoryl]-L-serin... residue
     '86019',  // S-[(2E,6E)-farnesyl]-L-cysteine residue
-    '78474',  // O-[S-(3R)-hydroxytetradecanoylpantetheine-4-phosphor... residue
+    '78474',  // O-[S-(3R)-hydroxytetradecanoylpantetheine-4-phospho... residue
     '85454',  // 5-methyl dCMP(1-) residue
     '73542',  // N(1)-methylguanosine 5'-monophosphate(1-) residue
     '74477',  // 2'-O-methyladenosine 5'-monophosphate(1-) residue
     '82833',  // 7-aminomethyl-7-carbaguanine 5'-phosphate zwitterion residue
     '78776',  // O-(S-3-oxoacylpantetheine-4'-phosphoryl)-L-serine(1-) residue
     '74415',  // N(6)-dimethylallyladenine 5'-monophosphate(1-) residue
-    '73603',  // 7-(2-hydroxy-3-amino-3-carboxypropyl)wyosine 5'-mono... residue
-    '74417',  // 2-methylthio-N(6)-dimethylallyladenine 5'-monophosph... residue
+    '73603',  // 7-(2-hydroxy-3-amino-3-carboxypropyl)wyosine 5'-mon... residue
+    '74417',  // 2-methylthio-N(6)-dimethylallyladenine 5'-monophosp... residue
     '85501',  // N(4)-(beta-D-glucosyl)-L-asparagine residue
     '82834',  // epoxyqueuosine 5'-phosphate zwitterion residue
     '65314',  // pseudouridine 5'-phosphate(1-) residue
@@ -311,18 +311,18 @@ var IGNORED_COMPOUNDS = [
     '74896',  // 3'-end ribonucleotide(1-) residue
     '74269',  // GMP(1-) residue
     '46858',  // L-tyrosine residue
-    '78473',  // O-(S-3-oxotetradecanoylpantetheine-4-phosphoryl)seri... residue
+    '78473',  // O-(S-3-oxotetradecanoylpantetheine-4-phosphoryl)ser... residue
     '90596',  // L-beta-isoaspartate residue
     '83397',  // L-citrulline residue
     '85279',  // S-3-[(2R)-phycoerythrobilin]-L-cysteine(2-) residue
     '74411',  // AMP(1-) residue
     '90598',  // L-aspartic acid alpha-methyl ester residue
-    '78451',  // O-[S-(3R)-hydroxybutanoylpantetheine-4'-phosphoryl]s... residue
+    '78451',  // O-[S-(3R)-hydroxybutanoylpantetheine-4'-phosphoryl]... residue
     '78297',  // (3S)-3-ammonio-3-(3-chloro-4-hydroxyphenyl)propanoyl residue
     '85428',  // trans-3-hydroxy-L-proline residue
     '50058',  // L-cystine residue
-    '78785',  // O-(S-2,3-saturated acylpantetheine-4'-phosphoryl)ser... residue
-    '78478',  // O-(S-3-oxohexadecanoylpantetheine-4'-phosphoryl)seri... residue
+    '78785',  // O-(S-2,3-saturated acylpantetheine-4'-phosphoryl)se... residue
+    '78478',  // O-(S-3-oxohexadecanoylpantetheine-4'-phosphoryl)ser... residue
     '78783',  // O-(S-oleoylpantetheine-4'-phosphoryl)serine(1-) residue
     // Deoxyribonucleotides
     '61404',  // dATP(4-)
@@ -459,12 +459,12 @@ var IGNORED_COMPOUNDS = [
     '18018',  // D-galactosyl-(1->4)-beta-D-glucosyl group
     '83148',  // glycino(1-) group
     '29917',  // thiol group
-    '15876',  // beta-D-galactosyl-1,3-(N-acetyl-beta-D-glucosaminyl-1,... group
+    '15876',  // beta-D-galactosyl-1,3-(N-acetyl-beta-D-glucosaminyl-1... group
     '68550',  // triphosphate group(4-)
     '77037',  // N,N-dimethyl-L-alanyl group
     '78503',  // C-terminal-gamma-L-glutamyl-L-2-aminoadipate(3-) group
     '16361',  // alpha-N-acetylneuraminyl-2,3-beta-D-galactosyl group
-    '17723',  // beta-D-galactosyl-1,3-(N-acetyl-D-glucosaminyl-1,6)-N-... group
+    '17723',  // beta-D-galactosyl-1,3-(N-acetyl-D-glucosaminyl-1,6)-N... group
     '78532',  // 3'-(L-prolyl)adenylyl zwitterionic group
     '17806',  // N-acetyl-beta-D-galactosaminyl group
     '78531',  // 3'-(L-phenylalanyl)adenylyl(1-) group
@@ -473,38 +473,38 @@ var IGNORED_COMPOUNDS = [
     '16124',  // alpha-L-fucosyl-(1->2)-beta-D-galactosyl group
     '78517',  // 3'-(L-cysteinyl)adenylyl zwitterionic group
     '11936',  // N-acetyl-beta-D-glucosaminyl-(1->4)-beta-D-mannosyl group
-    '16198',  // N-acetyl-beta-D-glucosaminyl-1,6-beta-D-galactosyl-1,4... group
+    '16198',  // N-acetyl-beta-D-glucosaminyl-1,6-beta-D-galactosyl-1,... group
     '75185',  // alpha-D-mannosyl group
     '78521',  // 3'-(L-glutaminyl)adenylyl zwitterionic group
     '79333',  // 3'-(D-alpha-aminoacyl)adenylyl zwitterionic group
-    '11714',  // 3-(2,4-bis[N-acetyl-beta-D-glucosaminyl]-alpha-D-manno... group
-    '17227',  // D-galactosyl-(1->3)-beta-D-galactosyl-(1->4)-beta-D-gl... group
+    '11714',  // 3-(2,4-bis[N-acetyl-beta-D-glucosaminyl]-alpha-D-mann... group
+    '17227',  // D-galactosyl-(1->3)-beta-D-galactosyl-(1->4)-beta-D-g... group
     '17571',  // beta-D-galactosyl-(1->4)-N-acetyl-D-glucosaminyl group
     '78520',  // 3'-(L-glutamate)adenylyl(1-) group
     '12357',  // beta-D-galactosyl-(1->4)-N-acetyl-beta-D-glucosaminyl group
     '32591',  // alpha-D-mannosyl-(1->3)-beta-D-mannosyl group
     '78529',  // 3'-(L-lysyl)adenylyl(1+) group
     '49298',  // N-formyl-L-methionyl group
-    '18914',  // beta-D-galactosyl-(1->3)-[alpha-L-fucosyl-(1->4)]-N-ac... group
+    '18914',  // beta-D-galactosyl-(1->3)-[alpha-L-fucosyl-(1->4)]-N-a... group
     '12193',  // alpha-D-mannosyl-(1->6)-beta-D-mannosyl group
     '22783',  // beta-D-galactosyl-(1->3)-N-acetyl-D-galactosaminyl group
-    '78499',  // C-terminal-gamma-L-glutamyl-L-2-aminoadipate 6-phospha... group
+    '78499',  // C-terminal-gamma-L-glutamyl-L-2-aminoadipate 6-phosph... group
     '88115',  // N(2)-L-glutamino(1-) group
     '78530',  // 3'-(L-methionyl)adenylyl zwitterionic group
     '74432',  // N(2),N(2),N(7)-trimethylguanosine 5'-triphosphate(2-) group
-    '5484',  // alpha-D-galactosyl-(1->3)-[alpha-L-fucosyl-(1->2)]-D-ga... group
+    '5484',  // alpha-D-galactosyl-(1->3)-[alpha-L-fucosyl-(1->2)]-D-g... group
     '64722',  // L-glutaminiumyl group
     '78516',  // 3'-(L-aspartate)adenylyl(1-) group
     '85224',  // alpha-hydroxyglycino(1-) group
     '32875',  // methyl group
-    '16250',  // N-acetyl-beta-D-glucosaminyl-(1->3)-N-acetyl-D-galacto... group
+    '16250',  // N-acetyl-beta-D-glucosaminyl-(1->3)-N-acetyl-D-galact... group
     '12384',  // beta-D-mannosyl group
-    '75191',  // N-acetyl-beta-D-galactosaminyl-(1->3)-N-acetyl-bet... group(2-)
+    '75191',  // N-acetyl-beta-D-galactosaminyl-(1->3)-N-acetyl-be... group(2-)
     '78844',  // 3'-(N-formyl-L-methionyl)adenylyl(1-) group
-    '17182',  // N-acetyl-beta-D-glucosaminyl-(1->2)-alpha-D-mannosyl-(... group
-    '17651',  // 6-(2,6-bis[N-acetyl-beta-D-glucosaminyl]-alpha-D-manno... group
+    '17182',  // N-acetyl-beta-D-glucosaminyl-(1->2)-alpha-D-mannosyl-... group
+    '17651',  // 6-(2,6-bis[N-acetyl-beta-D-glucosaminyl]-alpha-D-mann... group
     '78527',  // 3'-(L-histidyl)adenylyl(1-) group
-    '16478',  // N-acetyl-beta-D-glucosaminyl-1,6-(N-acetyl-beta-D-gluc... group
+    '16478',  // N-acetyl-beta-D-glucosaminyl-1,6-(N-acetyl-beta-D-glu... group
     '64428',  // H group
     '78515',  // 3'-(L-asparaginyl)adenylyl(1-) group
     '78551',  // 3'-(O-phosphonato-L-seryl)adenylyl(2-) group
@@ -512,8 +512,8 @@ var IGNORED_COMPOUNDS = [
     '78522',  // 3'-glycyladenylyl zwitterionic group
     '79073',  // CHOH group
     '78573',  // 3'-(L-selenocysteinyl)adenylyl(1-) group
-    '17483',  // alpha-N-acetylneuraminyl-2,8-alpha-N-acetylneuraminyl-... group
-    '32602',  // 2,4,6-tris(N-acetyl-beta-D-glucosaminyl)-alpha-D-mannosyl group
+    '17483',  // alpha-N-acetylneuraminyl-2,8-alpha-N-acetylneuraminyl... group
+    '32602',  // 2,4,6-tris(N-acetyl-beta-D-glucosaminyl)-alpha-D-mann... group
     '78537',  // 3'-(L-valyl)adenylyl zwitterionic group
     '78497',  // 3'-(L-alanyl)adenylyl zwitterionic group
     '64731',  // L-methioniniumyl group
@@ -521,22 +521,22 @@ var IGNORED_COMPOUNDS = [
     '23019',  // carbonyl group
     '16289',  // beta-D-galactosyl group
     '43176',  // hydroxy group
-    '17581',  // N-acetyl-beta-D-glucosaminyl-1,3-beta-D-galactosyl-1,3... group
+    '17581',  // N-acetyl-beta-D-glucosaminyl-1,3-beta-D-galactosyl-1,... group
     '78535',  // 3'-(L-tryptophyl)adenylyl(1-) group
-    '16059',  // N-acetyl-beta-D-glucosaminyl-1,3-beta-D-galactosyl-1,4... group
+    '16059',  // N-acetyl-beta-D-glucosaminyl-1,3-beta-D-galactosyl-1,... group
     '17785',  // alpha-D-Galp-(1->3)-beta-D-Galp-(1->4)-D-GlcpNAc-yl group
     '16117',  // beta-D-galactosyl-(1->3)-N-acetyl-alpha-D-galactosaminyl group
-    '75189',  // N-acetyl-beta-D-galactosaminyl-(1->3)-N-acetyl-beta-D-... group
+    '75189',  // N-acetyl-beta-D-galactosaminyl-(1->3)-N-acetyl-beta-D... group
     '78494',  // 3'-(L-leucyl)adenylyl zwitterionic group
     '90517',  // methyl L-leucinato group
     '78533',  // 3'-(L-seryl)adenylyl(1-) group
     '75187',  // N-acetyl-beta-D-glucosaminyl-(1->4)-alpha-D-mannosyl group
-    '32618',  // N-acetyl-beta-D-glucosaminyl-(1->2)-alpha-D-mannosyl-(... group
-    '32601',  // N-acetyl-beta-D-glucosaminyl-1,6-(N-acetyl-beta-D-gluc... group
-    '78501',  // C-terminal-gamma-L-glutamyl-L-2-aminoadipate semialdeh... group
+    '32618',  // N-acetyl-beta-D-glucosaminyl-(1->2)-alpha-D-mannosyl-... group
+    '32601',  // N-acetyl-beta-D-glucosaminyl-1,6-(N-acetyl-beta-D-glu... group
+    '78501',  // C-terminal-gamma-L-glutamyl-L-2-aminoadipate semialde... group
     '74429',  // 7-methylguanosine 5'-triphosphate(2-) group
-    '60105',  // alpha-N-acetylneuraminyl-(2->3)-beta-D-galactosyl-(1->... group
-    '16901',  // alpha-N-acetylneuraminyl-2,3-beta-D-galactosyl-1,3-N-a... group
+    '60105',  // alpha-N-acetylneuraminyl-(2->3)-beta-D-galactosyl-(1-... group
+    '16901',  // alpha-N-acetylneuraminyl-2,3-beta-D-galactosyl-1,3-N-... group
     '64718',  // L-alaniniumyl group
     '48563',  // methylsulfanyl group
     '78723',  // 3'-(D-tyrosyl)adenylyl(1-) group
@@ -545,7 +545,7 @@ var IGNORED_COMPOUNDS = [
     '78513',  // 3'-(L-arginyl)adenylyl(1+) group
     '64738',  // L-seriniumyl group
     '78525',  // L-glutamo(2-) group
-    '62190',  // N-acetyl-beta-D-galactosaminyl-(1->4)-N-acetyl-beta-D-... group
+    '62190',  // N-acetyl-beta-D-galactosaminyl-(1->4)-N-acetyl-beta-D... group
     '78556',  // 3'-(L-pyrrolysyl)adenylyl zwitterionic group
     '18915',  // beta-D-galactosyl-(1->3)-N-acetyl-D-glucosaminyl group
     '78534',  // 3'-(L-threonyl)adenylyl(1-) group
@@ -615,9 +615,9 @@ function evaluateInput(G, n, C, E, Fl, context) {
         start = C[0];
         goal = _.last(C);
         if (start === 'any') {
-            C = C.slice(1);
+            C = C.slice(1);  // affects filter
             start = null;
-            if (goal === 'any') {
+            if (goal === 'any') {  // too wide to implement
                 return [];
             } else {
                 targets = compoundReactions[goal][1];
@@ -625,7 +625,7 @@ function evaluateInput(G, n, C, E, Fl, context) {
         } else {
             sources = compoundReactions[start][0];
             if (goal === 'any') {
-                C = C.slice(0, -1);
+                C = C.slice(0, -1);  // affects filter
                 goal = null;
             } else {
                 targets = compoundReactions[goal][1];
@@ -641,6 +641,7 @@ function evaluateInput(G, n, C, E, Fl, context) {
         targets = sources;
     }
     // Find pathways.
+    // Constrain search to optimize performance.
     lenSources = sources.length;
     lenTargets = targets.length;
     maxSources = Math.ceil(Math.sqrt(a * lenSources / lenTargets));
@@ -659,6 +660,7 @@ function evaluateInput(G, n, C, E, Fl, context) {
     }
     maxPw = Math.ceil(b / (lenSources * lenTargets));
     maxFilter = n + Math.ceil(maxPw / c);
+    // Store shortest path from each source to each target in pathways.
     _.forEach(sources.slice(0, maxSources), function(s, i) {
         _.forEach(targets.slice(0, maxTargets), function(t, j) {
             pws = _.take(findPathway(G, s, t), maxPw);
@@ -680,6 +682,7 @@ function evaluateInput(G, n, C, E, Fl, context) {
             return false;
         }
     });
+    // Fetch data for evaluate function.
     data = orderPathwayData(
         pathways, stoichiometrics, complexities, demands, prices);
     _.forEach(_.zip(data[0], data[1]), function(SC) {
@@ -730,10 +733,7 @@ function evaluatePathway(steps, compounds) {
 /**
  * Return pathways that meet filtering conditions.
  * @param {array} pathways pathway arrays.
- * @param {array} C compound ChEBI ID strings.
- * @param {array} E enzyme EC number strings.
- * @param {string} s source ChEBI ID.
- * @param {string} t target ChEBI ID.
+ * @param {object} filter filter object.
  * @param {object} context context object.
  *
  * @returns {array} Approved pathways.
@@ -755,6 +755,9 @@ function filterPathways(pathways, filter, context) {
     var preC;
     var discard1;
     var discard2;
+    var intersectProsSubs;
+    var intersectFilterSubs;
+    var intersectAll;
     return _.remove(pathways, function(pathway) {
         approved = true;
         compounds = ['any'];
@@ -762,7 +765,7 @@ function filterPathways(pathways, filter, context) {
         _.forEach(pathway, function(reaction, i, pw) {
             substrates = _.keys(S[reaction][0]);
             products = _.keys(S[reaction][1]);
-            // Check if target is used as substrate.
+            // Check if target is consumed.
             if (_.includes(substrates, t)) {
                 approved = false;
                 return false;
@@ -773,11 +776,14 @@ function filterPathways(pathways, filter, context) {
             // Check for forbidden links.
             } else if (i >= 1) {
                 preC = _.keys(S[pw[i - 1]][1]);  // products
-                if (_.intersection(preC, _.intersection(Fl, substrates)).length >= _.intersection(preC, substrates).length) {
+                intersectProsSubs = _.intersection(preC, substrates);
+                intersectFilterSubs = _.intersection(Fl, substrates);
+                intersectAll = _.intersection(preC, intersectFilterSubs);
+                if (intersectAll.length >= intersectProsSubs.length) {
                     approved = false;
                     return false;
                 }
-                // Check for futile cycles.
+                // Check for repetitive consuming and producing.
                 if (i >= 2) {
                     prepreC = _.keys(S[pw[i - 2]][0]);  // substrates
                     discard1 = _.intersection(prepreC, substrates);
@@ -810,7 +816,6 @@ function filterPathways(pathways, filter, context) {
             return true;
         }
     });
-    //return pathways;
 }
 
 
@@ -828,7 +833,7 @@ function findPathway(G, source, target) {
     var optParameters = {};
     if (source !== null) {
         optParameters['source'] = source;
-        if (target !== null) {
+        if (target !== null) {  // source to target
             optParameters['target'] = target;
             try {
                 pathway = [jsnx.shortestPath(G, optParameters)];
@@ -836,7 +841,7 @@ function findPathway(G, source, target) {
             catch (error) {
                 ;
             }
-        } else {
+        } else {  // source to all targets
             try {
                 pathwaysAll = jsnx.shortestPath(G, optParameters);
             }
@@ -844,7 +849,7 @@ function findPathway(G, source, target) {
                 ;
             }
         }
-    } else if (target !== null) {
+    } else if (target !== null) {  // all sources to target
         optParameters['target'] = target;
         try {
             pathwaysAll = jsnx.shortestPath(G, optParameters);
@@ -852,21 +857,24 @@ function findPathway(G, source, target) {
         catch (error) {
             ;
         }
-    }
+    } 
+    // all sources to all targets not implemented
     if (pathwaysAll !== undefined) {
         return _.values(pathwaysAll._stringValues);
-    }
+    } else {
     return pathway;
+    }
 }
 
 
 /**
- *
+ * Format output for showing results.
  */
 function formatOutput(document, results, context) {
     var ol = createHTMLElement(document, 'OL');
     if (results === undefined) {
-        ol.innerHTML = 'Invalid search parameters. Please enter either at least 2 compounds or at least 1 enzyme.';
+        ol.innerHTML = 'Invalid search parameters. Please enter either at '
+            + 'least 2 compounds or at least 1 enzyme.';
     } else if (results.length === 0) {
         ol.innerHTML = 'No pathways were found.';
     } else {
@@ -879,7 +887,7 @@ function formatOutput(document, results, context) {
 
 
 /**
- *
+ * Format a compound entry in results.
  */
 function formatCompound(document, chebi, context) {
     var liMain = createHTMLElement(document, 'LI');
@@ -889,7 +897,7 @@ function formatCompound(document, chebi, context) {
 
 
 /**
- *
+ * Format a list tag.
  */
 function formatList(document, listTag, title, container, f, context) {
     var liMain = createHTMLElement(document, 'LI');
@@ -904,7 +912,7 @@ function formatList(document, listTag, title, container, f, context) {
 
 
 /**
- *
+ * Format a pathway entry in results.
  */
 function formatPathway(document, pathway, context) {
     var li;
@@ -942,7 +950,8 @@ function formatPathway(document, pathway, context) {
     li = formatList(document, 'UL', 'Substrates:', S, formatCompound, context);
     ulMain.appendChild(li);
     // Intermediates
-    li = formatList(document, 'UL', 'Intermediates:', I, formatCompound, context);
+    li = formatList(document, 'UL', 'Intermediates:', I, formatCompound,
+        context);
     ulMain.appendChild(li);
     // Products
     li = formatList(document, 'UL', 'Products:', P, formatCompound, context);
@@ -959,7 +968,7 @@ function formatPathway(document, pathway, context) {
 
 
 /**
- *
+ * Format a reaction entry in results.
  */
 function formatReaction(document, rhea, context) {
     var liMain = createHTMLElement(document, 'LI');
@@ -1068,7 +1077,7 @@ function initializeGraph(S, C, I) {
 
 
 /**
- *
+ * Initialize HTML form at Input section.
  */
 function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
     var compounds = [{id: 'any', text: 'any ChEBI'}];
@@ -1154,9 +1163,12 @@ function submitSearch() {
     var input = getInputValues(form);
     var results;
     var lenChildren = outputSlot.childNodes.length;
-    if (validateInputN(input.nResults) && validateInputCE(input.compounds, input.enzymes)) {
+    var nIsValid = validateInputN(input.nResults);
+    var cEIsValid = validateInputCE(input.compounds, input.enzymes);
+    if (validateInputN(nIsValid) && cEIsValid) {
         results = evaluateInput(
-            GRAPH, input.nResults, input.compounds, input.enzymes, input.filterLinks, CONTEXT);
+            GRAPH, input.nResults, input.compounds, input.enzymes,
+            input.filterLinks, CONTEXT);
     }
     tmp.appendChild(formatOutput(document, results, CONTEXT));
     outputSlot.innerHTML = tmp.innerHTML;
