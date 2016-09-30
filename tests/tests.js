@@ -135,8 +135,8 @@ function createFilter(conditions) {
 function createInputForm() {
     var form = document.createElement('FORM');
     var attrOption = {value:10, text:'10', selected:true};
-    var option = createHTMLElement(document, 'OPTION', attrOption);
-    var nResults = createHTMLElement(document, 'SELECT');
+    var option = PW.createHTMLElement(document, 'OPTION', attrOption);
+    var nResults = PW.createHTMLElement(document, 'SELECT');
     var compounds = createMultiselect(document, 'c');
     var enzymes = createMultiselect(document, 'e');
     var filterLinks = createMultiselect(document, 'fl');
@@ -181,7 +181,7 @@ QUnit.module('testCreateHTMLElement');
 QUnit.test('testPElement', function(assert) {
     var attributes = {text: 'text'};
 
-    var element = createHTMLElement(document, 'P', attributes);
+    var element = PW.createHTMLElement(document, 'P', attributes);
 
     assert.strictEqual(element.tagName, 'P', 'correct tagName: P')
     assert.strictEqual(element.text, 'text', 'correct text: text');
@@ -189,7 +189,7 @@ QUnit.test('testPElement', function(assert) {
 QUnit.test('testOptionElement', function(assert) {
     var attributes = {selected: true, value: 'value'};
 
-    var element = createHTMLElement(document, 'OPTION', attributes);
+    var element = PW.createHTMLElement(document, 'OPTION', attributes);
 
     assert.strictEqual(element.tagName, 'OPTION', 'correct tagName: OPTION');
     assert.strictEqual(element.selected, true, 'correct selected: true');
@@ -200,13 +200,13 @@ QUnit.test('testOptionElement', function(assert) {
 // TODO add filter field to tests.
 QUnit.module('testValidateInputFields');
 QUnit.test('testValidateInputFields', function(assert) {
-    var cEmptyEEmptyInvalid = validateInputCE([], []);
-    var cEmptyEValid = validateInputCE([], ['1', '2']);
-    var cValidEEmpty = validateInputCE(['1', '2'], []);
-    var cValidEValid = validateInputCE(['1', '2'], ['1', '2']);
-    var nInvalid0 = validateInputN(0);
-    var nInvalid21 = validateInputN(21);
-    var nValid10 = validateInputN(10);
+    var cEmptyEEmptyInvalid = PW.validateInputCE([], []);
+    var cEmptyEValid = PW.validateInputCE([], ['1', '2']);
+    var cValidEEmpty = PW.validateInputCE(['1', '2'], []);
+    var cValidEValid = PW.validateInputCE(['1', '2'], ['1', '2']);
+    var nInvalid0 = PW.validateInputN(0);
+    var nInvalid21 = PW.validateInputN(21);
+    var nValid10 = PW.validateInputN(10);
 
     assert.strictEqual(nInvalid0, false, 'false, n = 0');
     assert.strictEqual(nInvalid21, false, 'false, n = 21');
@@ -218,29 +218,29 @@ QUnit.test('testValidateInputFields', function(assert) {
 });
 QUnit.module('testEvaluateInput');
 QUnit.test('testReturnCorrectAmountResults', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
 
-    var results1 = evaluateInput(G, 1, ['1', 'any'], [], [], DATA);
-    var results2 = evaluateInput(G, 2, ['1', 'any'], [], [], DATA);
+    var results1 = PW.evaluateInput(G, 1, ['1', 'any'], [], [], DATA);
+    var results2 = PW.evaluateInput(G, 2, ['1', 'any'], [], [], DATA);
 
     assert.strictEqual(results1.length, 1, 'n = 1, return 1 result');
     assert.strictEqual(results2.length, 2, 'n = 2, return 2 results');
 });
 QUnit.test('testReturnCorrectOrdering', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
 
-    var results = _.unzip(evaluateInput(G, 90, ['1', 'any'], [], [], DATA))[0];
+    var results = _.unzip(PW.evaluateInput(G, 90, ['1', 'any'], [], [], DATA))[0];
 
     assert.ok(results[0] >= results[1] >= results[2] >= results[3],
               'order results from highest score to lowest');
 });
 QUnit.test('testReturnCorrectCompoundResults', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
 
-    var resultsC1Any = evaluateInput(G, 100, ['1', 'any'], [], [], DATA);
-    var resultsCAny1 = evaluateInput(G, 100, ['any', '1'], [], [], DATA);
-    var resultsC13 = evaluateInput(G, 100, ['1', '3'], [], [], DATA);
-    var resultsC135 = evaluateInput(G, 100, ['1', '3', '5'], [], [], DATA);
+    var resultsC1Any = PW.evaluateInput(G, 100, ['1', 'any'], [], [], DATA);
+    var resultsCAny1 = PW.evaluateInput(G, 100, ['any', '1'], [], [], DATA);
+    var resultsC13 = PW.evaluateInput(G, 100, ['1', '3'], [], [], DATA);
+    var resultsC135 = PW.evaluateInput(G, 100, ['1', '3', '5'], [], [], DATA);
 
     var C1Any = [['1'], ['1', '4'], ['2'], ['2', '6'], ['2', '7']];
     var CAny1 = [['3'], ['4', '5'], ['5'], ['6', '3'], ['7', '3']];
@@ -255,11 +255,11 @@ QUnit.test('testReturnCorrectCompoundResults', function(assert) {
                      'Compounds: 1, 3, 5');
 });
 QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
 
-    var resultsE1 = evaluateInput(G, 100, [], ['1'], [], DATA);
-    var resultsE12 = evaluateInput(G, 100, [], ['1', '2'], [], DATA);
-    var resultsE123 = evaluateInput(G, 100, [], ['1', '2', '3'], [], DATA);
+    var resultsE1 = PW.evaluateInput(G, 100, [], ['1'], [], DATA);
+    var resultsE12 = PW.evaluateInput(G, 100, [], ['1', '2'], [], DATA);
+    var resultsE123 = PW.evaluateInput(G, 100, [], ['1', '2', '3'], [], DATA);
 
     var E1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
@@ -285,15 +285,15 @@ QUnit.test('testReturnCorrectEnzymeResults', function(assert) {
     assert.deepEqual(_.unzip(resultsE123)[1].sort(), E123, 'Enzymes: 1, 2, 3');
 });
 QUnit.test('testReturnCorrectCombinationResults', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
 
-    var resultsC1AnyE1 = evaluateInput(G, 100, ['1', 'any'], ['1'], [], DATA);
-    var resultsCAny1E1 = evaluateInput(G, 100, ['any', '1'], ['1'], [], DATA);
-    var resultsC13E12 = evaluateInput(G, 100, ['1', '3'], ['1', '2'], [],
+    var resultsC1AnyE1 = PW.evaluateInput(G, 100, ['1', 'any'], ['1'], [], DATA);
+    var resultsCAny1E1 = PW.evaluateInput(G, 100, ['any', '1'], ['1'], [], DATA);
+    var resultsC13E12 = PW.evaluateInput(G, 100, ['1', '3'], ['1', '2'], [],
                                       DATA);
-    var resultsC135E123 = evaluateInput(G, 100, ['1', '3', '5'],
+    var resultsC135E123 = PW.evaluateInput(G, 100, ['1', '3', '5'],
                                         ['1', '2', '3'], [], DATA);
-    var resultsC5E12 = evaluateInput(G, 100, ['5'], ['1', '2'], [], DATA);
+    var resultsC5E12 = PW.evaluateInput(G, 100, ['5'], ['1', '2'], [], DATA);
 
     var C1AnyE1 = [['1'], ['1', '4'], ['2'], ['2', '6'], ['2', '7']];
     var CAny1E1 = [['3'], ['6', '3'], ['7', '3']];
@@ -333,9 +333,9 @@ QUnit.test('testCorrectResults', function(assert) {
         '4': [4, 3], '5': [5, 2], '6': [1, 6],
     };
 
-    var value1 = evaluatePathway(steps1, compounds);
-    var value2 = evaluatePathway(steps2, compounds);
-    var value3 = evaluatePathway(steps3, compounds);
+    var value1 = PW.evaluatePathway(steps1, compounds);
+    var value2 = PW.evaluatePathway(steps2, compounds);
+    var value3 = PW.evaluatePathway(steps3, compounds);
 
     assert.strictEqual(value1, 56, 'steps 1 -> 56');
     assert.strictEqual(value2, 36, 'steps 2 -> 36');
@@ -352,17 +352,17 @@ QUnit.test('testFilterAll', function(assert) {
         ['target', '3']
     ]);
 
-    var pws = filterPathways(createPathways(), filter, DATA);
+    var pws = PW.filterPathways(createPathways(), filter, DATA);
 
     assert.deepEqual(pws, [], 'filter all pathways');
 });
 QUnit.test('testFilterCompounds', function(assert) {
-    var pws1 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1']]]), DATA);
-    var pws13 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1', '3']]]), DATA);
-    var pws135 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1', '3', '5']]]), DATA);
+    var pws1 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1']]]), DATA);
+    var pws13 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1', '3']]]), DATA);
+    var pws135 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1', '3', '5']]]), DATA);
 
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
@@ -384,12 +384,12 @@ QUnit.test('testFilterCompounds', function(assert) {
     assert.deepEqual(pws135, filtered135, 'Compounds: 1, 3; 5');
 });
 QUnit.test('testFilterEnzymes', function(assert) {
-    var pws1 = filterPathways(createPathways(),
-        createFilter([['enzymes', ['1']]]), DATA);
-    var pws13 = filterPathways(createPathways(),
-        createFilter([['enzymes', ['1', '3']]]), DATA);
-    var pws134 = filterPathways(createPathways(),
-        createFilter([['enzymes', ['1', '3', '4']]]), DATA);
+    var pws1 = PW.filterPathways(createPathways(),
+            createFilter([['enzymes', ['1']]]), DATA);
+    var pws13 = PW.filterPathways(createPathways(),
+            createFilter([['enzymes', ['1', '3']]]), DATA);
+    var pws134 = PW.filterPathways(createPathways(),
+            createFilter([['enzymes', ['1', '3', '4']]]), DATA);
 
     var filtered1 = [
         ['1'], ['1', '4'], ['1', '4', '5'],
@@ -407,18 +407,18 @@ QUnit.test('testFilterEnzymes', function(assert) {
     assert.deepEqual(pws134, filtered134, 'Enzymes: 1, 3, 4');
 });
 QUnit.test('testFilterLinks', function(assert) {
-    var pws1 = filterPathways(createPathways(),
-        createFilter([['links', ['1']]]), DATA);
-    var pws12 = filterPathways(createPathways(),
-        createFilter([['links', ['1', '2']]]), DATA);
-    var pws13 = filterPathways(createPathways(),
-        createFilter([['links', ['1', '3']]]), DATA);
-    var pws1234 = filterPathways(createPathways(),
-        createFilter([['links', ['1', '2', '3', '4']]]), DATA);
-    var pws135 = filterPathways(createPathways(),
-        createFilter([['links', ['1', '3', '5']]]), DATA);
-    var pws123456 = filterPathways(createPathways(),
-        createFilter([['links', ['1', '2', '3', '4', '5', '6']]]), DATA);
+    var pws1 = PW.filterPathways(createPathways(),
+            createFilter([['links', ['1']]]), DATA);
+    var pws12 = PW.filterPathways(createPathways(),
+            createFilter([['links', ['1', '2']]]), DATA);
+    var pws13 = PW.filterPathways(createPathways(),
+            createFilter([['links', ['1', '3']]]), DATA);
+    var pws1234 = PW.filterPathways(createPathways(),
+            createFilter([['links', ['1', '2', '3', '4']]]), DATA);
+    var pws135 = PW.filterPathways(createPathways(),
+            createFilter([['links', ['1', '3', '5']]]), DATA);
+    var pws123456 = PW.filterPathways(createPathways(),
+            createFilter([['links', ['1', '2', '3', '4', '5', '6']]]), DATA);
 
     var filtered1 = createPathways();
     var filtered12 = [
@@ -438,10 +438,10 @@ QUnit.test('testFilterLinks', function(assert) {
     assert.deepEqual(pws123456, filtered123456, 'Links: 1, 2, 3, 4, 5, 6');
 });
 QUnit.test('testSources', function(assert) {
-    var pws3 = filterPathways(createPathways(),
-        createFilter([['source', '3']]), DATA);
-    var pws5 = filterPathways(createPathways(),
-        createFilter([['source', '5']]), DATA);
+    var pws3 = PW.filterPathways(createPathways(),
+            createFilter([['source', '3']]), DATA);
+    var pws5 = PW.filterPathways(createPathways(),
+            createFilter([['source', '5']]), DATA);
 
     var filtered3 = [['4'], ['4', '5'], ['5']];
     var filtered5 = [['1'], ['5'], ['5', '1']];
@@ -449,10 +449,10 @@ QUnit.test('testSources', function(assert) {
     assert.deepEqual(pws5, filtered5, 'Source: 5');
 });
 QUnit.test('testTargets', function(assert) {
-    var pws3 = filterPathways(createPathways(),
-        createFilter([['target', '3']]), DATA);
-    var pws5 = filterPathways(createPathways(),
-        createFilter([['target', '5']]), DATA);
+    var pws3 = PW.filterPathways(createPathways(),
+            createFilter([['target', '3']]), DATA);
+    var pws5 = PW.filterPathways(createPathways(),
+            createFilter([['target', '5']]), DATA);
 
     var filtered3 = [['1'], ['5'], ['5', '1']];
     var filtered5 = [['1'], ['1', '4'], ['4']];
@@ -460,11 +460,11 @@ QUnit.test('testTargets', function(assert) {
     assert.deepEqual(pws5, filtered5, 'Target: 5');
 });
 QUnit.test('testNoFilters', function(assert) {
-    var pws = filterPathways(createPathways(), createFilter(), DATA);
-    var pws132 = filterPathways([['1', '3', '2']], createFilter(), DATA);
-    var pws513 = filterPathways([['5', '1', '3']], createFilter(), DATA);
-    var pws5132 = filterPathways([['5', '1', '3', '2']], createFilter(), DATA);
-    var pws6327 = filterPathways([['6', '3', '2', '7']], createFilter(), DATA);
+    var pws = PW.filterPathways(createPathways(), createFilter(), DATA);
+    var pws132 = PW.filterPathways([['1', '3', '2']], createFilter(), DATA);
+    var pws513 = PW.filterPathways([['5', '1', '3']], createFilter(), DATA);
+    var pws5132 = PW.filterPathways([['5', '1', '3', '2']], createFilter(), DATA);
+    var pws6327 = PW.filterPathways([['6', '3', '2', '7']], createFilter(), DATA);
 
     assert.deepEqual(pws, createPathways(), "don't filter pathways");
     assert.deepEqual(pws132, [], 'filter cycle 1, 3, 2');
@@ -474,39 +474,39 @@ QUnit.test('testNoFilters', function(assert) {
                      "don't filter 6, 3, 2, 7");
 });
 QUnit.test('testPairedFilters', function(assert) {
-    var pwsC1E3 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1']], ['enzymes', ['3']]]), DATA);
+    var pwsC1E3 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1']], ['enzymes', ['3']]]), DATA);
 
-    var pwsC1L12 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1']], ['links', ['1', '2']]]), DATA);
+    var pwsC1L12 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1']], ['links', ['1', '2']]]), DATA);
 
-    var pwsC13S5 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1', '3']], ['source', '5']]), DATA);
+    var pwsC13S5 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1', '3']], ['source', '5']]), DATA);
 
-    var pwsC13T3 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1', '3']], ['target', '3']]), DATA);
+    var pwsC13T3 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1', '3']], ['target', '3']]), DATA);
 
-    var pwsE1L12 = filterPathways(createPathways(),
-        createFilter([['enzymes', ['1']], ['links', ['1', '2']]]), DATA);
+    var pwsE1L12 = PW.filterPathways(createPathways(),
+            createFilter([['enzymes', ['1']], ['links', ['1', '2']]]), DATA);
 
-    var pwsE1S5 = filterPathways(createPathways(),
-        createFilter([['enzymes', ['1']], ['source', '5']]), DATA);
+    var pwsE1S5 = PW.filterPathways(createPathways(),
+            createFilter([['enzymes', ['1']], ['source', '5']]), DATA);
 
-    var pwsE1T5 = filterPathways(createPathways(),
-        createFilter([['enzymes', ['1']], ['target', '5']]), DATA);
+    var pwsE1T5 = PW.filterPathways(createPathways(),
+            createFilter([['enzymes', ['1']], ['target', '5']]), DATA);
 
-    var pwsS3L56 = filterPathways(createPathways(),
-        createFilter([['source', '3'], ['links', ['5', '6']]]), DATA);
+    var pwsS3L56 = PW.filterPathways(createPathways(),
+            createFilter([['source', '3'], ['links', ['5', '6']]]), DATA);
 
-    var pwsS3T5 = filterPathways(createPathways(),
-        createFilter([['source', '3'], ['target', '5']]), DATA);
+    var pwsS3T5 = PW.filterPathways(createPathways(),
+            createFilter([['source', '3'], ['target', '5']]), DATA);
 
-    var pwsT5L34 = filterPathways(createPathways(),
-        createFilter([['target', '5'], ['links', ['3', '4']]]), DATA);
+    var pwsT5L34 = PW.filterPathways(createPathways(),
+            createFilter([['target', '5'], ['links', ['3', '4']]]), DATA);
 
-    var pwsC13E1S1T3L12 = filterPathways(createPathways(),
-        createFilter([['compounds', ['1', '3']], ['enzymes', ['1']],
-            ['links', ['1', '2']], ['source', '1'], ['target', '3']]), DATA);
+    var pwsC13E1S1T3L12 = PW.filterPathways(createPathways(),
+            createFilter([['compounds', ['1', '3']], ['enzymes', ['1']],
+                ['links', ['1', '2']], ['source', '1'], ['target', '3']]), DATA);
 
     var filteredC1E3 = [
         ['1', '4'], ['1', '4', '5'],
@@ -541,20 +541,20 @@ QUnit.test('testPairedFilters', function(assert) {
 
 QUnit.module('testFindPathway');
 QUnit.test('testCatchErrors', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
 
-    assert.notOk(findPathway(G, 'source', null), 'source to null, undefined');
-    assert.notOk(findPathway(G, null, 'target'), 'null to target, undefined');
-    assert.notOk(findPathway(G, '1', '8'), '1 to 8, undefined');
-    assert.notOk(findPathway(G, null, null), 'null to null, undefined');
+    assert.notOk(PW.findPathway(G, 'source', null), 'source to null, undefined');
+    assert.notOk(PW.findPathway(G, null, 'target'), 'null to target, undefined');
+    assert.notOk(PW.findPathway(G, '1', '8'), '1 to 8, undefined');
+    assert.notOk(PW.findPathway(G, null, null), 'null to null, undefined');
 });
 QUnit.test('testFindCorrectPathways', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS)
 
-    var pws1To5 = findPathway(G, '1', '5');
-    var pws1ToNull = findPathway(G, '1', null);
-    var pws5To1 = findPathway(G, '5', '1');
-    var pwsNullTo5 = findPathway(G, null, '5');
+    var pws1To5 = PW.findPathway(G, '1', '5');
+    var pws1ToNull = PW.findPathway(G, '1', null);
+    var pws5To1 = PW.findPathway(G, '5', '1');
+    var pwsNullTo5 = PW.findPathway(G, null, '5');
 
     var source1Target5 = [['1', '4', '5']];
     var source1TargetNull = [
@@ -576,7 +576,7 @@ QUnit.test('testFindCorrectPathways', function(assert) {
 
 QUnit.module('testFormatCompound');
 QUnit.test('testCorrectResults', function(assert) {
-    var text = formatCompound(document, '1', DATA).innerHTML;
+    var text = PW.formatCompound(document, '1', DATA).innerHTML;
 
     var correct = 'ChEBI:1 a';
     assert.deepEqual(text, correct, "element innerHTML 'ChEBI:1 a'");
@@ -585,8 +585,8 @@ QUnit.test('testCorrectResults', function(assert) {
 
 QUnit.module('testFormatList');
 QUnit.test('testCorrectCompoundResults', function(assert) {
-    var html = formatList(document, 'OL', 'title', ['1', '2'], formatCompound,
-        DATA).innerHTML;
+    var html = PW.formatList(document, 'OL', 'title', ['1', '2'], PW.formatCompound,
+            DATA).innerHTML;
 
     var correct = 'title<ol><li>ChEBI:1 a</li><li>ChEBI:2 b</li></ol>';
     assert.ok(_.includes(html, 'title'), "include 'title'");
@@ -602,7 +602,7 @@ QUnit.test('testCorrectCompoundResults', function(assert) {
 
 QUnit.module('testFormatPathway');
 QUnit.test('testCorrectCompoundResults', function(assert) {
-    var html = formatPathway(document, [1, ['1', '4']], DATA).innerHTML;
+    var html = PW.formatPathway(document, [1, ['1', '4']], DATA).innerHTML;
 
     assert.ok(_.includes(html, 'Total reaction:'),
               "include 'Total reaction:'");
@@ -628,21 +628,21 @@ QUnit.test('testCorrectCompoundResults', function(assert) {
 
 QUnit.module('testFormatOutput');
 QUnit.test('testReturnInvalidParameterMessage', function(assert) {
-    var html = formatOutput(document, undefined, DATA).innerHTML;
+    var html = PW.formatOutput(document, undefined, DATA).innerHTML;
 
     var correct = 'Invalid search parameters. Please enter either at least 2 '
         + 'compounds or at least 1 enzyme.';
     assert.deepEqual(html, correct, 'return element with correct innerHTLM');
 });
 QUnit.test('testReturnNoPathways', function(assert) {
-    var html = formatOutput(document, [], DATA).innerHTML;
+    var html = PW.formatOutput(document, [], DATA).innerHTML;
 
     var correct = 'No pathways were found.';
     assert.deepEqual(html, correct, 'return element with correct innerHTLM');
 });
 QUnit.test('testReturnOutput', function(assert) {
-    var html = formatOutput(document, [[1, ['1', '4']], [2, ['2', '6']]],
-        DATA).innerHTML;
+    var html = PW.formatOutput(document, [[1, ['1', '4']], [2, ['2', '6']]],
+            DATA).innerHTML;
 
     assert.ok(_.includes(html, 'Total reaction:'), "include 'Total reaction:'");
     assert.ok(_.includes(html, '<b>'), "include '<b>'");
@@ -670,7 +670,7 @@ QUnit.test('testReturnOutput', function(assert) {
 
 QUnit.module('testFormatReaction');
 QUnit.test('testReturnCorrectResults', function(assert) {
-    var html = formatReaction(document, '1', DATA).innerHTML;
+    var html = PW.formatReaction(document, '1', DATA).innerHTML;
 
     assert.ok(_.includes(html, '<dl>'), "include '<dl>'");
     assert.ok(_.includes(html, '</dl>'), "include '</dl>'");
@@ -697,7 +697,7 @@ QUnit.test('testReturnCorrectResults', function(assert) {
 QUnit.module('testGetInputValues');
 QUnit.test('testGetCorrectValues', function(assert) {
     var form = createInputForm();
-    var values = getInputValues(form);
+    var values = PW.getInputValues(form);
 
     var correct = {
         nResults: 10,
@@ -713,7 +713,7 @@ QUnit.test('testGetCorrectValues', function(assert) {
 QUnit.module('testGetMultiselectValues');
 QUnit.test('testGetCorrectValues', function(assert) {
     var multiselect = createMultiselect(document, 'e');
-    var values = getMultiselectValues(multiselect);
+    var values = PW.getMultiselectValues(multiselect);
 
     var correct = ['e1', 'e2'];
     assert.deepEqual(values, correct, "return ['e1', 'e2']");
@@ -723,7 +723,7 @@ QUnit.test('testGetCorrectValues', function(assert) {
 
 QUnit.module('testInitializeGraph');
 QUnit.test('testCorrectOutputs', function(assert) {
-    var G = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
+    var G = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS);
 
     var correctNodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
     var correctEdges = [
@@ -737,8 +737,8 @@ QUnit.test('testCorrectIgnores', function(assert) {
     var I1 = ['1', '3', '6'];
     var I2 = ['1', '2'];
 
-    var G1 = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I1);
-    var G2 = initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I2);
+    var G1 = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I1);
+    var G2 = PW.initializeGraph(RHEA_CHEBIS, CHEBI_RHEAS, I2);
 
     var correctNodes1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
     var correctNodes2 = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -761,7 +761,7 @@ QUnit.module('testOrderPathwayData');
 QUnit.test('testReturnCorrectData', function(assert) {
     var pathways = [['1', '2', '3'], ['4', '5', '6']];
 
-    var output = orderPathwayData(
+    var output = PW.orderPathwayData(
         pathways, RHEA_CHEBIS, COMPLEXITIES, DEMANDS, PRICES);
 
     var steps = [

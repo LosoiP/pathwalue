@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0;" />
 <title>PathWalue</title>
 <link href="static/css/select2.min.css" rel="stylesheet" type="text/css" />
-<link href="static/css/styles.css" rel="stylesheet" type="text/css" />
+<link href="static/css/pw.css" rel="stylesheet" type="text/css" />
 </head>
 
 
@@ -103,7 +103,7 @@ Welcome to try the test version of the PathWalue application!
 </select>
 </p>
 <p>
-<button type="button" onclick="submitSearch()">Search</button>
+<button type="button" onclick="PW.submitSearch()">Search</button>
 <small>Please note that the application performance may be slow due to the large amount of data it processes.</small>
 </p>
 </form>
@@ -172,32 +172,24 @@ Version control:
 </ul>
 </div>
 
-<script>var CONTEXT={};</script>
-<script src="static/json/cmp_demands.txt"></script>
-<script src="static/json/cmp_prices.txt"></script>
-<script src="static/json/cmp_names.txt"></script>
-<script src="static/json/cmp_reactions.txt"></script>
-<script src="static/json/ec_names.txt"></script>
-<script src="static/json/ec_reactions.txt"></script>
-<script src="static/json/rxn_complexities.txt"></script>
-<script src="static/json/rxn_ecs.txt"></script>
-<script src="static/json/rxn_equations.txt"></script>
-<script src="static/json/rxn_stoichiometrics.txt"></script>
+
+<script src="static/js/data/cmp_demands.js"></script>
+<script src="static/js/data/cmp_prices.js"></script>
+<script src="static/js/data/cmp_names.js"></script>
+<script src="static/js/data/cmp_reactions.js"></script>
+<script src="static/js/data/ec_names.js"></script>
+<script src="static/js/data/ec_reactions.js"></script>
+<script src="static/js/data/rxn_complexities.js"></script>
+<script src="static/js/data/rxn_ecs.js"></script>
+<script src="static/js/data/rxn_equations.js"></script>
+<script src="static/js/data/rxn_stoichiometrics.js"></script>
+<script src="static/js/data/ignored_chebis.js"></script>
 <script src="static/js/jquery-3.1.0.min.js"></script>
 <script src="static/js/select2.min.js"></script>
 <script src="static/js/lodash.min.js"></script>
 <script src="static/js/jsnetworkx.js"></script>
 <script src="static/js/pw.js"></script>
-<script>
-var GRAPH = initializeGraph(
-    CONTEXT.stoichiometrics, CONTEXT.compound_reactions, IGNORED_COMPOUNDS);
-</script>
-<script>
-initializeForm(
-    _.keys(CONTEXT.compound_reactions), CONTEXT.compounds,
-    _.keys(CONTEXT.ec_reactions), CONTEXT.enzymes);
-</script>
-<script src="static/js/multiselect.js"></script>
+<script src="static/js/pwsetup.js"></script>
 </body>
 
 
