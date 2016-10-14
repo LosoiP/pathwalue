@@ -333,6 +333,19 @@ function findPathway(G, source, target) {
  * Format a compound entry in results.
  */
 function formatCompound(document, chebi, context) {
+    var liMain = formatIntermediates(document, chebi, context);
+    var price = context.prices[chebi];
+    var demand = context.demands[chebi];
+    var value = price * demand;
+    liMain.innerHTML += ', <small>' + value.toString() + ' (' + price.toString() + ' &sdot; ' + demand.toString() + ')</small>';
+    return liMain;
+}
+
+
+/**
+ * Format a compound entry in results.
+ */
+function formatIntermediates(document, chebi, context) {
     var liMain = createHTMLElement(document, 'LI');
     liMain.innerHTML = 'ChEBI:' + chebi + ' ' + context.compounds[chebi];
     return liMain;
@@ -418,20 +431,20 @@ function formatPathway(document, pathway, context) {
         reactionPoints += context.complexities[rhea];
     });
     li = createHTMLElement(document, 'LI');
-    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') &sdot; ' + (reactionPoints + 1).toString() + ' &#8725; ' + pathway[1].length.toString() + '</small>';
+    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') &sdot; (' + reactionPoints.toString() + ' + 1) &frasl; ' + pathway[1].length.toString() + '</small>';
     ulMain.appendChild(li);
     // Substrates
-    li = formatList(document, 'UL', 'Substrates:', S, formatCompound, context);
+    li = formatList(document, 'UL', 'Substrates: <small>' + substratePoints.toString() + '</small>', S, formatCompound, context);
     ulMain.appendChild(li);
     // Intermediates
-    li = formatList(document, 'UL', 'Intermediates:', I, formatCompound,
+    li = formatList(document, 'UL', 'Intermediates:', I, formatIntermediates,
             context);
     ulMain.appendChild(li);
     // Products
-    li = formatList(document, 'UL', 'Products:', P, formatCompound, context);
+    li = formatList(document, 'UL', 'Products: <small>' + productPoints.toString() + '</small>', P, formatCompound, context);
     ulMain.appendChild(li);
     // Reaction steps
-    li = formatList(document, 'OL', 'Reaction steps:', pathway[1],
+    li = formatList(document, 'OL', 'Reaction steps: <small>(' + reactionPoints.toString() + ' + 1) &frasl; ' + pathway[1].length + '</small>', pathway[1],
             formatReaction, context);
     ulMain.appendChild(li);
     
@@ -696,6 +709,7 @@ PW.evaluatePathway = evaluatePathway;
 PW.filterPathways = filterPathways;
 PW.findPathway = findPathway;
 PW.formatCompound = formatCompound;
+PW.formatIntermediates = formatIntermediates;
 PW.formatList = formatList;
 PW.formatOutput = formatOutput;
 PW.formatPathway = formatPathway;

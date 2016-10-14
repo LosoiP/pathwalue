@@ -578,15 +578,24 @@ QUnit.module('testFormatCompound');
 QUnit.test('testCorrectResults', function(assert) {
     var text = PW.formatCompound(document, '1', DATA).innerHTML;
 
+    var correct = 'ChEBI:1 a, ';
+    assert.ok(_.includes(text, correct), "element innerHTML has 'ChEBI:1 a'");
+});
+
+
+QUnit.module('testFormatIntermediates');
+QUnit.test('testCorrectResults', function(assert) {
+    var text = PW.formatIntermediates(document, '1', DATA).innerHTML;
+
     var correct = 'ChEBI:1 a';
     assert.deepEqual(text, correct, "element innerHTML 'ChEBI:1 a'");
 });
 
 
 QUnit.module('testFormatList');
-QUnit.test('testCorrectCompoundResults', function(assert) {
-    var html = PW.formatList(document, 'OL', 'title', ['1', '2'], PW.formatCompound,
-            DATA).innerHTML;
+QUnit.test('testCorrectIntermediatesResults', function(assert) {
+    var html = PW.formatList(document, 'OL', 'title', ['1', '2'],
+            PW.formatIntermediates, DATA).innerHTML;
 
     var correct = 'title<ol><li>ChEBI:1 a</li><li>ChEBI:2 b</li></ol>';
     assert.ok(_.includes(html, 'title'), "include 'title'");
