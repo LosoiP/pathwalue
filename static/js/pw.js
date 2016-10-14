@@ -170,7 +170,7 @@ function evaluatePathway(steps, compounds) {
         productsAll.push.apply(productsAll, step[2]);
     });
     _.forEach(_.difference(substratesAll, productsAll), function(s) {
-        try {  // FIND OUT WHY COMPOUND[X] CAN BE UNDEFINED.
+        try {
             subs.push(compounds[s][0] * compounds[s][1]);
         }
         catch (error) {
@@ -265,15 +265,18 @@ function filterPathways(pathways, filter, context) {
             compounds.push(products);
             enzymes.push(rxnEcs[reaction]);
             });
+        if (!approved) {
+            return false;
+        }
         // Check for compounds and enzymes.
         if (_.intersection(C, _.flattenDeep(compounds)).length !== C.length) {
-            approved = false;
-        } else if (_.intersection(E, _.flattenDeep(enzymes)).length !== E.length) {
-            approved = false;
+            return false;
         }
-        if (approved) {
-            return true;
+        enzymes = _.intersection(E, _.flattenDeep(enzymes));
+        if (enzymes.length !== E.length) {
+            return false;
         }
+        return true;
     });
 }
 
@@ -429,31 +432,31 @@ function formatPathway(document, pathway, context) {
 /**
  * Format a reaction entry in results.
  */
-function formatReaction(document, rhea, context) {
+function formatReaction(document, rhea, data) {
     var liMain = createHTMLElement(document, 'LI');
     var dl = createHTMLElement(document, 'DL');
     var dt = createHTMLElement(document, 'DT');
     var dd = createHTMLElement(document, 'DD');
-    var enzymes = context.reaction_ecs[rhea];
-    var substrates = _.keys(context.stoichiometrics[rhea][0]);
-    var products = _.keys(context.stoichiometrics[rhea][1]);
-    dt.innerHTML = '<b>' + context.equations[rhea] + '</b>';
+    var enzymes = data.reaction_ecs[rhea];
+    var substrates = _.keys(data.stoichiometrics[rhea][0]);
+    var products = _.keys(data.stoichiometrics[rhea][1]);
+    dt.innerHTML = '<b>' + data.equations[rhea] + '</b>';
     dl.appendChild(dt);
     dd.innerHTML = 'Rhea:' + rhea;
     dl.appendChild(dd);
     _.forEach(enzymes, function(ec) {
         dd = createHTMLElement(document, 'DD');
-        dd.innerHTML = 'EC:' + ec + ' ' + context.enzymes[ec];
+        dd.innerHTML = 'EC:' + ec + ' ' + data.enzymes[ec];
         dl.appendChild(dd);
     });
-    _.forEach(substrates, function(chebi) {
+    _.forEach(substrates, function(c) {  // c = chebi
         dd = createHTMLElement(document, 'DD');
-        dd.innerHTML = 'Substrate ChEBI:' + chebi + ' ' + context.compounds[chebi];
+        dd.innerHTML = 'Substrate ChEBI:' + c + ' ' + data.compounds[c];
         dl.appendChild(dd);
     });
     _.forEach(products, function(chebi) {
         dd = createHTMLElement(document, 'DD');
-        dd.innerHTML = 'Product ChEBI:' + chebi + ' ' + context.compounds[chebi];
+        dd.innerHTML = 'Product ChEBI:' + chebi + ' ' + data.compounds[chebi];
         dl.appendChild(dd);
     });
     liMain.appendChild(dl)
