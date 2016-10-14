@@ -389,6 +389,9 @@ function formatPathway(document, pathway, context) {
     var namesP;
     var totalReaction = 'totalReaction';
     var pwPoints = pathway[0];
+    var substratePoints = 0;
+    var productPoints = 0;
+    var reactionPoints = 0;
     // Group compounds to S, I and P.
     _.forEach(pathway[1], function(rhea) {
         S.push.apply(S, _.keys(context.stoichiometrics[rhea][0]));
@@ -404,9 +407,18 @@ function formatPathway(document, pathway, context) {
     namesP = _.map(P, function(chebi) {return context.compounds[chebi];});
     totalReaction = namesS.join(' + ') + ' => ' + namesP.join(' + ');
     liMain.innerHTML = 'Total reaction: <b>' + totalReaction + '</b>';
-    // Points
+    // Assign points.
+    _.forEach(S, function (chebi) {
+        substratePoints += context.prices[chebi] * context.demands[chebi];
+    });
+    _.forEach(P, function (chebi) {
+        productPoints += context.prices[chebi] * context.demands[chebi];
+    });
+    _.forEach(pathway[1], function (rhea) {
+        reactionPoints += context.complexities[rhea];
+    });
     li = createHTMLElement(document, 'LI');
-    li.innerHTML = 'Score: ' + pwPoints;
+    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') &sdot; ' + (reactionPoints + 1).toString() + ' &#8725; ' + pathway[1].length.toString() + '</small>';
     ulMain.appendChild(li);
     // Substrates
     li = formatList(document, 'UL', 'Substrates:', S, formatCompound, context);

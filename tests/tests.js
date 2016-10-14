@@ -612,7 +612,8 @@ QUnit.test('testCorrectCompoundResults', function(assert) {
               'include total reaction');
     assert.ok(_.includes(html, '<li>'), "include '<li>'");
     assert.ok(_.includes(html, '</li>'), "include '</li>'");
-    assert.ok(_.includes(html, 'Score: 1'), "include 'Score: 1'");
+    assert.ok(_.includes(html, 'Score: 1, <small>('),
+              "include 'Score: 1, <small>('");
     assert.ok(_.includes(html, '<ul>'), "include '<ul>'");
     assert.ok(_.includes(html, '</ul>'), "include '</ul>'");
     assert.ok(_.includes(html, '<ol>'), "include '<ol>'");
