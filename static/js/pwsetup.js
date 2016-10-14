@@ -12,7 +12,7 @@
 
 (function (PW, $, _) {
     $(document).ready(
-        function() {
+        function () {
             PW.GRAPH = PW.initializeGraph(
                 PW.DATA.stoichiometrics, PW.DATA.compound_reactions, PW.DATA.IGNORED_COMPOUNDS);
             PW.initializeForm(
@@ -22,8 +22,8 @@
             $(".select2Multi").select2().on(
                 'select2:select',
                 function(e) {
-                    $selectedElement = $(e.params.data.element);
-                    $selectedElementOptgroup = $selectedElement.parent("optgroup");
+                    var $selectedElement = $(e.params.data.element);
+                    var $selectedElementOptgroup = $selectedElement.parent("optgroup");
                     if ($selectedElementOptgroup.length > 0) {
                         $selectedElement.data(
                             "select2-originaloptgroup",
