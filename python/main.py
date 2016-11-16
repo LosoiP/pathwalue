@@ -2,65 +2,6 @@
 """
 Define functions, constants and exceptions for PathWalue application.
 
-Functions
----------
-determine_intermediates :  find intermediate compounds
-evaluate_input :  process PathWalue user input
-evaluate_pathway :  evaluate pathway
-filter_pathway :  filter pathways by enzymes
-find_pathway :  find a pathway between reactions
-format_compound :  collect compound data to ouput
-format_pathway :  collect pathway data to output
-format_output :  collect data to output
-format_reaction :  collect reaction data to output
-intersect_dict :  return an intersect of dict and an iterable of keys
-initialize_graph :  initialize networkx.DiGraph for pathway searching
-nbest_items :  return n highest value items
-order_pathway_data :  collect pathway data for evaluation
-pair_reactions :  pair reactions for pathway searching
-get_content :  return contents of a text file
-get_json :  return object written in a JSON file
-get_names :  return filenames in a directory
-write_json :  write an object to a JSON file
-write_jsons :  write objects to JSON files
-
-Constants
----------
-DELIMITER_TSV :  tab character in tsv files
-PATH_CHEBI :  directory path to ChEBI files
-PATH_INTENZ :  directory path to IntEnz files
-PATH_JSON :  directory path to JSON files
-PATH_RHEA :  directory path to Rhea files
-PATH_RD :  directory path to Rhea reaction data files
-CHEBI_COMPOUNDS :  filename for ChEBI compound data
-CHEBI_DATA :  filename for ChEBI chemical data
-CHEBI_RELATIONS :  filename for ChEBI relation data
-CHEBI_VERTICES :  filename for ChEBI vertex data
-INTENZ :  filename for IntEnz data
-FILE_CMP_CHARGES :  JSON filename for ChEBI ID to charge mapping
-FILE_CMP_DEMANDS :  JSON filename for ChEBI ID to demand mapping
-FILE_CMP_FORMULAE :  JSON filename for ChEBI ID to formula mapping
-FILE_CMP_MASSES :  JSON filename for ChEBI ID to mass mapping
-FILE_CMP_PARENTS :  JSON filename for ChEBI ID to parent ID mapping
-FILE_CMP_PRICES :  JSON filename for ChEBI ID to price mapping
-FILE_CMP_REACTIONS :  JSON filename for compound to reaction mapping
-FILE_CMP_RELATIONS :  JSON filename for ChEBI ID to relations mapping
-FILE_EC_NAMES :  JSON filename for EC number to enzyme name mapping
-FILE_EC_REACTIONS :  JSON filename for EC number to Rhea ID mapping
-FILE_RXN_COMPLEXITIES :  JSON filename for Rhea ID to complexity mapping
-FILE_RXN_ECS :  JSON filename for Rhea ID to EC number mapping
-FILE_RXN_EQUATIONS :  JSON filename for Rhea ID to equation mapping
-FILE_RXN_STOICIOMETRICS :  JSON filename for Rhea ID to stoichiometrics
-RHEA_RC :  filename for Rhea EC data
-
-Exceptions
-----------
-ChEBIIDError :  given ChEBI ID is not recognized
-ECNumberError :  given EC number is not recognized
-RheaIDError :  given Rhea ID is not recognized
-DirectoryNotFoundError :  given directory path is not recognized
-
-
 PEP 257:
 The docstring of a script (a stand-alone program) should be usable as
 its "usage" message, printed when the script is invoked with incorrect
@@ -80,8 +21,7 @@ __init__.py module) should also list the modules and subpackages
 exported by the package.
 
 The docstring for a function or method should summarize its behavior
-and document its arguments, return value(s), side effects, exceptions
-raised, and restrictions on when it can be called (all if applicable).
+and document its arguments, return value(s), side effects, exceptions raised, and restrictions on when it can be called (all if applicable).
 Optional arguments should be indicated. It should be documented whether
 keyword arguments are part of the interface.
 
@@ -103,7 +43,7 @@ method calls the superclass method (in addition to its own behavior).
 
 import collections as cl
 import itertools as it
-import heapq as hq  # Used in finding n max values from a list.
+import heapq as hq  # find n max values from a list
 import math as m
 
 import networkx as nx
@@ -112,59 +52,88 @@ import json
 import os
 
 
-# Constants.
+# Constants
 DELIMITER_TSV = '\t'
 
-# File extensions.
+# File extensions
 _EXTENSION_DAT = '.dat'
-_EXTENSION_JSON = '.txt'
+_EXTENSION_JS = '.js'
+_EXTENSION_JSON = '.json'
 _EXTENSION_TSV = '.tsv'
 _EXTENSION_RD = '.rd'
 
-# Directory paths.
-_BASE_DIR = os.path.normpath('P:/My Documents/Spyder/PathWalue/webapp')
-_PATH_DATA = os.path.join(_BASE_DIR, 'data')
-PATH_CHEBI = os.path.join(_PATH_DATA, 'chebi')
-PATH_INTENZ = os.path.join(_PATH_DATA, 'intenz')
-PATH_JSON = os.path.join(_PATH_DATA, 'json')
-PATH_RHEA = os.path.join(_PATH_DATA, 'rhea')
-PATH_RD = os.path.join(PATH_RHEA, 'rd')
+# Directory names
+_DIR_DAT = 'dat'
+_DIR_JS = 'js'
+_DIR_JSON = 'json'
+_DIR_RD = 'rd'
+_DIR_TSV = 'tsv'
 
-# ChEBI files.
+# Directory paths
+_BASE_DIR = os.path.normpath('P:/My Documents/biochassis2/pathwalue')
+_PATH_DATA = os.path.join(_BASE_DIR, 'data')
+
+_PATH_CHEBI = os.path.join(_PATH_DATA, 'chebi')
+_PATH_INTENZ = os.path.join(_PATH_DATA, 'intenz')
+_PATH_RHEA = os.path.join(_PATH_DATA, 'rhea')
+
+PATH_CHEBI_TSV = os.path.join(_PATH_CHEBI, _DIR_TSV)
+PATH_INTENZ_DAT = os.path.join(_PATH_INTENZ, _DIR_DAT)
+PATH_JS = os.path.join(_PATH_DATA, 'js')
+PATH_JSON = os.path.join(_PATH_DATA, 'json')
+PATH_RHEA_RD = os.path.join(_PATH_RHEA, _DIR_RD)
+PATH_RHEA_TSV = os.path.join(_PATH_RHEA, _DIR_TSV)
+
+# ChEBI files
 CHEBI_COMPOUNDS = 'compounds' + _EXTENSION_TSV
 CHEBI_DATA = 'chemical_data' + _EXTENSION_TSV
 CHEBI_RELATIONS = 'relation' + _EXTENSION_TSV
 CHEBI_VERTICES = 'vertice' + _EXTENSION_TSV
 
-# IntEnz files.
-INTENZ = 'enzyme' + _EXTENSION_DAT
+# IntEnz files
+INTENZ_ENZYMES = 'enzyme' + _EXTENSION_DAT
 
-# JSON files.
-_PREFIX_CMP = 'cmp_'
-FILE_CMP_CHARGES = _PREFIX_CMP + 'charges' + _EXTENSION_JSON
-FILE_CMP_DEMANDS = _PREFIX_CMP + 'demands' + _EXTENSION_JSON
-FILE_CMP_FORMULAE = _PREFIX_CMP + 'formulae' + _EXTENSION_JSON
-FILE_CMP_MASSES = _PREFIX_CMP + 'masses' + _EXTENSION_JSON
-FILE_CMP_NAMES = _PREFIX_CMP + 'names' + _EXTENSION_JSON
-FILE_CMP_PARENTS = _PREFIX_CMP + 'parents' + _EXTENSION_JSON
-FILE_CMP_PRICES = _PREFIX_CMP + 'prices' + _EXTENSION_JSON
-FILE_CMP_REACTIONS = _PREFIX_CMP + 'reactions' + _EXTENSION_JSON
-FILE_CMP_RELATIONS = _PREFIX_CMP + 'relations' + _EXTENSION_JSON
-FILE_CMP_VALUES = _PREFIX_CMP + 'values' + _EXTENSION_JSON
-
-FILE_EC_NAMES = 'ec_names' + _EXTENSION_JSON
-FILE_EC_REACTIONS = 'ec_reactions' + _EXTENSION_JSON
-
-_PREFIX_RXN = 'rxn_'
-FILE_RXN_COMPLEXITIES = _PREFIX_RXN + 'complexities' + _EXTENSION_JSON
-FILE_RXN_ECS = _PREFIX_RXN + 'ecs' + _EXTENSION_JSON
-FILE_RXN_EQUATIONS = _PREFIX_RXN + 'equations' + _EXTENSION_JSON
-FILE_RXN_STOICHIOMETRICS = _PREFIX_RXN + 'stoichiometrics' + _EXTENSION_JSON
-
-# Rhea files.
+# Rhea files
 RHEA_EC = 'ec-rhea-dir' + _EXTENSION_TSV
 
+# JSON files
+_PREFIX_EC = 'ec_'
+EC_NAMES = _PREFIX_EX + 'names' + _EXTENSION_JSON
+EC_REACTIONS = _PREFIX_EX + 'reactions' + _EXTENSION_JSON
 
+_PREFIX_MOL = 'cmp_'
+MOL_CHARGES = _PREFIX_MOL + 'charges' + _EXTENSION_JSON
+MOL_DEMANDS = _PREFIX_MOL + 'demands' + _EXTENSION_JSON
+MOL_FORMULAE = _PREFIX_MOL + 'formulae' + _EXTENSION_JSON
+MOL_IGNORED = _PREFIX_MOL + 'ignored' + _EXTENSION_JSON
+MOL_MASSES = _PREFIX_MOL + 'masses' + _EXTENSION_JSON
+MOL_NAMES = _PREFIX_MOL + 'names' + _EXTENSION_JSON
+MOL_PARENTS = _PREFIX_MOL + 'parents' + _EXTENSION_JSON
+MOL_PRICES = _PREFIX_MOL + 'prices' + _EXTENSION_JSON
+MOL_REACTIONS = _PREFIX_MOL + 'reactions' + _EXTENSION_JSON
+MOL_RELATIONS = _PREFIX_MOL + 'relations' + _EXTENSION_JSON
+MOL_VALUES = _PREFIX_MOL + 'values' + _EXTENSION_JSON
+
+_PREFIX_RXN = 'rxn_'
+RXN_COMPLEXITIES = _PREFIX_RXN + 'complexities' + _EXTENSION_JSON
+RXN_ECS = _PREFIX_RXN + 'ecs' + _EXTENSION_JSON
+RXN_EQUATIONS = _PREFIX_RXN + 'equations' + _EXTENSION_JSON
+RXN_STOICHIOMETRICS = _PREFIX_RXN + 'stoichiometrics' + _EXTENSION_JSON
+
+# JS files
+JS_MOL_DEMANDS = _PREFIX_MOL + 'demands' + _EXTENSION_JS
+JS_MOL_NAMES = _PREFIX_MOL + 'names' + _EXTENSION_JS
+JS_MOL_PRICES = _PREFIX_MOL + 'prices' + _EXTENSION_JS
+JS_MOL_REACTIONS = _PREFIX_MOL + 'reactions' + _EXTENSION_JS
+JS_MOL_IGNORED = _PREFIX_MOL + 'ignored' + _EXTENSION_JS
+JS_EC_NAMES = _PREFIX_EC + 'names' + _EXTENSION_JS
+JS_EC_REACTIONS = _PREFIX_EC + 'reactions' + _EXTENSION_JS
+JS_RXN_COMPLEXITIES = _PREFIX_RXN + 'complexities' + _EXTENSION_JS
+JS_RXN_ENZYMES = _PREFIX_RXN + 'enzymes' + _EXTENSION_JS
+JS_RXN_EQUATIONS = _PREFIX_RXN + 'equations' + _EXTENSION_JS
+JS_RXN_STOICHIOMETRICS = _PREFIX_RXN + 'stoichiometrics' + _EXTENSION_JS
+
+# TODO Make a separate file of ignored compounds? JSON or py?
 _IGNORED_COMPOUNDS = set((
     '15377',  # H2O water
     '29242',  # AsH2O3
@@ -1005,144 +974,6 @@ def find_pathway(graph, source=None, target=None):
             yield nx.bidirectional_shortest_path(graph, source, target)
         except nx.NetworkXNoPath:
             pass
-
-
-def format_compound(compound, context={}):
-    """
-    Format chebi data with context to a dict.
-
-    Parameters
-    ----------
-    compound : dict
-        ChEBI ID str to stoichiometric number int.
-    context : dict
-        Must have a 'compounds' key that maps to a dict of ChEBI ID strs
-        to compound names.
-
-    Returns
-    -------
-    dict
-        Compound data keyed by strings: 'chebi', 'number' and 'name'.
-
-    """
-    data = {}
-    try:
-        [[chebi, number]] = compound.items()
-    except ValueError:  # Empty `compound`.
-        pass
-    else:
-        data['chebi'] = chebi
-        data['number'] = number
-        data['name'] = context.get('compounds', {}).get(data['chebi'], '')
-    finally:
-        return data
-
-
-def format_output(results, data):
-    """
-    Format `evaluate_input` results.
-
-    Parameters
-    ----------
-    results : iterable
-        tuples of value, pathway -pairs.
-
-    Returns
-    -------
-    list
-        Pathway dicts.
-
-    """
-    output = []
-    for value, reactions in results:
-        output.append(format_pathway(value, reactions, data))
-    return output
-
-
-def format_pathway(value, reactions=[], context={}):
-    """
-    Format pathway data with context to a dict.
-
-    Parameters
-    ----------
-    value : number
-        Pathways value.
-    reactions : iterable
-        Rhea ID strings.
-    context : dict
-        Accessory data. Must have keys 'compounds', 'enzymes',
-        'equations', 'reactions', 'stoichiometrics' that map to data
-        dicts.
-
-    Returns
-    -------
-    dict
-        Pathway data. Has keys 'value', 'reactions', 'substrates',
-        'products' and 'intermediates'.
-
-    """
-    data = {}
-    data['value'] = value
-    data['reactions'] = [format_reaction(r, context) for r in reactions]
-    data['substrates'] = []
-    data['products'] = []
-    data['intermediates'] = []
-    substrates = []
-    products = []
-    for reaction in data['reactions']:
-        substrates_reaction = reaction['substrates']
-        products_reaction = reaction['products']
-        for s, v_s in substrates_reaction.items():
-            substrates.append(format_compound({s: v_s}, context))
-        for p, v_p in products_reaction.items():
-            products.append(format_compound({p: v_p}, context))
-    intermediates = determine_intermediates(substrates, products)
-    for i, v_i in intermediates.items():
-        data['intermediates'].append(format_compound({i: v_i}, context))
-    for s in substrates:
-        is_intermediate = s['chebi'] in intermediates
-        duplicates = any(s['chebi'] == d['chebi'] for d in data['substrates'])
-        if not is_intermediate and not duplicates:
-            data['substrates'].append(s)
-    for p in products:
-        is_intermediate = p['chebi'] in intermediates
-        is_duplicate = any(p['chebi'] == d['chebi'] for d in data['products'])
-        if not is_intermediate and not is_duplicate:
-            data['products'].append(p)
-    return data
-
-
-def format_reaction(reaction, context={}):
-    """
-    Format reaction data with context to a dict.
-
-    Parameters
-    ----------
-    reaction : str
-        Rhea ID.
-    context : dict
-        Accessory data. Must have keys 'equations', 'reactions',
-        'enzymes' and 'stoichiometrics' that map to data dicts.
-
-    Returns
-    -------
-    dict
-        Reaction data. Has keys 'rhea', 'equation', 'enzymes',
-        'products' and 'substrates'.
-
-    """
-    data = {}
-    data['rhea'] = reaction
-    data['equation'] = context.get('equations', {}).get(reaction, '')
-    enzymes = context.get('reaction_ecs', {}).get(reaction, [])
-    enzyme_names = {
-        ec: context.get('enzymes', {}).get(ec, '') for ec in enzymes}
-    data['enzymes'] = {ec: enzyme_names[ec] for ec in enzymes}
-    substrates, products = context.get(
-        'stoichiometrics', {}).get(reaction, ({}, {}))
-    data['products'] = products
-    data['substrates'] = substrates
-    return data
 
 
 def intersect_dict(target, filter_to={}):
