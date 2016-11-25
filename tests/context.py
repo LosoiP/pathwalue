@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, os.path.normpath('../python/'))
 
-# import chebi
+import chebi
 import files
 # import intenz
 # import main

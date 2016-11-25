@@ -11,7 +11,7 @@ read_vertices: process vertices.tsv
 main: process ChEBI data to JSON files.
 
 """
-DELIMITER_TSV = '\t'
+_DELIMITER_TSV = '\t'
 
 IGNORED_COMPOUNDS = set((
     '15377',  # H2O water
@@ -563,8 +563,9 @@ def read_chemical_data(contents, compound_parents):
 
     Parameters
     ---------
-    contents : list
-        List of chemical data file row strings.
+    contents : iterable of dicts
+        Iterable of dicts of strings, that correspond to chemical
+        data file rows.
 
     compound_parents : dict
         Mapping from compound IDs to parent IDs.
@@ -579,9 +580,10 @@ def read_chemical_data(contents, compound_parents):
 
     """
     charges, formulae, masses = {}, {}, {}
-    # Process content row by row.
-    for row in contents[1:]:
-        __, compound, __, type_, data = row.split(DELIMITER_TSV)
+    for row in _read_tsv(contents):
+        compound = contents['COMPOUND_ID']
+        type_ = contents['TYPE']
+        data = contents['CHEMICAL_DATA']
         # Map compound ID to parent ID.
         parent = compound_parents.get(compound, compound)
         # Sort data.
@@ -613,8 +615,7 @@ def read_compounds(contents):
    """
 
     compound_names, compound_parents = {}, {}
-    # Process content row by row, but skip header.
-    for row in contents[1:]:
+    for row in contents:
         id_, status, __, __, parent, name, *__ = row.split(DELIMITER_TSV)
         # Statuses:
         # C: checked
@@ -649,8 +650,7 @@ def read_relations(contents, vertex_compounds):
     """
 
     compound_relations = {}
-    # Process content row by row, but skip header.
-    for row in contents[1:]:
+    for row in contents:
         id_, type_, final, initial, status = row.split(DELIMITER_TSV)
         # Include only manually curated relation data.
         if status.strip() == 'C':
@@ -665,9 +665,9 @@ def read_relations(contents, vertex_compounds):
     return compound_relations
 
 
-def read_vertices(content, compound_parents):
+def read_vertices(contents, compound_parents):
     """
-    Read content and return vertex data as dict of str.
+    Read contents and return vertex data as dict of str.
 
     Parameters
     ----------
@@ -685,10 +685,20 @@ def read_vertices(content, compound_parents):
     """
 
     vertex_compounds = {}
-    # Process content row by row, but skip header.
-    for row in content[1:]:
+    # Process content row by row.
+    for row in contents:
         id_, compound, *__ = row.split(DELIMITER_TSV)
         # Map compound IDs to parent IDs.
         parent = compound_parents.get(compound, compound)
         vertex_compounds[id_] = parent
     return vertex_compounds
+
+
+def _read_tsv(contents):
+    """
+    """
+
+    fields_header = contents[0].strip().split(_DELIMITER_TSV)
+    for row in contents[1:]:
+        fields_row = row.strip().split(_DELIMITER_TSV)
+        yield dict(zip(fields_header, fields_row))
