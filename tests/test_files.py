@@ -8,129 +8,129 @@ Created on Fri Nov 25 13:37:41 2016
 import pytest
 
 from context import files
+from context import paths
+
+
+_INVALID_FILENAME = 'invalid_filename'
+_INVALID_PATH = 'invalid_path'
+_VALID_PATH = paths._TESTS
+_VALID_JSON = 'test_read.json'
+
+_JSON_OBJECT = {'test_1': 1, 'test_2': 2}
 
 
 class TestGetContent:
 
-    invalid_filename = 'invalid_filename.txt'
-    invalid_path = 'invalid_path'
-    valid_filename = m.RHEA_EC
-    valid_path = m.PATH_RHEA
-
-    def test_output_contains_strings(self):
-        output = m.get_content(self.valid_path, self.valid_filename)
-        for item in output:
-            assert isinstance(item, str)
-
-    def test_output_is_list(self):
-        output = m.get_content(self.valid_path, self.valid_filename)
-        assert isinstance(output, list)
-
     def test_raise_filenotfounderror_invalid_filename(self):
         with pytest.raises(FileNotFoundError):
-            m.get_content(self.valid_path, self.invalid_filename)
+            files.get_content(_VALID_PATH, _INVALID_FILENAME)
 
     def test_raise_filenotfounderror_invalid_path(self):
         with pytest.raises(FileNotFoundError):
-            m.get_content(self.invalid_path, self.valid_filename)
+            files.get_content(_INVALID_PATH, _VALID_JSON)
 
     def test_raise_no_errors_valid_path_valid_filename(self):
-        m.get_content(self.valid_path, self.valid_filename)
+        files.get_content(_VALID_PATH, _VALID_JSON)
 
     def test_raise_typeerror_invalid_filename(self):
         with pytest.raises(TypeError):
-            m.get_content(self.valid_path, list(self.valid_filename))
+            files.get_content(_VALID_PATH, list(_VALID_JSON))
 
     def test_raise_typeerror_invalid_path(self):
         with pytest.raises(TypeError):
-            m.get_content(list(self.valid_path), self.valid_filename)
+            files.get_content(list(_VALID_PATH), _VALID_JSON)
+
+    def test_return_contains_only_strings(self):
+        contents = files.get_content(_VALID_PATH, _VALID_JSON)
+        for row in contents:
+            assert isinstance(row, str)
+
+    def test_return_list(self):
+        contents = files.get_content(_VALID_PATH, _VALID_JSON)
+        assert isinstance(contents, list)
 
 
 class TestGetJson:
 
-    invalid_filename = 'invalid_filename.txt'
-    invalid_path = 'invalid_path'
-    valid_filename = m.FILE_CMP_REACTIONS
-    valid_path = m.PATH_JSON
-
-    def test_output_is_object(self):
-        output = m.get_json(self.valid_path, self.valid_filename)
-        assert isinstance(output, object)
-
     def test_raise_filenotfounderror_invalid_filename(self):
         with pytest.raises(FileNotFoundError):
-            m.get_json(self.valid_path, self.invalid_filename)
+            files.get_json(_VALID_PATH, _INVALID_FILENAME)
 
     def test_raise_filenotfounderror_invalid_path(self):
         with pytest.raises(FileNotFoundError):
-            m.get_json(self.invalid_path, self.valid_filename)
+            files.get_json(_INVALID_PATH, _VALID_JSON)
 
     def test_raise_no_errors_valid_path_valid_filename(self):
-        m.get_json(self.valid_path, self.valid_filename)
+        files.get_json(_VALID_PATH, _VALID_JSON)
 
     def test_raise_typeerror_invalid_filename(self):
         with pytest.raises(TypeError):
-            m.get_json(self.valid_path, list(self.valid_filename))
+            files.get_json(_VALID_PATH, list(_VALID_JSON))
 
     def test_raise_typeerror_invalid_path(self):
         with pytest.raises(TypeError):
-            m.get_json(list(self.valid_path), self.valid_filename)
+            files.get_json(list(_VALID_PATH), _VALID_JSON)
+
+    def test_return_object(self):
+        json_object = files.get_json(_VALID_PATH, _VALID_JSON)
+        assert isinstance(json_object, object)
+
+    def test_return_correct_object(self):
+        json_object = files.get_json(_VALID_PATH, _VALID_JSON)
+        assert json_object == _JSON_OBJECT
 
 
 class TestWriteJson:
 
-    filename = 'test1.txt'
-    path = m.PATH_JSON
-    data_object = {}
+    filename = 'test_write.json'
 
     def test_output_file_exists(self):
-        m.write_json(self.data_object, self.path, self.filename)
-        output = m.get_json(self.path, self.filename)
-        assert isinstance(output, type(self.data_object))
+        files.write_json(_JSON_OBJECT, _VALID_PATH, self.filename)
+        output = files.get_json(_VALID_PATH, self.filename)
+        assert isinstance(output, type(_JSON_OBJECT))
 
     def test_raise_typeerror_invalid_filename(self):
         with pytest.raises(TypeError):
-            m.write_json(self.data_object, self.path, list(self.filename))
+            files.write_json(_JSON_OBJECT, _VALID_PATH, list(self.filename))
 
     def test_raise_no_errors_valid_path_valid_filename(self):
-        m.write_json(self.data_object, self.path, self.filename)
+        files.write_json(_JSON_OBJECT, _VALID_PATH, self.filename)
 
     def test_raise_typeerror_invalid_path(self):
         with pytest.raises(TypeError):
-            m.write_json(self.data_object, list(self.path), self.filename)
+            files.write_json(_JSON_OBJECT, list(_VALID_PATH), self.filename)
 
     def test_return_none(self):
-        output = m.write_json(self.data_object, self.path, self.filename)
+        output = files.write_json(_JSON_OBJECT, _VALID_PATH, self.filename)
         assert isinstance(output, type(None))
 
 
 class TestWriteJsons:
 
-    filenames = ['test1.txt', 'test2.txt']
-    path = m.PATH_JSON
-    data = [{}, {}]
+    filenames = ['test_write_1.json', 'test_write_2.json']
+    data = [_JSON_OBJECT, _JSON_OBJECT]
 
     def test_output_files_exist(self):
-        m.write_jsons(self.data, self.path, self.filenames)
+        files.write_jsons(self.data, _VALID_PATH, self.filenames)
         for file, test_object in zip(self.filenames, self.data):
-            output = m.get_json(self.path, file)
+            output = files.get_json(_VALID_PATH, file)
             assert isinstance(output, type(test_object))
 
     def test_raise_no_errors_valid_data_path_filenames(self):
-        m.write_jsons(self.data, self.path, self.filenames)
+        files.write_jsons(self.data, _VALID_PATH, self.filenames)
 
     def test_raise_typeerror_invalid_data_type(self):
         with pytest.raises(TypeError):
-            m.write_jsons(str(self.data), self.path, self.filenames)
+            files.write_jsons(str(self.data), _VALID_PATH, self.filenames)
 
     def test_raise_typeerror_invalid_filenames_type(self):
         with pytest.raises(TypeError):
-            m.write_jsons(self.data, self.path, str(self.filenames))
+            files.write_jsons(self.data, _VALID_PATH, str(self.filenames))
 
     def test_raise_typeerror_invalid_path(self):
         with pytest.raises(TypeError):
-            m.write_jsons(self.data, list(self.path), self.filenames)
+            files.write_jsons(self.data, list(_VALID_PATH), self.filenames)
 
     def test_return_none(self):
-        output = m.write_jsons(self.data, self.path, self.filenames)
+        output = files.write_jsons(self.data, _VALID_PATH, self.filenames)
         assert isinstance(output, type(None))
