@@ -4,7 +4,7 @@ pytest module for intenz.py unit tests.
 
 """
 
-from context import intenz as ie
+from context import intenz
 
 
 SAMPLES = '''

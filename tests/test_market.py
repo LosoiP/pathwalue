@@ -4,7 +4,7 @@ pytest module for analysis.py unit tests.
 
 """
 
-from context import analysis as an
+from context import market
 import networkx as nx
 import pytest
 

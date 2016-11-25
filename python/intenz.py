@@ -11,16 +11,6 @@ main: process IntEnz data to JSON files.
 """
 
 
-from main import (
-    FILE_EC_NAMES,
-    INTENZ,
-    PATH_INTENZ,
-    PATH_JSON,
-    get_content,
-    write_json,
-    )
-
-
 def get_enzymes(content):
     """
     Find enzyme names names and EC numbers in content.
@@ -71,7 +61,7 @@ def merge_dicts(dicts, kkey, vkey):
     return {d.get(kkey): d.get(vkey) for d in dicts if kkey in d and vkey in d}
 
 
-def main():
+def initialize_intenz():
     """
     Read and process IntEnz enzyme.dat file to JSON files.
 
@@ -92,7 +82,3 @@ def main():
         ec_names,
         ]
     return data
-
-
-if __name__ == '__main__':
-    data = main()

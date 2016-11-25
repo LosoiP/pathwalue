@@ -17,25 +17,6 @@ main: process Rhea data to JSON files.
 
 from collections import Counter
 
-from main import (
-    # Constants.
-    DELIMITER_TSV,
-    FILE_CMP_PARENTS,
-    FILE_CMP_REACTIONS,
-    FILE_EC_REACTIONS,
-    FILE_RXN_ECS,
-    FILE_RXN_EQUATIONS,
-    FILE_RXN_STOICHIOMETRICS,
-    RHEA_EC,
-    PATH_JSON,
-    PATH_RD,
-    PATH_RHEA,
-    # Functions.
-    get_content,
-    get_json,
-    get_names,
-    write_jsons,
-    )
 
 PARENTS = get_json(PATH_JSON, FILE_CMP_PARENTS)  # Run chebi.main() first.
 
@@ -224,28 +205,7 @@ def read_rds(filenames):
     return data
 
 
-def add_supplementary_reactions(cmp_rxns, rxn_equats, rxn_stoich):
-    cmp_rxns['61548'][0].append('S1')
-    cmp_rxns['61548'][1].append('S2')
-    cmp_rxns['57584'][0].append('S2')
-    cmp_rxns['57584'][1].append('S1')
-    cmp_rxns['57579'][0].append('S3')
-    cmp_rxns['57579'][1].append('S4')
-    cmp_rxns['57634'][0].append('S4')
-    cmp_rxns['57634'][1].append('S3')
-
-    rxn_equats['S1'] = 'D-glucopyranose 6-phosphate => aldehydo-D-glucose 6-phosphate'
-    rxn_equats['S2'] = 'aldehydo-D-glucose 6-phosphate => D-glucopyranose 6-phosphate'
-    rxn_equats['S3'] = 'D-fructose 6-phosphate => beta-D-fructose 6-phosphate'
-    rxn_equats['S4'] = 'beta-D-fructose 6-phosphate => D-fructose 6-phosphate'
-
-    rxn_stoich['S1'] = [{'61548': 1}, {'57584': 1}]
-    rxn_stoich['S2'] = [{'57584': 1}, {'61548': 1}]
-    rxn_stoich['S3'] = [{'57579': 1}, {'57634': 1}]
-    rxn_stoich['S4'] = [{'57634': 1}, {'57579': 1}]
-
-
-def main():
+def initialize_rhea():
     """
     Convert Rhea rd files to JSON formatted files for analysis.
 
@@ -289,8 +249,3 @@ def main():
     write_jsons(data, PATH_JSON, jsonnames)
 
     return data
-
-
-if __name__ == '__main__':
-    # pass
-    data = main()

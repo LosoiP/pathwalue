@@ -25,23 +25,6 @@ from math import sqrt
 import networkx as nx
 import numpy as np
 
-from main import (
-    # Constants.
-    _IGNORED_COMPOUNDS,
-    PATH_JSON,
-    FILE_CMP_DEMANDS,
-    FILE_CMP_PRICES,
-    FILE_CMP_REACTIONS,
-    FILE_CMP_RELATIONS,
-    FILE_RXN_COMPLEXITIES,
-    FILE_RXN_STOICHIOMETRICS,
-    # Exceptions.
-    RheaIDError,
-    # Functions.
-    get_json,
-    write_jsons,
-    )
-
 
 _TYPES_DEMAND = {
     'has_role': {
@@ -548,7 +531,7 @@ def parse_formula(formula):
     return element_numbers
 
 
-def main():
+def initialize_market():
     """
     Run analysis to evaluate demands, prices and complexities.
 
