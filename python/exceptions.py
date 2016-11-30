@@ -8,3 +8,7 @@ Created on Fri Nov 25 13:46:16 2016
 
 class DirectoryNotFoundError(OSError):
     pass
+
+
+class TSVFieldError(ValueError):
+    pass

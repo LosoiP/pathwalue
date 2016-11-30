@@ -1,17 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Read and process ChEBI data to JSON files.
-
-Functions
----------
-read_chemical_data: process chemical.tsv
-read_compounds: process compounds.tsv
-read_relations: process relations.tsv
-read_vertices: process vertices.tsv
-main: process ChEBI data to JSON files.
 
 """
-_DELIMITER_TSV = '\t'
 
 IGNORED_COMPOUNDS = set((
     '15377',  # H2O water
@@ -557,13 +547,13 @@ IGNORED_COMPOUNDS = set((
     ))
 
 
-def read_chemical_data(contents, compound_parents):
+def parse_chemical_data(data, compound_parents={}):
     """
     Read content and return chemical data as dicts.
 
     Parameters
     ---------
-    contents : iterable of dicts
+    data : iterable of dicts
         Iterable of dicts of strings, that correspond to chemical
         data file rows.
 
@@ -580,23 +570,25 @@ def read_chemical_data(contents, compound_parents):
 
     """
     charges, formulae, masses = {}, {}, {}
-    for row in _read_tsv(contents):
-        compound = contents['COMPOUND_ID']
-        type_ = contents['TYPE']
-        data = contents['CHEMICAL_DATA']
-        # Map compound ID to parent ID.
+    for index_entry, entry in enumerate(data):
+        compound = entry['COMPOUND_ID']
+        type_datum = entry['TYPE']
+        datum = entry['CHEMICAL_DATA']
         parent = compound_parents.get(compound, compound)
-        # Sort data.
-        if type_ == 'CHARGE':
-            charges[parent] = int(data.strip())
-        elif type_ == 'FORMULA':
-            formulae[parent] = data.strip()
-        elif type_ == 'MASS':
-            masses[parent] = float(data.strip())
+        if type_datum == 'CHARGE':
+            charges[parent] = int(datum.strip())
+        elif type_datum == 'FORMULA':
+            formulae[parent] = datum.strip()
+        elif type_datum in ['MASS', 'MONOISOTOPIC MASS']:
+            masses[parent] = float(datum.strip())
+        else:
+            raise ValueError(
+                'row {}: CHARGE, FORMULA nor MASS at TYPE field'.format(
+                    index_entry))
     return charges, formulae, masses
 
 
-def read_compounds(contents):
+def parse_compounds(data):
     """
     Read content and return compound data as dicts of str.
 
@@ -613,23 +605,27 @@ def read_compounds(contents):
         [1] compound IDs to compound names.
 
    """
-
     compound_names, compound_parents = {}, {}
-    for row in contents:
-        id_, status, __, __, parent, name, *__ = row.split(DELIMITER_TSV)
+    for index_entry, entry in enumerate(data):
+        compound = entry['ID']
+        name = entry['NAME']
+        parent = entry['PARENT_ID']
+        # status = entry['']
         # Statuses:
         # C: checked
         # E: preliminary entry
         # O: obsolete
         # S: submitted
         if parent != 'null':
-            compound_parents[id_] = parent
-        if name != 'null':
-            compound_names[id_] = name
+            compound_parents[compound] = parent
+        elif name != 'null':
+            compound_names[compound] = name
+        else:
+            raise ValueError('both PARENT_ID and NAME fields null')
     return compound_parents, compound_names
 
 
-def read_relations(contents, vertex_compounds):
+def parse_relations(data, vertex_compounds):
     """
     Read content and return relation data as dict of dict of str.
 
@@ -648,10 +644,13 @@ def read_relations(contents, vertex_compounds):
         IDs to relation type strings.
 
     """
-
     compound_relations = {}
-    for row in contents:
-        id_, type_, final, initial, status = row.split(DELIMITER_TSV)
+    for entry in data:
+        final = entry['FINAL_ID']
+        initial = entry['INIT_ID']
+        # id_ = entry['ID']
+        status = entry['STATUS']
+        type_ = entry['TYPE']
         # Include only manually curated relation data.
         if status.strip() == 'C':
             # Map `goal` and `start` to compound IDs.
@@ -665,7 +664,7 @@ def read_relations(contents, vertex_compounds):
     return compound_relations
 
 
-def read_vertices(contents, compound_parents):
+def parse_vertices(data, compound_parents={}):
     """
     Read contents and return vertex data as dict of str.
 
@@ -683,22 +682,10 @@ def read_vertices(contents, compound_parents):
         Mapping from vertex IDs to compound IDs.
 
     """
-
     vertex_compounds = {}
-    # Process content row by row.
-    for row in contents:
-        id_, compound, *__ = row.split(DELIMITER_TSV)
-        # Map compound IDs to parent IDs.
+    for entry in data:
+        id_ = entry['ID']
+        compound = entry['COMPOUND_CHILD_ID']
         parent = compound_parents.get(compound, compound)
         vertex_compounds[id_] = parent
     return vertex_compounds
-
-
-def _read_tsv(contents):
-    """
-    """
-
-    fields_header = contents[0].strip().split(_DELIMITER_TSV)
-    for row in contents[1:]:
-        fields_row = row.strip().split(_DELIMITER_TSV)
-        yield dict(zip(fields_header, fields_row))

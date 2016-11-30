@@ -80,6 +80,45 @@ class TestGetJson:
         assert json_object == _JSON_OBJECT
 
 
+class TestParseTsv:
+
+    tsv_valid = [
+        'FIELD_1\tFIELD_2\tFIELD_3\n',
+        '1-1\t1-2\t1-3\n',
+        '2-1\t2-2\t2-3\n',
+        ]
+    tsv_invalid_data = [
+        'FIELD_1\tFIELD_2\tFIELD_3\n',
+        '1-1\t1-2\t1-3\n',
+        '2-1\t2-2  2-3\n',
+        ]
+
+    def test_raise_tsv_field_error_invalid_data(self):
+        with pytest.raises(files.TSVFieldError):
+            list(files.parse_tsv(self.tsv_invalid_data))
+
+    def test_raise_tsv_field_error_invalid_data_header_1_2_3(self):
+        with pytest.raises(files.TSVFieldError):
+            list(files.parse_tsv(self.tsv_invalid_data, ['H1', 'H2', 'H3']))
+
+    def test_yield_correct_fields(self):
+        fields = list(files.parse_tsv(self.tsv_valid))
+        correct_fields = [
+            {'FIELD_1': '1-1', 'FIELD_2': '1-2', 'FIELD_3': '1-3'},
+            {'FIELD_1': '2-1', 'FIELD_2': '2-2', 'FIELD_3': '2-3'},
+            ]
+        assert fields == correct_fields
+
+    def test_yield_correct_fields_header_1_2_3(self):
+        fields = list(files.parse_tsv(self.tsv_valid, ['H1', 'H2', 'H3']))
+        correct_fields = [
+            {'H1': 'FIELD_1', 'H2': 'FIELD_2', 'H3': 'FIELD_3'},
+            {'H1': '1-1', 'H2': '1-2', 'H3': '1-3'},
+            {'H1': '2-1', 'H2': '2-2', 'H3': '2-3'},
+            ]
+        assert fields == correct_fields
+
+
 class TestWriteJson:
 
     filename = 'test_write.json'

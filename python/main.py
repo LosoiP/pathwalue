@@ -64,22 +64,26 @@ def initialize_chebi():
     """
 
     # Obtain compound data.
-    contents_compound = files.get_content(paths.CHEBI_TSV, files.CHEBI_COMPOUNDS)
-    compound_data = read_compounds(contents_compound)
+    raw_compounds = files.get_content(paths.CHEBI_TSV, files.CHEBI_COMPOUNDS)
+    tsv_compounds = files.parse_tsv(raw_compounds)
+    compound_data = chebi.parse_compounds(tsv_compounds)
     compound_parents, compound_names = compound_data
 
     # Obtain chemical data.
-    contents_chemical = files.get_content(paths.CHEBI_TSV, files.CHEBI_DATA)
-    chemical_data = read_chemical_data(contents_chemical, compound_parents)
+    raw_chemical = files.get_content(paths.CHEBI_TSV, files.CHEBI_DATA)
+    tsv_chemical = files.parse_tsv(raw_chemical)
+    chemical_data = chebi.parse_chemical_data(tsv_chemical, compound_parents)
     compound_charges, compound_formulae, compound_masses = chemical_data
 
     # Obtain vertex data.
-    contents_vertex = files.get_content(paths.CHEBI_TSV, files.CHEBI_VERTICES)
-    vertex_compounds = read_vertices(contents_vertex, compound_parents)
+    raw_vertex = files.get_content(paths.CHEBI_TSV, files.CHEBI_VERTICES)
+    tsv_vertex = files.parse_tsv(raw_vertex)
+    vertex_compounds = chebi.parse_vertices(tsv_vertex, compound_parents)
 
     # Obtain relation data.
-    contents_relation = files.get_content(paths.CHEBI_TSV, files.CHEBI_RELATIONS)
-    compound_relations = read_relations(contents_relation, vertex_compounds)
+    raw_relation = files.get_content(paths.CHEBI_TSV, files.CHEBI_RELATIONS)
+    tsv_relation = files.parse_tsv(raw_relation)
+    compound_relations = chebi.parse_relations(tsv_relation, vertex_compounds)
 
     # Collect data and assign corresponding JSON filenames.
     # List indices must match each other.

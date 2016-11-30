@@ -9,6 +9,11 @@ Created on Fri Nov 25 12:57:40 2016
 import json
 import os
 
+from exceptions import TSVFieldError
+
+
+# Delimiters
+_DELIMITER_TSV = '\t'
 
 # File extensions
 _EXTENSION_DAT = '.dat'
@@ -124,6 +129,24 @@ def get_json(path, filename):
         raise TypeError('`filename` must be str')
     with open(os.path.join(path, filename)) as file:
         return json.load(file)
+
+
+def parse_tsv(contents, fields_header=[]):
+    """
+    """
+
+    start_index = 0
+    if not fields_header:
+        fields_header = contents[0].strip().split(_DELIMITER_TSV)
+        start_index = 1
+    for index_row, row in enumerate(contents[start_index:]):
+        fields_row = row.strip().split(_DELIMITER_TSV)
+        if len(fields_header) != len(fields_row):
+            raise TSVFieldError(
+                "row {}: {} fields found, {} expected".format(
+                    index_row, len(fields_row), len(fields_header)))
+        else:
+            yield dict(zip(fields_header, fields_row))
 
 
 def write_json(python_object, path, filename):
