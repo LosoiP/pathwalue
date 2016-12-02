@@ -165,6 +165,103 @@ def get_json(path, filename):
         return json.load(file)
 
 
+def parse_ctab_counts_line_(ctab):
+    """
+    """
+    counts_line = {}
+    indices = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 39]
+    keys = ['n_atoms', 'n_bonds', 'n_atoms_lists', '', 'is_chiral', 'n_stext',
+            'n_rxn_components', 'n_reactants', 'n_products',
+            'n_intermediates', 'n_properties', 'version']
+    for key, index_lag, index_lead in zip(keys, indices[:-1], indices[1:]):
+        value = ctab[index_lag:index_lead].strip()
+        if key.startswith('n_'):
+            try:
+                value = int(value)
+            except ValueError:
+                value = 0
+        elif key.startswith('is_'):
+            try:
+                value = bool(int(value))
+            except ValueError:
+                value = False
+        elif key:
+            pass
+        else:
+            value = None
+        counts_line[key] = value
+    return counts_line
+
+
+def parse_ctab_atom_block_(contents):
+    """
+    """
+    return contents
+
+
+def parse_ctab_bond_block_(contents):
+    """
+    """
+    return contents
+
+
+def parse_ctab_atoms_lists_(contents):
+    """
+    """
+    return contents
+
+
+def parse_ctab_stext_(contents):
+    """
+    """
+    return contents
+
+
+def parse_ctab_properties_(contents):
+    """
+    """
+    return contents
+
+
+def parse_ctab(contents):
+    """
+    """
+    counts_line = parse_ctab_counts_line_(contents[0])
+    n_atoms = counts_line['n_atoms']
+    n_bonds = counts_line['n_bonds']
+    n_properties = counts_line['n_properties']
+    first = 1
+    last = first + n_atoms
+
+    atoms = parse_ctab_atom_block_(contents[first:last])
+
+    first, last = last, last + n_bonds
+    bonds = parse_ctab_bond_block_(contents[first:last])
+
+    atoms_lists = parse_ctab_atoms_lists_([])
+
+    stext = parse_ctab_stext_([])
+
+    first, last = last, last + n_properties
+    properties = parse_ctab_properties_(contents[first:last])
+    return counts_line, atoms, bonds, atoms_lists, stext, properties
+
+
+def parse_mol(contents):
+    """
+    """
+
+
+def parse_rd(contents):
+    """
+    """
+
+
+def parse_rxn(contents):
+    """
+    """
+
+
 def parse_tsv(contents, fields_header=[]):
     """
     """

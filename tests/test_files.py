@@ -15,8 +15,12 @@ _INVALID_FILENAME = 'invalid_filename'
 _INVALID_FILENAMES = ['invalid_filename_1', 'invalid_filename_2']
 _INVALID_PATH = 'invalid_path'
 _VALID_PATH = paths._TESTS
-_VALID_JSON = 'test_read.json'
-_VALID_JSONS = ['test_read.json', 'test_read.json']
+_VALID_CTAB = 'read_test.ctab'
+_VALID_MOL = 'read_test.mol'
+_VALID_RD = 'read_test.rd'
+_VALID_RXN = 'read_test.rxn'
+_VALID_JSON = 'read_test.json'
+_VALID_JSONS = ['read_test.json', 'read_test.json']
 
 _JSON_OBJECT = {'test_1': 1, 'test_2': 2}
 
@@ -111,6 +115,67 @@ class TestGetJson:
         assert json_object == _JSON_OBJECT
 
 
+class TestParseCtab:
+
+    ctab_valid = files.get_content(_VALID_PATH, _VALID_CTAB)
+
+    def test_correct_counts_line(self):
+        counts_line = files.parse_ctab_counts_line_(self.ctab_valid[0])
+        assert counts_line == {
+            'n_atoms': 3, 'n_bonds': 2, 'n_atoms_lists': 0, '': None,
+            'is_chiral': False,
+            'n_stext': 0, 'n_rxn_components': 0, 'n_reactants': 0,
+            'n_products': 0, 'n_intermediates': 0, 'n_properties': 999,
+            'version': 'V2000',
+            }
+
+    def test_correct_atom_block(self):
+        atom_block = files.parse_ctab_atom_block_(self.ctab_valid[1:3])
+        assert atom_block == [
+            '   -0.4125    0.7145    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0',
+            '    0.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0',
+            '   -0.4125   -0.7145    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0',
+            ]
+
+    def test_correct_bond_block(self):
+        bond_block = files.parse_ctab_bond_block_(self.ctab_valid)
+        assert bond_block == [
+            '  2  1  1  0  0  0  0',
+            '  2  3  1  0  0  0  0',
+            ]
+
+    def test_correct_atoms_lists(self):
+        atoms_lists = files.parse_ctab_atoms_lists_([])
+        assert atoms_lists == {}
+
+    def test_correct_stext(self):
+        stext = files.parse_ctab_stext_([])
+        assert stext == {}
+
+    def test_correct_properties(self):
+        properties = files.parse_ctab_properties_(self.ctab_valid[6])
+        assert properties == {}
+
+    def test_correct_ctab(self):
+        ctab = files.parse_ctab(self.ctab_valid)
+        assert ctab == [
+            files.parse_ctab_counts_line_(self.ctab_valid[0]),
+            files.parse_ctab_atom_block_(self.ctab_valid[1:3]),
+            files.parse_ctab_bond_block_(self.ctab_valid[4:6]),
+            files.parse_ctab_atoms_lists_([]),
+            files.parse_ctab_stext_([]),
+            files.parse_ctab_properties_(self.ctab_valid[6]),
+            ]
+
+
+class TestParseMol:
+
+    mol_valid = files.get_content(_VALID_PATH, _VALID_MOL)
+
+    def test_correct_header(self):
+        header, __ = files.parse_mol(self.mol_valid)
+
+
 class TestParseTsv:
 
     tsv_valid = [
@@ -152,7 +217,7 @@ class TestParseTsv:
 
 class TestWriteJson:
 
-    filename = 'test_write.json'
+    filename = 'write_test.json'
 
     def test_output_file_exists(self):
         files.write_json(_JSON_OBJECT, _VALID_PATH, self.filename)
@@ -177,7 +242,7 @@ class TestWriteJson:
 
 class TestWriteJsons:
 
-    filenames = ['test_write_1.json', 'test_write_2.json']
+    filenames = ['write_test_1.json', 'write_test_2.json']
     data = [_JSON_OBJECT, _JSON_OBJECT]
 
     def test_output_files_exist(self):

@@ -128,7 +128,7 @@ def initialize_rhea(chebi_parents={}):
 
     # Obtain data from rd files and get corresponding JSON filenames.
     rds_raw = files.get_contents(rd_filenames)
-    rds_parsed = (rhea.parse_rd(rd) for rd in rds_raw)
+    rds_parsed = (files.parse_rd(rd) for rd in rds_raw)
     rd_data = rhea.parse_reactions(rds_parsed, chebi_parents)
     mol_rxns, rxn_equats, rxn_master_rxn, rxn_stoich = rd_data
 
