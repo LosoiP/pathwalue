@@ -18,9 +18,6 @@ main: process Rhea data to JSON files.
 from collections import Counter
 
 
-PARENTS = get_json(PATH_JSON, FILE_CMP_PARENTS)  # Run chebi.main() first.
-
-
 def read_ecs(contents, reaction_masters_reactions):
     """
     Read Rhea EC number data.
@@ -202,50 +199,4 @@ def read_rds(filenames):
             reaction_masters_reactions,
             data_stoichiometrics,
             ]
-    return data
-
-
-def initialize_rhea():
-    """
-    Convert Rhea rd files to JSON formatted files for analysis.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    list
-        Rhea data in dicts.
-
-    """
-    # Obtain rd filenames.
-    rdnames = get_names(PATH_RD)
-
-    # Obtain data from rd files and get corresponding JSON filenames.
-    rd_data = read_rds(rdnames)
-    cmp_rxns, rxn_equats, rxn_master_rxn, rxn_stoich = rd_data
-
-    # EC
-    content_ecs = get_content(PATH_RHEA, RHEA_EC)
-    ec_reactions, reaction_ecs = read_ecs(content_ecs, rxn_master_rxn)
-
-    # Create supplementary reactions.
-    add_supplementary_reactions(cmp_rxns, rxn_equats, rxn_stoich)
-
-    # Save data in JSON format.
-    data = [cmp_rxns,
-            ec_reactions,
-            reaction_ecs,
-            rxn_equats,
-            rxn_stoich,
-            ]
-    jsonnames = [FILE_CMP_REACTIONS,
-                 FILE_EC_REACTIONS,
-                 FILE_RXN_ECS,
-                 FILE_RXN_EQUATIONS,
-                 FILE_RXN_STOICHIOMETRICS,
-                 ]
-    write_jsons(data, PATH_JSON, jsonnames)
-
     return data

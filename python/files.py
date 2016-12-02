@@ -106,6 +106,40 @@ def get_content(path, filename):
         return file.readlines()
 
 
+def get_contents(path, filenames):
+    """
+    Return content of a text file.
+
+    Parameters
+    ----------
+    path : str
+        Directory path to file.
+    filename : str
+        Name of the file. Name must include extension.
+
+    Returns
+    -------
+    list
+        Contents of the file. List elements correspond to text file
+        rows.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the path or file does not exist.
+    TypeError
+        If path or filename is not str.
+
+    """
+    if not isinstance(path, str):
+        raise TypeError('`path` must be str')
+    elif not isinstance(filenames, list):
+        raise TypeError('`filenames` must be list')
+    for filename in filenames:
+        with open(os.path.join(path, filename)) as file:
+            yield file.readlines()
+
+
 def get_json(path, filename):
     """
     Return data object from a JSON formatted file.

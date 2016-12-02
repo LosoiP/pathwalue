@@ -12,9 +12,11 @@ from context import paths
 
 
 _INVALID_FILENAME = 'invalid_filename'
+_INVALID_FILENAMES = ['invalid_filename_1', 'invalid_filename_2']
 _INVALID_PATH = 'invalid_path'
 _VALID_PATH = paths._TESTS
 _VALID_JSON = 'test_read.json'
+_VALID_JSONS = ['test_read.json', 'test_read.json']
 
 _JSON_OBJECT = {'test_1': 1, 'test_2': 2}
 
@@ -48,6 +50,35 @@ class TestGetContent:
     def test_return_list(self):
         contents = files.get_content(_VALID_PATH, _VALID_JSON)
         assert isinstance(contents, list)
+
+
+class TestGetContents:
+
+    def test_raise_filenotfounderror_invalid_filenames(self):
+        with pytest.raises(FileNotFoundError):
+            list(files.get_contents(_VALID_PATH, _INVALID_FILENAMES))
+
+    def test_raise_filenotfounderror_invalid_path(self):
+        with pytest.raises(FileNotFoundError):
+            list(files.get_contents(_INVALID_PATH, _VALID_JSONS))
+
+    def test_raise_no_errors_valid_path_valid_filenames(self):
+        list(files.get_contents(_VALID_PATH, _VALID_JSONS))
+
+    def test_raise_typeerror_invalid_filenames(self):
+        with pytest.raises(TypeError):
+            list(files.get_contents(_VALID_PATH, str(_VALID_JSONS)))
+
+    def test_raise_typeerror_invalid_path(self):
+        with pytest.raises(TypeError):
+            list(files.get_contents(list(_VALID_PATH), _VALID_JSONS))
+
+    def test_yield_lists_of_strings(self):
+        all_files = list(files.get_contents(_VALID_PATH, _VALID_JSONS))
+        for file_contents in all_files:
+            assert isinstance(file_contents, list)
+            for row in file_contents:
+                assert isinstance(row, str)
 
 
 class TestGetJson:

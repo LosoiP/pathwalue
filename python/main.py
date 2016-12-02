@@ -46,11 +46,12 @@ method calls the superclass method (in addition to its own behavior).
 import chebi
 import files
 import paths
+import rhea
 
 
 def initialize_chebi():
     """
-    Convert ChEBI tsv files to JSON files for analysis.
+    Convert ChEBI tsv files to JSON files.
 
     Parameters
     ----------
@@ -62,7 +63,6 @@ def initialize_chebi():
         Dicts of data.
 
     """
-
     # Obtain compound data.
     raw_compounds = files.get_content(paths.CHEBI_TSV, files.CHEBI_COMPOUNDS)
     tsv_compounds = files.parse_tsv(raw_compounds)
@@ -87,7 +87,7 @@ def initialize_chebi():
 
     # Collect data and assign corresponding JSON filenames.
     # List indices must match each other.
-    data_all = [
+    data = [
         compound_charges,
         compound_names,
         compound_parents,
@@ -95,7 +95,7 @@ def initialize_chebi():
         compound_formulae,
         compound_masses,
         ]
-    jsonnames_all = [
+    jsonnames = [
         files.MOL_CHARGES,
         files.MOL_NAMES,
         files.MOL_PARENTS,
@@ -105,9 +105,51 @@ def initialize_chebi():
         ]
 
     # Save data in JSON format.
-    files.write_jsons(data_all, paths.JSON, jsonnames_all)
-    return data_all
+    files.write_jsons(data, paths.JSON, jsonnames)
+    return data
 
 
-if __name__ == '__main__':
-    pass
+def initialize_rhea(chebi_parents={}):
+    """
+    Convert Rhea rd files to JSON formatted files for analysis.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    list
+        Rhea data in dicts.
+
+    """
+    # Obtain rd filenames.
+    rd_filenames = paths.get_names(paths.RHEA_RD)
+
+    # Obtain data from rd files and get corresponding JSON filenames.
+    rds_raw = files.get_contents(rd_filenames)
+    rds_parsed = (rhea.parse_rd(rd) for rd in rds_raw)
+    rd_data = rhea.parse_reactions(rds_parsed, chebi_parents)
+    mol_rxns, rxn_equats, rxn_master_rxn, rxn_stoich = rd_data
+
+    # EC
+    ecs_raw = files.get_content(paths.RHEA_TSV, files.RHEA_EC)
+    ecs_tsv = files.parse_tsv(ecs_raw, ['EC', 'RHEA', 'DIRECTION'])
+    enz_reactions, reaction_ecs = rhea.parse_ecs(ecs_tsv, rxn_master_rxn)
+
+    # Save data in JSON format.
+    data = [mol_rxns,
+            enz_reactions,
+            reaction_ecs,
+            rxn_equats,
+            rxn_stoich,
+            ]
+    jsonnames = [files.JS_MOL_REACTIONS,
+                 files.ENZ_REACTIONS,
+                 files.RXN_ECS,
+                 files.RXN_EQUATIONS,
+                 files.RXN_STOICHIOMETRICS,
+                 ]
+    files.write_jsons(data, paths.JSON, jsonnames)
+
+    return data
