@@ -130,7 +130,7 @@ class TestParseCtab:
             }
 
     def test_correct_atom_block(self):
-        atom_block = files.parse_ctab_atom_block_(self.ctab_valid[1:3])
+        atom_block = files.parse_ctab_atom_block_(self.ctab_valid[1:4])
         assert atom_block == [
             '   -0.4125    0.7145    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0',
             '    0.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0',
@@ -138,7 +138,7 @@ class TestParseCtab:
             ]
 
     def test_correct_bond_block(self):
-        bond_block = files.parse_ctab_bond_block_(self.ctab_valid)
+        bond_block = files.parse_ctab_bond_block_(self.ctab_valid[4:6])
         assert bond_block == [
             '  2  1  1  0  0  0  0',
             '  2  3  1  0  0  0  0',
@@ -158,14 +158,14 @@ class TestParseCtab:
 
     def test_correct_ctab(self):
         ctab = files.parse_ctab(self.ctab_valid)
-        assert ctab == [
+        assert ctab == (
             files.parse_ctab_counts_line_(self.ctab_valid[0]),
-            files.parse_ctab_atom_block_(self.ctab_valid[1:3]),
+            files.parse_ctab_atom_block_(self.ctab_valid[1:4]),
             files.parse_ctab_bond_block_(self.ctab_valid[4:6]),
             files.parse_ctab_atoms_lists_([]),
             files.parse_ctab_stext_([]),
             files.parse_ctab_properties_(self.ctab_valid[6]),
-            ]
+            )
 
 
 class TestParseMol:

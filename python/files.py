@@ -196,31 +196,37 @@ def parse_ctab_counts_line_(ctab):
 def parse_ctab_atom_block_(contents):
     """
     """
-    return contents
+    atom_block = []
+    for row in contents:
+        atom_block.append(row.rstrip('\n'))
+    return atom_block
 
 
 def parse_ctab_bond_block_(contents):
     """
     """
-    return contents
+    bond_block = []
+    for row in contents:
+        bond_block.append(row.rstrip('\n'))
+    return bond_block
 
 
 def parse_ctab_atoms_lists_(contents):
     """
     """
-    return contents
+    return {}
 
 
 def parse_ctab_stext_(contents):
     """
     """
-    return contents
+    return {}
 
 
 def parse_ctab_properties_(contents):
     """
     """
-    return contents
+    return {}
 
 
 def parse_ctab(contents):
