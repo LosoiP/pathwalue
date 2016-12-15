@@ -3,13 +3,30 @@
 Created on Fri Nov 25 12:57:40 2016
 
 @author: losoip
+
+RD, RXN, MOL and CTAB:
+J . Chem. InJ Comput. Sci. 1992, 32, 244-255 
+Description of Several Chemical Structure File Formats Used by Computer Programs 
+Developed at Molecular Design Limited 
+ARTHUR DALBY, JAMES G. NOURSE,* W. DOUGLAS HOUNSHELL, ANN K . I. GUSHURST, 
+DAVID L. GRIER, BURTON A. LELAND, and JOHN LAUFER 
+Molecular Design Limited, 21 32 Farallon Drive, San Leandro, California 94577 
+Received January 23, 1992 
 """
 
 
 import json
 import os
 
-from exceptions import TSVFieldError
+
+from collections import namedtuple
+from exceptions import (
+    CtabError,
+    MolError,
+    RdError,
+    RxnError,
+    TsvError,
+    )
 
 
 # Delimiters
@@ -73,7 +90,16 @@ JS_RXN_EQUATIONS = _PREFIX_RXN + 'equations' + _EXTENSION_JS
 JS_RXN_STOICHIOMETRICS = _PREFIX_RXN + 'stoichiometrics' + _EXTENSION_JS
 
 
-def get_content(path, filename):
+# File formats.
+Ctab = namedtuple('CTAB', ['counts_line', 'atom_block', 'bond_block'])
+Mol = namedtuple('MOL', ['header', 'ctab'])
+Rd = namedtuple('RD', ['version', 'time', 'records'])
+RdRecord = namedtuple('RDRecord', ['identifier', 'rxn', 'data'])
+Rxn = namedtuple('RXN', ['header', 'n_reactants', 'n_products', 'mols'])
+Tsv = namedtuple('TSV', ['fields', 'data'])
+
+
+def get_content(path, filename, strip_newlines=True):
     """
     Return content of a text file.
 
@@ -83,12 +109,13 @@ def get_content(path, filename):
         Directory path to file.
     filename : str
         Name of the file. Name must include extension.
+    strip_newlines : bool
+        If true, strip newlines '\\n'.
 
-    Returns
-    -------
-    list
-        Contents of the file. List elements correspond to text file
-        rows.
+    Yields
+    ------
+    str
+        Contents of the file. Elements correspond to text file rows.
 
     Raises
     ------
@@ -103,10 +130,15 @@ def get_content(path, filename):
     elif not isinstance(filename, str):
         raise TypeError('`filename` must be str')
     with open(os.path.join(path, filename)) as file:
-        return file.readlines()
+        if strip_newlines:
+            for line in file:
+                yield line.rstrip('\n')
+        else:
+            for line in file:
+                yield line
 
 
-def get_contents(path, filenames):
+def get_contents(path, filenames, strip_newlines=True):
     """
     Return content of a text file.
 
@@ -116,12 +148,13 @@ def get_contents(path, filenames):
         Directory path to file.
     filename : str
         Name of the file. Name must include extension.
+    strip_newlines : bool
+        If true, strip newlines '\\n'.
 
-    Returns
-    -------
-    list
-        Contents of the file. List elements correspond to text file
-        rows.
+    Yields
+    ------
+    generator
+        File content string generators.
 
     Raises
     ------
@@ -136,8 +169,7 @@ def get_contents(path, filenames):
     elif not isinstance(filenames, list):
         raise TypeError('`filenames` must be list')
     for filename in filenames:
-        with open(os.path.join(path, filename)) as file:
-            yield file.readlines()
+        yield get_content(path, filename, strip_newlines)
 
 
 def get_json(path, filename):
@@ -256,16 +288,49 @@ def parse_ctab(contents):
 def parse_mol(contents):
     """
     """
+    if contents[0].rstrip('\n') != '$MOL':
+        raise MolError
+    header = {
+        'name': contents[1].rstrip('\n'),
+        'meta': contents[2].rstrip('\n'),
+        'comment': contents[3].rstrip('\n'),
+        }
+    ctab = parse_ctab(contents[4:])
+    return header, ctab
 
 
 def parse_rd(contents):
     """
     """
+    # Check file validity.
+    if len(contents) < 2:
+        raise RdError('RD file too short: less than 2 lines found')
+    elif contents[0].rstrip('\n') != '$RDFILE 1':
+        raise RdError('identifier "$RDFILE 1" not found at begin')
+    # Parse RD file.
+    records = []
+    records.append(RdRecord(identifier='', rxn=Rxn(), data={}))
+    return Rd(version='1', time='', records=records)
 
 
 def parse_rxn(contents):
     """
     """
+    if len(contents) < 5:
+        raise RxnError('RXN file too short: less than 5 lines found')
+    elif contents[0].rstrip('\n') != '$RXN':
+        raise RxnError('identifier $RXN not found at begin')
+    header = {
+        'name': contents[2].rstrip('\n'),
+        'comment': contents[3].rstrip('\n'),
+        }
+    reactants = int(contents[4][0:3])
+    products = int(contents[4][3:6])
+    mols = []
+    for i, row in zip(range(5, len(contents)), contents[5:]):
+        if row.rstrip('\n') == '$MOL':
+            mols.append(parse_mol(contents[i:]))
+    return header, (reactants, products), mols
 
 
 def parse_tsv(contents, fields_header=[]):
@@ -279,7 +344,7 @@ def parse_tsv(contents, fields_header=[]):
     for index_row, row in enumerate(contents[start_index:]):
         fields_row = row.strip().split(_DELIMITER_TSV)
         if len(fields_header) != len(fields_row):
-            raise TSVFieldError(
+            raise TsvError(
                 "row {}: {} fields found, {} expected".format(
                     index_row, len(fields_row), len(fields_header)))
         else:

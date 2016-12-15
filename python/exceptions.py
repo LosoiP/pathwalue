@@ -10,5 +10,25 @@ class DirectoryNotFoundError(OSError):
     pass
 
 
-class TSVFieldError(ValueError):
+class FileFormatError(ValueError):
+    pass
+
+
+class CtabError(FileFormatError):
+    pass
+
+
+class MolError(FileFormatError):
+    pass
+
+
+class RdError(FileFormatError):
+    pass
+
+
+class RxnError(FileFormatError):
+    pass
+
+
+class TsvError(FileFormatError):
     pass

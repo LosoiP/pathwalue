@@ -20,7 +20,7 @@ _VALID_MOL = 'read_test.mol'
 _VALID_RD = 'read_test.rd'
 _VALID_RXN = 'read_test.rxn'
 _VALID_JSON = 'read_test.json'
-_VALID_JSONS = ['read_test.json', 'read_test.json']
+_VALID_JSONS = ['read_test_1.json', 'read_test_2.json']
 
 _JSON_OBJECT = {'test_1': 1, 'test_2': 2}
 
@@ -29,60 +29,82 @@ class TestGetContent:
 
     def test_raise_filenotfounderror_invalid_filename(self):
         with pytest.raises(FileNotFoundError):
-            files.get_content(_VALID_PATH, _INVALID_FILENAME)
+            list(files.get_content(_VALID_PATH, _INVALID_FILENAME))
 
     def test_raise_filenotfounderror_invalid_path(self):
         with pytest.raises(FileNotFoundError):
-            files.get_content(_INVALID_PATH, _VALID_JSON)
+            list(files.get_content(_INVALID_PATH, _VALID_JSON))
 
     def test_raise_no_errors_valid_path_valid_filename(self):
-        files.get_content(_VALID_PATH, _VALID_JSON)
+        list(files.get_content(_VALID_PATH, _VALID_JSON))
 
     def test_raise_typeerror_invalid_filename(self):
         with pytest.raises(TypeError):
-            files.get_content(_VALID_PATH, list(_VALID_JSON))
+            list(files.get_content(_VALID_PATH, list(_VALID_JSON)))
 
     def test_raise_typeerror_invalid_path(self):
         with pytest.raises(TypeError):
-            files.get_content(list(_VALID_PATH), _VALID_JSON)
+            list(files.get_content(list(_VALID_PATH), _VALID_JSON))
 
-    def test_return_contains_only_strings(self):
+    def test_yield_strings(self):
         contents = files.get_content(_VALID_PATH, _VALID_JSON)
         for row in contents:
             assert isinstance(row, str)
 
-    def test_return_list(self):
+    def test_yield_newlines_not_stripped(self):
+        contents = files.get_content(_VALID_PATH, _VALID_JSON, False)
+        for row in contents:
+            assert row.endswith('\n')
+
+    def test_yield_newlines_stripped(self):
         contents = files.get_content(_VALID_PATH, _VALID_JSON)
-        assert isinstance(contents, list)
+        for row in contents:
+            assert not row.endswith('\n')
 
 
 class TestGetContents:
 
     def test_raise_filenotfounderror_invalid_filenames(self):
         with pytest.raises(FileNotFoundError):
-            list(files.get_contents(_VALID_PATH, _INVALID_FILENAMES))
+            for file in files.get_contents(_VALID_PATH, _INVALID_FILENAMES):
+                list(file)
 
     def test_raise_filenotfounderror_invalid_path(self):
         with pytest.raises(FileNotFoundError):
-            list(files.get_contents(_INVALID_PATH, _VALID_JSONS))
+            for file in files.get_contents(_INVALID_PATH, _VALID_JSONS):
+                list(file)
 
     def test_raise_no_errors_valid_path_valid_filenames(self):
-        list(files.get_contents(_VALID_PATH, _VALID_JSONS))
+        for file in files.get_contents(_VALID_PATH, _VALID_JSONS):
+            list(file)
 
     def test_raise_typeerror_invalid_filenames(self):
         with pytest.raises(TypeError):
-            list(files.get_contents(_VALID_PATH, str(_VALID_JSONS)))
+            for file in files.get_contents(_VALID_PATH, str(_VALID_JSONS)):
+                list(file)
 
     def test_raise_typeerror_invalid_path(self):
         with pytest.raises(TypeError):
-            list(files.get_contents(list(_VALID_PATH), _VALID_JSONS))
+            for file in files.get_contents(list(_VALID_PATH), _VALID_JSONS):
+                list(file)
 
-    def test_yield_lists_of_strings(self):
-        all_files = list(files.get_contents(_VALID_PATH, _VALID_JSONS))
-        for file_contents in all_files:
-            assert isinstance(file_contents, list)
-            for row in file_contents:
+    def test_yield_iterables_of_strings(self):
+        all_files = files.get_contents(_VALID_PATH, _VALID_JSONS)
+        for file in all_files:
+            for row in file:
                 assert isinstance(row, str)
+
+    def test_yield_newlines_not_stripped(self):
+        all_files = files.get_content(_VALID_PATH, _VALID_JSON, False)
+        for file in all_files:
+            for row in file:
+                assert row.endswith('\n')
+
+    def test_yield_newlines_stripped(self):
+        all_files = files.get_content(_VALID_PATH, _VALID_JSON)
+        for file in all_files:
+            for row in file:
+                assert not row.endswith('\n')
 
 
 class TestGetJson:
@@ -118,6 +140,8 @@ class TestGetJson:
 class TestParseCtab:
 
     ctab_valid = files.get_content(_VALID_PATH, _VALID_CTAB)
+
+    # TODO def test_raise_mol_error_REASON(self):
 
     def test_correct_counts_line(self):
         counts_line = files.parse_ctab_counts_line_(self.ctab_valid[0])
@@ -172,8 +196,73 @@ class TestParseMol:
 
     mol_valid = files.get_content(_VALID_PATH, _VALID_MOL)
 
+    # TODO def test_raise_mol_error_REASON(self):
+
     def test_correct_header(self):
         header, __ = files.parse_mol(self.mol_valid)
+        assert header == {'name': 'CHEBI:15377', 'meta': '', 'comment': ''}
+
+    def test_correct_ctab(self):
+        __, ctab = files.parse_mol(self.mol_valid)
+        assert ctab == files.parse_ctab(self.mol_valid[4:])
+
+
+class TestParseRd:
+
+    rd_valid = files.get_content(_VALID_PATH, _VALID_RD)
+
+    # TODO def test_raise_rd_error_REASON(self):
+
+    def test_correct_record_data(self):
+        rd = files.parse_rd(self.rd_valid)
+        assert rd.records.data == {
+            'masterId': '10748',
+            'status': 'approved',
+            'qualifiers': set(['MA', 'FO', 'CB']),
+            'equation': 'H(+) + hydrogencarbonate => CO2 + H2O',
+            }
+
+    def test_correct_record_identifier(self):
+        rd = files.parse_rd(self.rd_valid)
+        assert rd.records.identifier == 'RIREG:10749'
+
+    def test_correct_record_rxn(self):
+        rd = files.parse_rd(self.rd_valid)
+        assert rd.records.rxn == files.parse_rxn(self.valid_rd[3:])
+
+    def test_correct_time(self):
+        rd = files.parse_rd(self.rd_valid)
+        assert rd.time == '10/22/2016 18:17'
+
+    def test_correct_version(self):
+        rd = files.parse_rd(self.rd_valid)
+        assert rd.version == '1'
+
+
+
+class TestParseRxn:
+
+    rxn_valid = files.get_content(_VALID_PATH, _VALID_RXN)
+
+    # TODO def test_raise_rxn_error_REASON(self):
+
+    def test_correct_header(self):
+        header, *__ = files.parse_rxn(self.rxn_valid)
+        assert header == {'name': 'Rhea  rhea-util102220161817  10749',
+                          'comment': 'RHEA:release=77'}
+
+    def test_correct_reactants_products(self):
+        __, n_reactants_products, __ = files.parse_rxn(self.rxn_valid)
+        assert n_reactants_products == (2, 2)
+
+    def test_correct_mols(self):
+        *__, mols = files.parse_rxn(self.rxn_valid)
+        assert mols == [
+            files.parse_mol(self.rxn_valid[5:13]),
+            files.parse_mol(self.rxn_valid[13:27]),
+            files.parse_mol(self.rxn_valid[27:38]),
+            files.parse_mol(self.rxn_valid[38:49]),
+            ]
 
 
 class TestParseTsv:
@@ -189,12 +278,12 @@ class TestParseTsv:
         '2-1\t2-2  2-3\n',
         ]
 
-    def test_raise_tsv_field_error_invalid_data(self):
-        with pytest.raises(files.TSVFieldError):
+    def test_raise_tsv_error_invalid_data(self):
+        with pytest.raises(files.TsvError):
             list(files.parse_tsv(self.tsv_invalid_data))
 
-    def test_raise_tsv_field_error_invalid_data_header_1_2_3(self):
-        with pytest.raises(files.TSVFieldError):
+    def test_raise_tsv_error_invalid_data_header_1_2_3(self):
+        with pytest.raises(files.TsvError):
             list(files.parse_tsv(self.tsv_invalid_data, ['H1', 'H2', 'H3']))
 
     def test_yield_correct_fields(self):

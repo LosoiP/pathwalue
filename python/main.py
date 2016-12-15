@@ -127,10 +127,10 @@ def initialize_rhea(chebi_parents={}):
     rd_filenames = paths.get_names(paths.RHEA_RD)
 
     # Obtain data from rd files and get corresponding JSON filenames.
-    rds_raw = files.get_contents(rd_filenames)
+    rds_raw = files.get_contents(paths.RHEA_RD, rd_filenames)
     rds_parsed = (files.parse_rd(rd) for rd in rds_raw)
-    rd_data = rhea.parse_reactions(rds_parsed, chebi_parents)
-    mol_rxns, rxn_equats, rxn_master_rxn, rxn_stoich = rd_data
+    data_rhea = rhea.read_rd_data(rds_parsed, chebi_parents)
+    mol_rxns, rxn_equats, rxn_master_rxn, rxn_stoich = data_rhea
 
     # EC
     ecs_raw = files.get_content(paths.RHEA_TSV, files.RHEA_EC)

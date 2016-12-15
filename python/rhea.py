@@ -16,6 +16,11 @@ main: process Rhea data to JSON files.
 """
 
 from collections import Counter
+# from formats import Rd
+
+RD_APPROVED = 'approved'
+RD_QUALIFIERS_DENIED = ['TR', 'CR']  # transport, class
+RD_QUALIFIERS_REQUIRED = ['CB', 'FO', 'MA']  # balanced, formula, mass
 
 
 def read_ecs(contents, reaction_masters_reactions):
@@ -200,3 +205,32 @@ def read_rds(filenames):
             data_stoichiometrics,
             ]
     return data
+
+
+def read_rd_data(rds_parsed, chebi_parents):
+    mol_rxns, rxn_equats, rxn_masters, rxn_stoich = {}, {}, {}, {}
+    for rd in rds_parsed:
+        for record in rd.records:
+            # Check reaction status and qualifiers.
+            if record.data['status'] != RD_APPROVED:
+                continue
+            qualifiers = record.data['qualifiers']
+            if any(q in qualifiers for q in RD_QUALIFIERS_DENIED):
+                continue
+            elif not all(q in qualifiers for q in RD_QUALIFIERS_REQUIRED):
+                continue
+            rxn = record.rxn
+            # Check that reaction molecules belong to ChEBI.
+            for mol in rxn.mols:
+                if mol.name.split(':') != 'CHEBI':
+                    break
+            # Save reaction data.
+            else:
+                id_rhea = record.identifier
+                for id_chebi in rxn.mols[:rxn.n_reactants]:
+                    mol_rxns.setdefault(id_chebi, [[], []])[0].append(id_rhea)
+                for id_chebi in rxn.mols[rxn.n_reactants:]:
+                    mol_rxns.setdefault(id_chebi, [[], []])[1].append(id_rhea)
+                rxn_equats.get(id_rhea, {})[id_rhea] = record.data['equation']
+                rxn_masters.get(id_rhea, {})[id_rhea] = record.data['masterId']
+    return mol_rxns, rxn_equats, rxn_masters, rxn_stoich
