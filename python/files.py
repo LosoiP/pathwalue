@@ -129,13 +129,14 @@ def get_content(path, filename, strip_newlines=True):
         raise TypeError('`path` must be str')
     elif not isinstance(filename, str):
         raise TypeError('`filename` must be str')
+    contents = []
     with open(os.path.join(path, filename)) as file:
-        if strip_newlines:
-            for line in file:
-                yield line.rstrip('\n')
-        else:
-            for line in file:
-                yield line
+        for line in file:
+            if strip_newlines:
+                contents.append(line.rstrip('\n'))
+            else:
+                contents.append(line)
+        return contents
 
 
 def get_contents(path, filenames, strip_newlines=True):
@@ -305,12 +306,19 @@ def parse_rd(contents):
     # Check file validity.
     if len(contents) < 2:
         raise RdError('RD file too short: less than 2 lines found')
-    elif contents[0].rstrip('\n') != '$RDFILE 1':
+    elif contents[0] != '$RDFILE 1':
         raise RdError('identifier "$RDFILE 1" not found at begin')
+    elif not contents[1].startswith('$DATM '):
+        raise RdError('Time stamp "$DATM " not found at begin')
     # Parse RD file.
+    *__, time = contents[1].partition(' ')
     records = []
-    records.append(RdRecord(identifier='', rxn=Rxn(), data={}))
-    return Rd(version='1', time='', records=records)
+    records.append(RdRecord(
+        identifier=contents[2],
+        rxn=parse_rxn(contents[3:]),
+        data={})
+        )
+    return Rd(version='1', time=time, records=records)
 
 
 def parse_rxn(contents):

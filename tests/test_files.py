@@ -46,19 +46,19 @@ class TestGetContent:
         with pytest.raises(TypeError):
             list(files.get_content(list(_VALID_PATH), _VALID_JSON))
 
-    def test_yield_strings(self):
-        contents = files.get_content(_VALID_PATH, _VALID_JSON)
-        for row in contents:
+    def test_return_iterable_of_strings(self):
+        for row in files.get_content(_VALID_PATH, _VALID_JSON):
             assert isinstance(row, str)
 
-    def test_yield_newlines_not_stripped(self):
-        contents = files.get_content(_VALID_PATH, _VALID_JSON, False)
-        for row in contents:
+    def test_return_list(self):
+        assert isinstance(files.get_content(_VALID_PATH, _VALID_JSON), list)
+
+    def test_return_newlines_not_stripped(self):
+        for row in files.get_content(_VALID_PATH, _VALID_JSON, False):
             assert row.endswith('\n')
 
-    def test_yield_newlines_stripped(self):
-        contents = files.get_content(_VALID_PATH, _VALID_JSON)
-        for row in contents:
+    def test_return_newlines_stripped(self):
+        for row in files.get_content(_VALID_PATH, _VALID_JSON, True):
             assert not row.endswith('\n')
 
 
@@ -66,31 +66,27 @@ class TestGetContents:
 
     def test_raise_filenotfounderror_invalid_filenames(self):
         with pytest.raises(FileNotFoundError):
-            for file in files.get_contents(_VALID_PATH, _INVALID_FILENAMES):
-                list(file)
+            list(files.get_contents(_VALID_PATH, _INVALID_FILENAMES))
 
     def test_raise_filenotfounderror_invalid_path(self):
         with pytest.raises(FileNotFoundError):
-            for file in files.get_contents(_INVALID_PATH, _VALID_JSONS):
-                list(file)
+            list(files.get_contents(_INVALID_PATH, _VALID_JSONS))
 
     def test_raise_no_errors_valid_path_valid_filenames(self):
-        for file in files.get_contents(_VALID_PATH, _VALID_JSONS):
-            list(file)
+        list(files.get_contents(_VALID_PATH, _VALID_JSONS))
 
     def test_raise_typeerror_invalid_filenames(self):
         with pytest.raises(TypeError):
-            for file in files.get_contents(_VALID_PATH, str(_VALID_JSONS)):
-                list(file)
+            list(files.get_contents(_VALID_PATH, str(_VALID_JSONS)))
 
     def test_raise_typeerror_invalid_path(self):
         with pytest.raises(TypeError):
-            for file in files.get_contents(list(_VALID_PATH), _VALID_JSONS):
-                list(file)
+            list(files.get_contents(list(_VALID_PATH), _VALID_JSONS))
 
-    def test_yield_iterables_of_strings(self):
+    def test_yield_lists_of_strings(self):
         all_files = files.get_contents(_VALID_PATH, _VALID_JSONS)
         for file in all_files:
+            assert isinstance(file, list)
             for row in file:
                 assert isinstance(row, str)
 
@@ -101,7 +97,7 @@ class TestGetContents:
                 assert row.endswith('\n')
 
     def test_yield_newlines_stripped(self):
-        all_files = files.get_content(_VALID_PATH, _VALID_JSON)
+        all_files = files.get_content(_VALID_PATH, _VALID_JSON, True)
         for file in all_files:
             for row in file:
                 assert not row.endswith('\n')
@@ -215,7 +211,7 @@ class TestParseRd:
 
     def test_correct_record_data(self):
         rd = files.parse_rd(self.rd_valid)
-        assert rd.records.data == {
+        assert rd.records[0].data == {
             'masterId': '10748',
             'status': 'approved',
             'qualifiers': set(['MA', 'FO', 'CB']),
@@ -224,11 +220,11 @@ class TestParseRd:
 
     def test_correct_record_identifier(self):
         rd = files.parse_rd(self.rd_valid)
-        assert rd.records.identifier == 'RIREG:10749'
+        assert rd.records[0].identifier == 'RIREG:10749'
 
     def test_correct_record_rxn(self):
         rd = files.parse_rd(self.rd_valid)
-        assert rd.records.rxn == files.parse_rxn(self.valid_rd[3:])
+        assert rd.records[0].rxn == files.parse_rxn(self.rd_valid[3:])
 
     def test_correct_time(self):
         rd = files.parse_rd(self.rd_valid)
@@ -237,7 +233,6 @@ class TestParseRd:
     def test_correct_version(self):
         rd = files.parse_rd(self.rd_valid)
         assert rd.version == '1'
-
 
 
 class TestParseRxn:
