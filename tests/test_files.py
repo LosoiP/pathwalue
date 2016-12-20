@@ -209,30 +209,51 @@ class TestParseRd:
 
     # TODO def test_raise_rd_error_REASON(self):
 
-    def test_correct_record_data(self):
+    def test_correct_records(self):
         rd = files.parse_rd(self.rd_valid)
-        assert rd.records[0].data == {
-            'masterId': '10748',
-            'status': 'approved',
-            'qualifiers': set(['MA', 'FO', 'CB']),
-            'equation': 'H(+) + hydrogencarbonate => CO2 + H2O',
-            }
-
-    def test_correct_record_identifier(self):
-        rd = files.parse_rd(self.rd_valid)
-        assert rd.records[0].identifier == 'RIREG:10749'
-
-    def test_correct_record_rxn(self):
-        rd = files.parse_rd(self.rd_valid)
-        assert rd.records[0].rxn == files.parse_rxn(self.rd_valid[3:])
+        assert rd.records == [
+            files.parse_rd_record_(self.rd_valid[2:17]),
+            files.parse_rd_record_(self.rd_valid[17:]),
+            ]
 
     def test_correct_time(self):
         rd = files.parse_rd(self.rd_valid)
-        assert rd.time == '10/22/2016 18:17'
+        assert rd.time == '12/20/2016 12:24'
 
     def test_correct_version(self):
         rd = files.parse_rd(self.rd_valid)
         assert rd.version == '1'
+
+
+class TestParseRdRecord:
+
+    rd_record_valid = files.get_content(_VALID_PATH, _VALID_RD)[2:17]
+
+    # TODO def test_raise_rd_error_REASON(self):
+
+    def test_correct_record_data(self):
+        rd_record = files.parse_rd_record_(self.rd_record_valid)
+        assert rd_record.data == {
+            'text1': ' '.join([
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed',
+                'do eiusmod tempor incididunt ut labore et dolore magna',
+                'aliqua. Ut enim ad minim veniam, quis nostrud exercitation',
+                'ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                'Duis aute irure dolor in reprehenderit in voluptate velit',
+                'esse cillum dolore eu fugiat nulla pariatur. Excepteur sint',
+                'occaecat cupidatat non proident, sunt in culpa qui officia',
+                'deserunt mollit anim id est laborum.',
+                ]),
+            'text2': 'Lorem ipsum dolor sit amet...',
+            }
+
+    def test_correct_record_identifier(self):
+        rd_record = files.parse_rd_record_(self.rd_record_valid)
+        assert rd_record.identifier == '$RIREG LOREM'
+
+    def test_correct_record_rxn(self):
+        rd_record = files.parse_rd_record_(self.rd_record_valid)
+        assert rd_record.rxn == files.parse_rxn(self.rd_record_valid[1:])
 
 
 class TestParseRxn:

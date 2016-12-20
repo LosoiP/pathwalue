@@ -313,21 +313,56 @@ def parse_rd(contents):
     # Parse RD file.
     *__, time = contents[1].partition(' ')
     records = []
-    records.append(RdRecord(
-        identifier=contents[2],
-        rxn=parse_rxn(contents[3:]),
-        data={})
-        )
+    intervals_record = []
+    # Detect records.
+    for i, row in enumerate(contents):
+        if row.startswith('$RFMT'):
+            intervals_record.append(i)
+    intervals_record.append(i)
+    # Parse records.
+    for i, j in zip(intervals_record[:-1], intervals_record[1:]):
+        records.append(parse_rd_record_(contents[i:j]))
     return Rd(version='1', time=time, records=records)
+
+
+def parse_rd_record_(contents):
+    """
+    """
+    # Check record validity.
+    if not contents[0].startswith('$RFMT'):
+        raise RdError('identifier $RFMT expected at begin, {} found'.format(
+            contents[0]))
+    # Detect data.
+    intervals_dtype = []
+    for i, row in enumerate(contents):
+        if row.startswith('$DTYPE'):
+            intervals_dtype.append(i)
+    intervals_dtype.append(i)
+    # Parse record.
+    *__, identifier = contents[0].partition(' ')
+    rxn = parse_rxn(contents[1:intervals_dtype[0]])
+    data = {}
+    for i, j in zip(intervals_dtype[:-1], intervals_dtype[1:]):
+        *__, dtype = contents[i].partition(' ')
+        *__, datum = contents[1+i].partition(' ')
+        datum_multiline = ' '.join(contents[2+i:j])
+        if datum_multiline:
+            data[dtype] = ' '.join([datum, datum_multiline])
+        else:
+            data[dtype] = datum
+    return RdRecord(identifier=identifier, rxn=rxn, data=data)
 
 
 def parse_rxn(contents):
     """
     """
     if len(contents) < 5:
-        raise RxnError('RXN file too short: less than 5 lines found')
-    elif contents[0].rstrip('\n') != '$RXN':
-        raise RxnError('identifier $RXN not found at begin')
+        raise RxnError(
+            'RXN file too short: expected minimum of 5, {} found'.format(
+                len(contents)))
+    elif contents[0] != '$RXN':
+        raise RxnError('identifier $RXN expected at begin, {} found'.format(
+            contents[0]))
     header = {
         'name': contents[2].rstrip('\n'),
         'comment': contents[3].rstrip('\n'),
