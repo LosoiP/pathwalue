@@ -1,0 +1,20 @@
+# Directories
+backup/
+data/
+external/
+png/
+preliminary/
+__*/
+.*/
+
+# File-extensions
+*.ctab
+*.json
+*.mol
+*.rd
+*.rxn
+*.txt
+
+# Files
+.gitignore
+.spyderproject

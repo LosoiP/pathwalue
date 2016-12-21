@@ -91,13 +91,13 @@ class TestGetContents:
                 assert isinstance(row, str)
 
     def test_yield_newlines_not_stripped(self):
-        all_files = files.get_content(_VALID_PATH, _VALID_JSON, False)
+        all_files = files.get_contents(_VALID_PATH, _VALID_JSONS, False)
         for file in all_files:
             for row in file:
                 assert row.endswith('\n')
 
     def test_yield_newlines_stripped(self):
-        all_files = files.get_content(_VALID_PATH, _VALID_JSON, True)
+        all_files = files.get_contents(_VALID_PATH, _VALID_JSONS, True)
         for file in all_files:
             for row in file:
                 assert not row.endswith('\n')
@@ -140,7 +140,7 @@ class TestParseCtab:
     # TODO def test_raise_mol_error_REASON(self):
 
     def test_correct_counts_line(self):
-        counts_line = files.parse_ctab_counts_line_(self.ctab_valid[0])
+        counts_line = files._parse_ctab_counts_line(self.ctab_valid[0])
         assert counts_line == {
             'n_atoms': 3, 'n_bonds': 2, 'n_atoms_lists': 0, '': None,
             'is_chiral': False,
@@ -150,7 +150,7 @@ class TestParseCtab:
             }
 
     def test_correct_atom_block(self):
-        atom_block = files.parse_ctab_atom_block_(self.ctab_valid[1:4])
+        atom_block = files._parse_ctab_atom_block(self.ctab_valid[1:4])
         assert atom_block == [
             '   -0.4125    0.7145    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0',
             '    0.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0',
@@ -158,62 +158,81 @@ class TestParseCtab:
             ]
 
     def test_correct_bond_block(self):
-        bond_block = files.parse_ctab_bond_block_(self.ctab_valid[4:6])
+        bond_block = files._parse_ctab_bond_block(self.ctab_valid[4:6])
         assert bond_block == [
             '  2  1  1  0  0  0  0',
             '  2  3  1  0  0  0  0',
             ]
 
     def test_correct_atoms_lists(self):
-        atoms_lists = files.parse_ctab_atoms_lists_([])
+        atoms_lists = files._parse_ctab_atoms_lists([])
         assert atoms_lists == {}
 
     def test_correct_stext(self):
-        stext = files.parse_ctab_stext_([])
+        stext = files._parse_ctab_stext([])
         assert stext == {}
 
     def test_correct_properties(self):
-        properties = files.parse_ctab_properties_(self.ctab_valid[6])
+        properties = files._parse_ctab_properties(self.ctab_valid[6])
         assert properties == {}
 
     def test_correct_ctab(self):
         ctab = files.parse_ctab(self.ctab_valid)
         assert ctab == (
-            files.parse_ctab_counts_line_(self.ctab_valid[0]),
-            files.parse_ctab_atom_block_(self.ctab_valid[1:4]),
-            files.parse_ctab_bond_block_(self.ctab_valid[4:6]),
-            files.parse_ctab_atoms_lists_([]),
-            files.parse_ctab_stext_([]),
-            files.parse_ctab_properties_(self.ctab_valid[6]),
+            files._parse_ctab_counts_line(self.ctab_valid[0]),
+            files._parse_ctab_atom_block(self.ctab_valid[1:4]),
+            files._parse_ctab_bond_block(self.ctab_valid[4:6]),
+            files._parse_ctab_atoms_lists([]),
+            files._parse_ctab_stext([]),
+            files._parse_ctab_properties(self.ctab_valid[6]),
             )
 
 
 class TestParseMol:
 
     mol_valid = files.get_content(_VALID_PATH, _VALID_MOL)
+    mol_invalid_header = files.get_content(_VALID_PATH, _VALID_MOL)[1:]
 
-    # TODO def test_raise_mol_error_REASON(self):
+    def test_raise_mol_error_invalid_header(self):
+        with pytest.raises(files.MolError):
+            files.parse_mol(self.mol_invalid_header)
 
-    def test_correct_header(self):
-        header, __ = files.parse_mol(self.mol_valid)
-        assert header == {'name': 'CHEBI:15377', 'meta': '', 'comment': ''}
+    def test_correct_comment(self):
+        mol = files.parse_mol(self.mol_valid)
+        assert mol.comment == ''
 
-    def test_correct_ctab(self):
-        __, ctab = files.parse_mol(self.mol_valid)
-        assert ctab == files.parse_ctab(self.mol_valid[4:])
+    def test_correct_meta(self):
+        mol = files.parse_mol(self.mol_valid)
+        assert mol.meta == ''
+
+    def test_correct_name(self):
+        mol = files.parse_mol(self.mol_valid)
+        assert mol.name == 'CHEBI:15377'
+
+    def test_correct_ctab_parse_false(self):
+        mol = files.parse_mol(self.mol_valid, False)
+        assert mol.ctab == ()
+
+    def test_correct_ctab_parse_true(self):
+        mol = files.parse_mol(self.mol_valid, True)
+        assert mol.ctab == files.parse_ctab(self.mol_valid[4:])
 
 
 class TestParseRd:
 
     rd_valid = files.get_content(_VALID_PATH, _VALID_RD)
+    rd_invalid_header = files.get_content(_VALID_PATH, _VALID_RD)[1:]
 
-    # TODO def test_raise_rd_error_REASON(self):
+    def test_raise_rd_error_invalid_header(self):
+        with pytest.raises(files.RdError):
+            files.parse_rd(self.rd_invalid_header)
 
     def test_correct_records(self):
         rd = files.parse_rd(self.rd_valid)
         assert rd.records == [
-            files.parse_rd_record_(self.rd_valid[2:17]),
-            files.parse_rd_record_(self.rd_valid[17:]),
+            files._parse_rd_record(self.rd_valid[2:17]),
+            files._parse_rd_record(self.rd_valid[17:26]),
+            files._parse_rd_record(self.rd_valid[26:]),
             ]
 
     def test_correct_time(self):
@@ -227,12 +246,13 @@ class TestParseRd:
 
 class TestParseRdRecord:
 
-    rd_record_valid = files.get_content(_VALID_PATH, _VALID_RD)[2:17]
+    rd_record_valid_1 = files.get_content(_VALID_PATH, _VALID_RD)[2:17]
+    rd_record_valid_2 = files.get_content(_VALID_PATH, _VALID_RD)[17:26]
+    rd_record_valid_3 = files.get_content(_VALID_PATH, _VALID_RD)[26:]
+    rd_record_invalid_header = files.get_content(_VALID_PATH, _VALID_RD)[27:]
 
-    # TODO def test_raise_rd_error_REASON(self):
-
-    def test_correct_record_data(self):
-        rd_record = files.parse_rd_record_(self.rd_record_valid)
+    def test_correct_record_data_1(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_1)
         assert rd_record.data == {
             'text1': ' '.join([
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed',
@@ -247,38 +267,86 @@ class TestParseRdRecord:
             'text2': 'Lorem ipsum dolor sit amet...',
             }
 
-    def test_correct_record_identifier(self):
-        rd_record = files.parse_rd_record_(self.rd_record_valid)
-        assert rd_record.identifier == '$RIREG LOREM'
+    def test_correct_record_data_2(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_2)
+        assert rd_record.data == {
+            'text1': ' '.join([
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed',
+                'do eiusmod tempor',
+                ]),
+            }
 
-    def test_correct_record_rxn(self):
-        rd_record = files.parse_rd_record_(self.rd_record_valid)
-        assert rd_record.rxn == files.parse_rxn(self.rd_record_valid[1:])
+    def test_correct_record_data_3(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_3)
+        assert rd_record.data == {
+            'masterId': '10748',
+            'status': 'approved',
+            'qualifiers': '[MA, FO, CB]',
+            'equation': 'H(+) + hydrogencarbonate => CO2 + H2O',
+            }
+
+    def test_correct_record_identifier_1(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_1)
+        assert rd_record.identifier == '$RIREG TEST1'
+
+    def test_correct_record_identifier_2(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_2)
+        assert rd_record.identifier == '$RIREG TEST2'
+
+    def test_correct_record_identifier_3(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_3)
+        assert rd_record.identifier == '$RIREG 10749'
+
+    def test_correct_record_rxn_1(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_1)
+        assert rd_record.rxn == files.parse_rxn(self.rd_record_valid_1[1:])
+
+    def test_correct_record_rxn_2(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_2)
+        assert rd_record.rxn == files.parse_rxn(self.rd_record_valid_2[1:])
+
+    def test_correct_record_rxn_3(self):
+        rd_record = files._parse_rd_record(self.rd_record_valid_3)
+        assert rd_record.rxn == files.parse_rxn(self.rd_record_valid_3[1:])
+
+    def test_raise_rd_error_invalid_header(self):
+        with pytest.raises(files.RdError):
+            files._parse_rd_record(self.rd_record_invalid_header)
 
 
 class TestParseRxn:
 
     rxn_valid = files.get_content(_VALID_PATH, _VALID_RXN)
+    rxn_invalid_header = files.get_content(_VALID_PATH, _VALID_RXN)[1:]
 
-    # TODO def test_raise_rxn_error_REASON(self):
+    def test_correct_comment(self):
+        rxn = files.parse_rxn(self.rxn_valid)
+        assert rxn.comment == 'RHEA:release=77'
 
-    def test_correct_header(self):
-        header, *__ = files.parse_rxn(self.rxn_valid)
-        assert header == {'name': 'Rhea  rhea-util102220161817  10749',
-                          'comment': 'RHEA:release=77'}
+    def test_correct_name(self):
+        rxn = files.parse_rxn(self.rxn_valid)
+        assert rxn.name == 'Rhea  rhea-util102220161817  10749'
 
-    def test_correct_reactants_products(self):
-        __, n_reactants_products, __ = files.parse_rxn(self.rxn_valid)
-        assert n_reactants_products == (2, 2)
+    def test_correct_n_products(self):
+        rxn = files.parse_rxn(self.rxn_valid)
+        assert rxn.n_products == 2
+
+    def test_correct_n_reactants(self):
+        rxn = files.parse_rxn(self.rxn_valid)
+        assert rxn.n_reactants == 2
 
     def test_correct_mols(self):
-        *__, mols = files.parse_rxn(self.rxn_valid)
-        assert mols == [
+        rxn = files.parse_rxn(self.rxn_valid)
+        assert rxn.mols == [
             files.parse_mol(self.rxn_valid[5:13]),
             files.parse_mol(self.rxn_valid[13:27]),
             files.parse_mol(self.rxn_valid[27:38]),
             files.parse_mol(self.rxn_valid[38:49]),
             ]
+
+    def test_raise_rxn_error_invalid_header(self):
+        with pytest.raises(files.RxnError):
+            files.parse_rxn(self.rxn_invalid_header)
 
 
 class TestParseTsv:

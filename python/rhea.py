@@ -60,7 +60,7 @@ def read_ecs(contents, reaction_masters_reactions):
     return ec_reactions, reaction_ecs
 
 
-def read_rds(filenames):
+def read_rds_old(filenames):
     """
     Read rd files, and return reaction data and target JSON filenames.
 
@@ -207,30 +207,63 @@ def read_rds(filenames):
     return data
 
 
-def read_rd_data(rds_parsed, chebi_parents):
+def read_rds(rds_parsed, chebi_parents):
     mol_rxns, rxn_equats, rxn_masters, rxn_stoich = {}, {}, {}, {}
+    n_records = 0
+    n_accepted = 0
+    types_dtype = Counter()
+    types_status = Counter()
+    types_qualifier = Counter()
     for rd in rds_parsed:
         for record in rd.records:
+            approve_reaction = True
+            print('RHEA: {}'.format(record.identifier), end='')
+            n_records += 1
+            # Save datatypes.
+            types_dtype.update(record.data.keys())
             # Check reaction status and qualifiers.
-            if record.data['status'] != RD_APPROVED:
-                continue
-            qualifiers = record.data['qualifiers']
+            status = record.data['status']
+            types_status[status] += 1
+            if status != RD_APPROVED:
+                print(', status: {}'.format(status), end='')
+                approve_reaction = False
+            # Check reaction qualifiers.
+            qualifiers_raw = record.data['qualifiers']
+            qualifiers = qualifiers_raw.strip('[]').replace(' ', '').split(',')
+            types_qualifier.update(qualifiers)
             if any(q in qualifiers for q in RD_QUALIFIERS_DENIED):
-                continue
+                print(', forbidden qualifiers: {}'.format(qualifiers), end='')
+                approve_reaction = False
             elif not all(q in qualifiers for q in RD_QUALIFIERS_REQUIRED):
-                continue
-            rxn = record.rxn
+                print(', inadequate qualifiers: {}'.format(qualifiers), end='')
+                approve_reaction = False
             # Check that reaction molecules belong to ChEBI.
+            rxn = record.rxn
             for mol in rxn.mols:
-                if mol.name.split(':') != 'CHEBI':
-                    break
+                if mol.name.partition(':')[0] != 'CHEBI':
+                    print(', non-ChEBI $MOL entry: {}'.format(mol.name), end='')
+                    approve_reaction = False
             # Save reaction data.
-            else:
-                id_rhea = record.identifier
-                for id_chebi in rxn.mols[:rxn.n_reactants]:
+            if approve_reaction:
+                *__, id_rhea = record.identifier.partition(' ')
+                print(', saving reaction {}'.format(id_rhea))
+                for mol in rxn.mols[:rxn.n_reactants]:
+                    *__, chebi = mol.name.partition(':')
+                    id_chebi = chebi_parents.get(chebi, chebi)
                     mol_rxns.setdefault(id_chebi, [[], []])[0].append(id_rhea)
-                for id_chebi in rxn.mols[rxn.n_reactants:]:
+                    rxn_stoich.setdefault(id_rhea, [[], []])[0].append(id_chebi)
+                for mol in rxn.mols[rxn.n_reactants:]:
+                    *__, chebi = mol.name.partition(':')
+                    id_chebi = chebi_parents.get(chebi, chebi)
                     mol_rxns.setdefault(id_chebi, [[], []])[1].append(id_rhea)
-                rxn_equats.get(id_rhea, {})[id_rhea] = record.data['equation']
-                rxn_masters.get(id_rhea, {})[id_rhea] = record.data['masterId']
+                    rxn_stoich.setdefault(id_rhea, [[], []])[1].append(id_chebi)
+                rxn_equats[id_rhea] = record.data['equation']
+                rxn_masters[id_rhea] = record.data['masterId']
+                n_accepted += 1
+            else:
+                print()
+    print('RHEA: {} records read, {} accepted'.format(n_records, n_accepted))
+    print('RHEA: found statuses: {}'.format(types_status))
+    print('RHEA: found qualifiers: {}'.format(types_qualifier))
+    print('RHEA: found $DTYPEs: {}'.format(types_dtype))
     return mol_rxns, rxn_equats, rxn_masters, rxn_stoich

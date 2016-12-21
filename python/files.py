@@ -91,11 +91,12 @@ JS_RXN_STOICHIOMETRICS = _PREFIX_RXN + 'stoichiometrics' + _EXTENSION_JS
 
 
 # File formats.
-Ctab = namedtuple('CTAB', ['counts_line', 'atom_block', 'bond_block'])
-Mol = namedtuple('MOL', ['header', 'ctab'])
+# Ctab = namedtuple('CTAB', ['counts_line', 'atom_block', 'bond_block'])
+Mol = namedtuple('MOL', ['name', 'meta', 'comment', 'ctab'])
 Rd = namedtuple('RD', ['version', 'time', 'records'])
 RdRecord = namedtuple('RDRecord', ['identifier', 'rxn', 'data'])
-Rxn = namedtuple('RXN', ['header', 'n_reactants', 'n_products', 'mols'])
+Rxn = namedtuple('RXN', ['name', 'comment', 'n_reactants', 'n_products',
+                         'mols'])
 Tsv = namedtuple('TSV', ['fields', 'data'])
 
 
@@ -198,7 +199,7 @@ def get_json(path, filename):
         return json.load(file)
 
 
-def parse_ctab_counts_line_(ctab):
+def _parse_ctab_counts_line(ctab):
     """
     """
     counts_line = {}
@@ -226,7 +227,7 @@ def parse_ctab_counts_line_(ctab):
     return counts_line
 
 
-def parse_ctab_atom_block_(contents):
+def _parse_ctab_atom_block(contents):
     """
     """
     atom_block = []
@@ -235,7 +236,7 @@ def parse_ctab_atom_block_(contents):
     return atom_block
 
 
-def parse_ctab_bond_block_(contents):
+def _parse_ctab_bond_block(contents):
     """
     """
     bond_block = []
@@ -244,19 +245,19 @@ def parse_ctab_bond_block_(contents):
     return bond_block
 
 
-def parse_ctab_atoms_lists_(contents):
+def _parse_ctab_atoms_lists(contents):
     """
     """
     return {}
 
 
-def parse_ctab_stext_(contents):
+def _parse_ctab_stext(contents):
     """
     """
     return {}
 
 
-def parse_ctab_properties_(contents):
+def _parse_ctab_properties(contents):
     """
     """
     return {}
@@ -265,39 +266,40 @@ def parse_ctab_properties_(contents):
 def parse_ctab(contents):
     """
     """
-    counts_line = parse_ctab_counts_line_(contents[0])
+    counts_line = _parse_ctab_counts_line(contents[0])
     n_atoms = counts_line['n_atoms']
     n_bonds = counts_line['n_bonds']
     n_properties = counts_line['n_properties']
     first = 1
     last = first + n_atoms
 
-    atoms = parse_ctab_atom_block_(contents[first:last])
+    atoms = _parse_ctab_atom_block(contents[first:last])
 
     first, last = last, last + n_bonds
-    bonds = parse_ctab_bond_block_(contents[first:last])
+    bonds = _parse_ctab_bond_block(contents[first:last])
 
-    atoms_lists = parse_ctab_atoms_lists_([])
+    atoms_lists = _parse_ctab_atoms_lists([])
 
-    stext = parse_ctab_stext_([])
+    stext = _parse_ctab_stext([])
 
     first, last = last, last + n_properties
-    properties = parse_ctab_properties_(contents[first:last])
+    properties = _parse_ctab_properties(contents[first:last])
     return counts_line, atoms, bonds, atoms_lists, stext, properties
 
 
-def parse_mol(contents):
+def parse_mol(contents, ctab_parse=False):
     """
     """
-    if contents[0].rstrip('\n') != '$MOL':
+    if contents[0] != '$MOL':
         raise MolError
-    header = {
-        'name': contents[1].rstrip('\n'),
-        'meta': contents[2].rstrip('\n'),
-        'comment': contents[3].rstrip('\n'),
-        }
-    ctab = parse_ctab(contents[4:])
-    return header, ctab
+    name = contents[1]
+    meta = contents[2]
+    comment = contents[3]
+    if ctab_parse:
+        ctab = parse_ctab(contents[4:])
+    else:
+        ctab = ()
+    return Mol(name, meta, comment, ctab)
 
 
 def parse_rd(contents):
@@ -318,14 +320,14 @@ def parse_rd(contents):
     for i, row in enumerate(contents):
         if row.startswith('$RFMT'):
             intervals_record.append(i)
-    intervals_record.append(i)
+    intervals_record.append(i + 1)  # i + 1 == len(contents)
     # Parse records.
     for i, j in zip(intervals_record[:-1], intervals_record[1:]):
-        records.append(parse_rd_record_(contents[i:j]))
+        records.append(_parse_rd_record(contents[i:j]))
     return Rd(version='1', time=time, records=records)
 
 
-def parse_rd_record_(contents):
+def _parse_rd_record(contents):
     """
     """
     # Check record validity.
@@ -337,7 +339,7 @@ def parse_rd_record_(contents):
     for i, row in enumerate(contents):
         if row.startswith('$DTYPE'):
             intervals_dtype.append(i)
-    intervals_dtype.append(i)
+    intervals_dtype.append(i + 1)  # i + 1 == len(contents)
     # Parse record.
     *__, identifier = contents[0].partition(' ')
     rxn = parse_rxn(contents[1:intervals_dtype[0]])
@@ -363,17 +365,24 @@ def parse_rxn(contents):
     elif contents[0] != '$RXN':
         raise RxnError('identifier $RXN expected at begin, {} found'.format(
             contents[0]))
-    header = {
-        'name': contents[2].rstrip('\n'),
-        'comment': contents[3].rstrip('\n'),
-        }
-    reactants = int(contents[4][0:3])
-    products = int(contents[4][3:6])
+    name = contents[2]
+    comment = contents[3]
+    n_reactants = int(contents[4][0:3])
+    n_products = int(contents[4][3:6])
     mols = []
-    for i, row in zip(range(5, len(contents)), contents[5:]):
-        if row.rstrip('\n') == '$MOL':
-            mols.append(parse_mol(contents[i:]))
-    return header, (reactants, products), mols
+    # Detect mols.
+    intervals_mol = []
+    for i, row in enumerate(contents):
+        if row == '$MOL':
+            intervals_mol.append(i)
+    intervals_mol.append(i + 1)
+    for i, j in zip(intervals_mol[:-1], intervals_mol[1:]):
+        mols.append(parse_mol(contents[i:j]))
+    # Check validity.
+    if len(mols) != n_reactants + n_products:
+        raise RxnError('{} $MOL entries expected, {} found'.format(
+            n_reactants + n_products, len(mols)))
+    return Rxn(name, comment, n_reactants, n_products, mols)
 
 
 def parse_tsv(contents, fields_header=[]):

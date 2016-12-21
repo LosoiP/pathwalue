@@ -42,6 +42,7 @@ method calls the superclass method (in addition to its own behavior).
 
 """
 
+from collections import namedtuple
 
 import chebi
 import files
@@ -133,23 +134,30 @@ def initialize_rhea(chebi_parents={}):
     mol_rxns, rxn_equats, rxn_master_rxn, rxn_stoich = data_rhea
 
     # EC
-    ecs_raw = files.get_content(paths.RHEA_TSV, files.RHEA_EC)
-    ecs_tsv = files.parse_tsv(ecs_raw, ['EC', 'RHEA', 'DIRECTION'])
-    enz_reactions, reaction_ecs = rhea.parse_ecs(ecs_tsv, rxn_master_rxn)
+    #ecs_raw = files.get_content(paths.RHEA_TSV, files.RHEA_EC)
+    #ecs_tsv = files.parse_tsv(ecs_raw, ['EC', 'RHEA', 'DIRECTION'])
+    #enz_reactions, reaction_ecs = rhea.read_ecs(ecs_tsv, rxn_master_rxn)
 
     # Save data in JSON format.
     data = [mol_rxns,
-            enz_reactions,
-            reaction_ecs,
+    #        enz_reactions,
+    #        reaction_ecs,
             rxn_equats,
             rxn_stoich,
             ]
-    jsonnames = [files.JS_MOL_REACTIONS,
-                 files.ENZ_REACTIONS,
-                 files.RXN_ECS,
+    jsonnames = [files.MOL_REACTIONS,
+    #             files.ENZ_REACTIONS,
+    #             files.RXN_ECS,
                  files.RXN_EQUATIONS,
                  files.RXN_STOICHIOMETRICS,
                  ]
     files.write_jsons(data, paths.JSON, jsonnames)
 
     return data
+
+
+def load_rhea():
+    """
+    """
+    Rhea = namedtuple('Rhea', [])
+    return Rhea()
