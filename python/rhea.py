@@ -22,7 +22,16 @@ RD_QUALIFIERS_DENIED = ['TR', 'CR']  # transport, class
 RD_QUALIFIERS_REQUIRED = ['CB', 'FO', 'MA']  # balanced, formula, mass
 
 
-def read_ecs(contents, reaction_masters_reactions):
+def crosslink_master_ids(reaction_masters):
+    """
+    """
+    master_reactions = {}
+    for rhea, master in reaction_masters.items():
+        master_reactions.setdefault(master, []).append(rhea)
+    return master_reactions
+
+
+def read_ecs(contents, reaction_masters, master_reactions):
     """
     Read Rhea EC number data.
 
@@ -45,11 +54,8 @@ def read_ecs(contents, reaction_masters_reactions):
     for entry in contents:
         ec = entry['EC']
         rhea = entry['RHEA']
-        master = reaction_masters_reactions.get(rhea, {})
-        try:
-            __, reactions = master.popitem()
-        except KeyError:
-            reactions = [rhea]
+        master = reaction_masters.get(rhea, rhea)
+        reactions = master_reactions.get(master, [])
         ec_reactions.setdefault(ec, set()).update(reactions)
         for reaction in reactions:
             reaction_ecs.setdefault(reaction, set()).add(ec)

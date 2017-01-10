@@ -131,12 +131,13 @@ def initialize_rhea(chebi_parents={}):
     rds_raw = files.get_contents(paths.RHEA_RD, rd_filenames)
     rds_parsed = (files.parse_rd(rd) for rd in rds_raw)
     data_rhea = rhea.read_rd_data(rds_parsed, chebi_parents)
-    mol_rxns, rxn_equats, rxn_master_rxn, rxn_stoich = data_rhea
+    mol_rxns, rxn_equats, rxn_master, rxn_stoich = data_rhea
+    master_rxn = rhea.crosslink_master_ids(rxn_master)
 
     # Extract data from tsv file.
     ecs_raw = files.get_content(paths.RHEA_TSV, files.RHEA_EC)
     ecs_tsv = files.parse_tsv(ecs_raw, ['EC', 'RHEA', 'DIRECTION'])
-    enz_reactions, reaction_ecs = rhea.read_ecs(ecs_tsv, rxn_master_rxn)
+    enz_reactions, reaction_ecs = rhea.read_ecs(ecs_tsv, rxn_master, master_rxn)
 
     # Save data in JSON format.
     data = [mol_rxns,
