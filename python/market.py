@@ -25,104 +25,95 @@ from math import sqrt
 import networkx as nx
 import numpy as np
 
+from exceptions import ReactionIdError
 
-_TYPES_DEMAND = {
-    'has_role': {
-        # Applications (ChEBI 33232)
-        '33286': 2,  # agrochemical
-        '75835': 1,  # anti-anaemic agent
-        '67079': 1,  # anti-inflammatory agent
-        '77964': 1,  # anticaking agent
-        '77973': 1,  # antifoaming agent
-        '64857': 1,  # cosmetic
-        '75358': 1,  # curing agent
-        '27780': 1,  # detergent
-        '37958': 1,  # dye
-        '78152': 1,  # enzyme mimic
-        '75324': 1,  # excipient
-        '79314': 1,  # flame retardant
-        '64047': 1,  # food additive
-        '48318': 1,  # fragnance
-        '33292': 2,  # fuel
-        '77968': 1,  # humectant
-        '47867': 1,  # indicator
-        '35209': 1,  # label
-        '64345': 1,  # MALDI matrix material
-        '74152': 1,  # mordant
-        '74886': 1,  # neoglycolipid probe
-        '25944': 2,  # pesticide
-        '52217': 2,  # pharmaceutical
-        '79056': 2,  # plasticiser
-        '50406': 1,  # probe
-        '76414': 1,  # propellant
-        '51087': 1,  # protecting group
-        '50533': 1,  # protein denaturant
-        '73352': 1,  # protein-sequencing agent
-        '33893': 2,  # reagent
-        '78433': 2,  # refrigerant
-        '46787': 2,  # solvent
-        '35204': 1,  # tracer
-        },
-    'is_a': {
-        '33232': 1,  # application
-        # Pharmaceuticals (ChEBI 52217)
-        '23888': 1,  # drug
-        },
+
+RELATIONS_DEMAND = set(['has_role', 'is_a'])
+RELATIONS_PRICE = set(['has_role', 'has_functional_parent',
+                       'is_substituent_group_from', 'has_part', 'is_a'])
+CHEBIS_DEMAND = {
+    '33232': 1,  # application
+    # Applications (ChEBI 33232)
+    '33286': 2,  # agrochemical
+    '75835': 1,  # anti-anaemic agent
+    '67079': 1,  # anti-inflammatory agent
+    '77964': 1,  # anticaking agent
+    '77973': 1,  # antifoaming agent
+    '64857': 1,  # cosmetic
+    '75358': 1,  # curing agent
+    '27780': 1,  # detergent
+    '37958': 1,  # dye
+    '78152': 1,  # enzyme mimic
+    '75324': 1,  # excipient
+    '79314': 1,  # flame retardant
+    '64047': 1,  # food additive
+    '48318': 1,  # fragnance
+    '33292': 2,  # fuel
+    '77968': 1,  # humectant
+    '47867': 1,  # indicator
+    '35209': 1,  # label
+    '64345': 1,  # MALDI matrix material
+    '74152': 1,  # mordant
+    '74886': 1,  # neoglycolipid probe
+    '25944': 2,  # pesticide
+    '79056': 2,  # plasticiser
+    '50406': 1,  # probe
+    '76414': 1,  # propellant
+    '51087': 1,  # protecting group
+    '50533': 1,  # protein denaturant
+    '73352': 1,  # protein-sequencing agent
+    '33893': 2,  # reagent
+    '78433': 2,  # refrigerant
+    '46787': 2,  # solvent
+    '35204': 1,  # tracer
+    '52217': 2,  # pharmaceutical
+    # Pharmaceuticals (ChEBI 52217)
+    '23888': 1,  # drug
     }
-_TYPES_PRICES = {
-    'has_role': {
-        },
-    'has_functional_parent': {
-        },
-    'is_substituent_group_from': {
-        },
-    'has_part': {
-        # Groups
-        '33249': 1,  # organyl group
-        '23019': 2,  # carbonyl group
-        '46883': 2,  # carboxy group
-        '51422': 1,  # organodiyl group
-        '79073': 1,  # CHOH group
-        '43176': 1,  # hydroxy group
-        },
-    'is_a': {
-        '50860': 1,  # organic molecular entity
-        # Organic molecular entities (ChEBI 50860)
-        '18059': 1,  # lipid
-        '78840': 2,  # olefinic compound
-        '64709': 1,  # organic acid
-        '50047': 1,  # organic amino compound
-        '33245': 1,  # organic fundamental parent
-        '33822': 1,  # organic hydroxy compound
-        '33635': 1,  # organic polycyclic compound
-        # Lipids (ChEBI 18059)
-        '35366': 1,  # fatty acid
-        '28868': 1,  # fatty acid anion
-        '35748': 1,  # fatty acid ester
-        '24026': 1,  # fatty alcohol
-        '29348': 1,  # fatty amide
-        '35741': 1,  # glycerolipid
-        '131727': 1,  # hydroxylipid
-        '24913':  1,  # isoprenoid
-        # Olefinic compounds (ChEBI 78840)
-        '33641': 1,  # olefin
-        # Acyclic olefins (ChEBI 33645)
-        '32878': 1,  # alkene
-        # Organic amino compounds (ChEBI 50047)
-        '32952': 1,  # amine
-        '33709': 1,  # amino acid
-        '22478': 1,  # amino alcohol
-        '33869': 1,  # aromatic amine
-        # Organic fundamental parents (ChEBI 33245)
-        '24632': 1,  # hydrocarbon
-        # Organic hydroxy compounds (ChEBI 33822)
-        '30879': 1,  # alcohol
-        '33823': 1,  # enol
-        '33853': 1,  # phenols
-        },
+CHEBIS_PRICE = {
+    # Groups
+    '33249': 1,  # organyl group
+    '23019': 2,  # carbonyl group
+    '46883': 2,  # carboxy group
+    '51422': 1,  # organodiyl group
+    '79073': 1,  # CHOH group
+    '43176': 1,  # hydroxy group
+    '50860': 1,  # organic molecular entity
+    # Organic molecular entities (ChEBI 50860)
+    '18059': 1,  # lipid
+    '78840': 2,  # olefinic compound
+    '64709': 1,  # organic acid
+    '50047': 1,  # organic amino compound
+    '33245': 1,  # organic fundamental parent
+    '33822': 1,  # organic hydroxy compound
+    '33635': 1,  # organic polycyclic compound
+    # Lipids (ChEBI 18059)
+    '35366': 1,  # fatty acid
+    '28868': 1,  # fatty acid anion
+    '35748': 1,  # fatty acid ester
+    '24026': 1,  # fatty alcohol
+    '29348': 1,  # fatty amide
+    '35741': 1,  # glycerolipid
+    '131727': 1,  # hydroxylipid
+    '24913':  1,  # isoprenoid
+    # Olefinic compounds (ChEBI 78840)
+    '33641': 1,  # olefin
+    # Acyclic olefins (ChEBI 33645)
+    '32878': 1,  # alkene
+    # Organic amino compounds (ChEBI 50047)
+    '32952': 1,  # amine
+    '33709': 1,  # amino acid
+    '22478': 1,  # amino alcohol
+    '33869': 1,  # aromatic amine
+    # Organic fundamental parents (ChEBI 33245)
+    '24632': 1,  # hydrocarbon
+    # Organic hydroxy compounds (ChEBI 33822)
+    '30879': 1,  # alcohol
+    '33823': 1,  # enol
+    '33853': 1,  # phenols
     }
 
-_COMPLEXITY_COMPOUNDS = {
+COMPLEXITY_COMPOUNDS = {
     # Deoxyribonucleotides
     '61404': 1,  # dATP(4-)
     '57667': 1,  # dADP(3-)
@@ -307,12 +298,12 @@ def evaluate_complexity(reaction, stoichiometrics={}, compounds={}):
     if not isinstance(reaction, str):
         raise TypeError('Input must be a reaction Rhea ID string.')
     elif reaction not in stoichiometrics:
-        raise RheaIDError('No reaction found with ID {}.'.format(reaction))
+        raise ReactionIdError('No reaction found with ID {}.'.format(reaction))
     # Get the amount of consumed cofactors.
     values = {}
-    reaction_substrates, reaction_products = stoichiometrics[reaction]
+    reaction_substrates, __ = stoichiometrics[reaction]
     for chebi, complexity in compounds.items():
-        amount = reaction_substrates.get(chebi, 0)
+        amount = reaction_substrates.count(chebi)
         values[chebi] = amount * complexity
 
     # Evaluate complexity factor.
@@ -355,7 +346,7 @@ def evaluate_compound(demand, price):
     return demand * price
 
 
-def evaluate_ontology(graph, compound, types):
+def evaluate_ontology(graph, compound, target_values):
     """
     Evaluate ontology.
 
@@ -376,13 +367,12 @@ def evaluate_ontology(graph, compound, types):
 
     """
     values = []
-    for relation, targets in types.items():
-        for target, value in targets.items():
-            try:
-                if nx.has_path(graph, compound, target):
-                    values.append(value)
-            except nx.NetworkXError:
-                continue
+    for target, value in target_values.items():
+        try:
+            if nx.has_path(graph, compound, target):
+                values.append(value)
+        except nx.NetworkXError:
+            continue
     return sum(values)
 
 
@@ -529,58 +519,3 @@ def parse_formula(formula):
         element_numbers.update({element: number})
 
     return element_numbers
-
-
-def initialize_market():
-    """
-    Run analysis to evaluate demands, prices and complexities.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    list
-        Dicts of data.
-
-    """
-    compound_reactions = get_json(PATH_JSON, FILE_CMP_REACTIONS)
-    compound_relations = get_json(PATH_JSON, FILE_CMP_RELATIONS)
-    stoichiometrics = get_json(PATH_JSON, FILE_RXN_STOICHIOMETRICS)
-    complexity_compounds = _COMPLEXITY_COMPOUNDS
-
-    graph_d = initialize_graph(compound_relations, _TYPES_DEMAND)
-    graph_p = initialize_graph(compound_relations, _TYPES_PRICES)
-    # Collect and save data to JSON files.
-    demand, price, complexity = {}, {}, {}
-    for compound in compound_reactions:
-        if compound in _IGNORED_COMPOUNDS:
-            demand[compound] = 0
-            price[compound] = 0
-        else:
-            demand[compound] = evaluate_ontology(graph_d, compound,
-                                                 _TYPES_DEMAND)
-            price[compound] = evaluate_ontology(graph_p, compound,
-                                                _TYPES_PRICES)
-    for reaction in stoichiometrics:
-        complexity[reaction] = evaluate_complexity(reaction,
-                                                   stoichiometrics,
-                                                   complexity_compounds)
-    data = [
-        complexity,
-        demand,
-        price,
-        ]
-    jsonnames = [
-        FILE_RXN_COMPLEXITIES,
-        FILE_CMP_DEMANDS,
-        FILE_CMP_PRICES,
-        ]
-    write_jsons(data, PATH_JSON, jsonnames)
-    return data
-
-
-if __name__ == '__main__':
-    pass
-    # data = main()

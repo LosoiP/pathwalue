@@ -42,10 +42,10 @@ method calls the superclass method (in addition to its own behavior).
 
 """
 
-from collections import namedtuple
 
 import chebi
 import files
+import market
 import paths
 import rhea
 
@@ -110,6 +110,69 @@ def initialize_chebi():
     return data
 
 
+def initialize_market():
+    """
+    Run analysis to evaluate demands, prices and complexities.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    list
+        Dicts of data.
+
+    """
+    compound_reactions = files.get_json(paths.JSON, files.MOL_REACTIONS)
+    compound_relations = files.get_json(paths.JSON, files.MOL_RELATIONS)
+    stoichiometrics = files.get_json(paths.JSON, files.RXN_STOICHIOMETRICS)
+    complexity_compounds = market.COMPLEXITY_COMPOUNDS
+
+    graph_d = market.initialize_graph(compound_relations,
+                                      market.RELATIONS_DEMAND)
+    graph_p = market.initialize_graph(compound_relations,
+                                      market.RELATIONS_PRICE)
+    # Collect and save data to JSON files.
+    demand, price, complexity = {}, {}, {}
+    ignored = 0
+    for compound in compound_reactions:
+        print('MARKET: CHEBI {}'.format(compound), end='')
+        if compound in chebi.IGNORED_COMPOUNDS:
+            print(', ignored')
+            demand[compound] = 0
+            price[compound] = 0
+            ignored += 1
+        else:
+            demand[compound] = market.evaluate_ontology(graph_d, compound,
+                                                        market.CHEBIS_DEMAND)
+            price[compound] = market.evaluate_ontology(graph_p, compound,
+                                                       market.CHEBIS_PRICE)
+            print(', demand {}, price {}'.format(demand[compound],
+                                                 price[compound]))
+    for reaction in stoichiometrics:
+        complexity[reaction] = market.evaluate_complexity(reaction,
+                                                          stoichiometrics,
+                                                          complexity_compounds)
+        print('MARKET: RHEA {}, complexity {}'.format(reaction,
+                                                      complexity[reaction]))
+    print('MARKET: {}/{} compounds, {} reactions'.format(
+        len(compound_reactions) - ignored, len(compound_reactions),
+        len(stoichiometrics)))
+    data = [
+        complexity,
+        demand,
+        price,
+        ]
+    jsonnames = [
+        files.RXN_COMPLEXITIES,
+        files.MOL_DEMANDS,
+        files.MOL_PRICES,
+        ]
+    files.write_jsons(data, paths.JSON, jsonnames)
+    return data
+
+
 def initialize_rhea(chebi_parents={}):
     """
     Convert Rhea rd files to JSON formatted files for analysis.
@@ -155,10 +218,3 @@ def initialize_rhea(chebi_parents={}):
     files.write_jsons(data, paths.JSON, jsonnames)
 
     return data
-
-
-def load_rhea():
-    """
-    """
-    Rhea = namedtuple('Rhea', [])
-    return Rhea()

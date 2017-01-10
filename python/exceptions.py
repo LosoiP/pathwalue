@@ -32,3 +32,19 @@ class RxnError(FileFormatError):
 
 class TsvError(FileFormatError):
     pass
+
+
+class IdError(KeyError):
+    pass
+
+
+class CompoundIdError(IdError):
+    pass
+
+
+class EnzymeIdError(IdError):
+    pass
+
+
+class ReactionIdError(IdError):
+    pass
