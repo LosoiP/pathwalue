@@ -243,23 +243,12 @@ def run_analysis():
     ref_iso = ['10189', '15991', '17066', '16342', '23733', '23285', '13370']
 
     # Obtain results.
-    C_eth = []
-    E_eth = []
-    C_iso = []
-    E_iso = []
-    raw_eth = pw.evaluate_input(20, G, C_eth, E_eth, context)
-    raw_iso = pw.evaluate_input(20, G, C_iso, E_iso, context)
-
-    # Analyze results.
-    results_rxns_eth = analyze_rxns(raw_eth, ref_eth, context)
-    results_mols_eth = analyze_mols(raw_eth, ref_eth, context)
-
-    results_rxns_iso = analyze_rxns(raw_iso, ref_iso, context)
-    results_mols_iso = analyze_mols(raw_iso, ref_iso, context)
-
-    return [
-        results_rxns_eth,
-        results_mols_eth,
-        results_rxns_iso,
-        results_mols_iso,
-        ]
+    for n in range(1, 20):
+        for C_eth in []:
+            for E_eth in []:
+                raw_eth = pw.evaluate_input(n, G, C_eth, E_eth, context)
+                # Compare to reference and save results.
+        for C_iso in []:
+            for E_iso in []:
+                raw_iso = pw.evaluate_input(n, G, C_iso, E_iso, context)
+                # Compare to reference and save results.
