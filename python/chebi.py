@@ -585,6 +585,7 @@ def parse_chemical_data(data, compound_parents={}):
             raise ValueError(
                 'row {}: CHARGE, FORMULA nor MASS at TYPE field'.format(
                     index_entry))
+    print('CHEBI: {} chemical data rows parsed'.format(index_entry))
     return charges, formulae, masses
 
 
@@ -622,6 +623,7 @@ def parse_compounds(data):
             compound_names[compound] = name
         else:
             raise ValueError('both PARENT_ID and NAME fields null')
+    print('CHEBI: {} compounds parsed'.format(index_entry))
     return compound_parents, compound_names
 
 
@@ -645,7 +647,8 @@ def parse_relations(data, vertex_compounds):
 
     """
     compound_relations = {}
-    for entry in data:
+    n_curated = 0
+    for n_entries, entry in enumerate(data):
         final = entry['FINAL_ID']
         initial = entry['INIT_ID']
         # id_ = entry['ID']
@@ -653,6 +656,7 @@ def parse_relations(data, vertex_compounds):
         type_ = entry['TYPE']
         # Include only manually curated relation data.
         if status.strip() == 'C':
+            n_curated += 1
             # Map `goal` and `start` to compound IDs.
             start = vertex_compounds[initial]
             goal = vertex_compounds[final]
@@ -661,6 +665,7 @@ def parse_relations(data, vertex_compounds):
                 compound_relations[start][goal] = type_
             except KeyError:
                 compound_relations[start] = {goal: type_}
+    print('CHEBI: {}/{} relations curated'.format(n_curated, n_entries))
     return compound_relations
 
 
@@ -683,9 +688,10 @@ def parse_vertices(data, compound_parents={}):
 
     """
     vertex_compounds = {}
-    for entry in data:
+    for n_entries, entry in enumerate(data):
         id_ = entry['ID']
         compound = entry['COMPOUND_CHILD_ID']
         parent = compound_parents.get(compound, compound)
         vertex_compounds[id_] = parent
+    print('CHEBI: {} vertices parsed'.format(n_entries))
     return vertex_compounds

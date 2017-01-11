@@ -47,6 +47,7 @@ import chebi
 import files
 import market
 import paths
+import pw
 import rhea
 
 
@@ -218,3 +219,47 @@ def initialize_rhea(chebi_parents={}):
     files.write_jsons(data, paths.JSON, jsonnames)
 
     return data
+
+
+def run_analysis():
+    """
+    """
+    # Define context.
+    context = {
+        'ec_reactions': files.get_json(paths.JSON, files.ENZ_REACTIONS),
+        'compound_reactions': files.get_json(paths.JSON, files.MOL_REACTIONS),
+        'complexities': files.get_json(paths.JSON, files.RXN_COMPLEXITIES),
+        'demands': files.get_json(paths.JSON, files.MOL_DEMANDS),
+        'prices': files.get_json(paths.JSON, files.MOL_PRICES),
+        'stoichiometrics': files.get_json(paths.JSON,
+                                          files.RXN_STOICHIOMETRICS),
+        }
+    S = context['stoichiometrics']
+    mol_rxns = context['compound_reactions']
+    G = pw.initialize_graph(S, mol_rxns, set(), chebi.IGNORED_COMPOUNDS)
+
+    # Define reference pathways.
+    ref_eth = ['45485', '25292']
+    ref_iso = ['10189', '15991', '17066', '16342', '23733', '23285', '13370']
+
+    # Obtain results.
+    C_eth = []
+    E_eth = []
+    C_iso = []
+    E_iso = []
+    raw_eth = pw.evaluate_input(20, G, C_eth, E_eth, context)
+    raw_iso = pw.evaluate_input(20, G, C_iso, E_iso, context)
+
+    # Analyze results.
+    results_rxns_eth = analyze_rxns(raw_eth, ref_eth, context)
+    results_mols_eth = analyze_mols(raw_eth, ref_eth, context)
+
+    results_rxns_iso = analyze_rxns(raw_iso, ref_iso, context)
+    results_mols_iso = analyze_mols(raw_iso, ref_iso, context)
+
+    return [
+        results_rxns_eth,
+        results_mols_eth,
+        results_rxns_iso,
+        results_mols_iso,
+        ]
