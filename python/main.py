@@ -53,7 +53,7 @@ import pw
 import rhea
 
 
-def compare_pathways(pathways_raw, reactions_ref, context):
+def compare_pathways(pathways_raw, reactions_ref, context, treshold=0.8):
     """
     """
     Pathway = namedtuple('Pathway', ['path', 'score', 's_s', 's_p', 's_mol',
@@ -80,7 +80,10 @@ def compare_pathways(pathways_raw, reactions_ref, context):
         s_p = len(intersect_p) / len(union_p)
         s_m = len(intersect_s | intersect_p) / len(union_s | union_p)
         s_r = len(intersect_r) / len(union_r)
-        pathways.append(Pathway(reactions, score, s_s, s_p, s_m, s_r))
+        pathway = Pathway(reactions, score, s_s, s_p, s_m, s_r)
+        pathways.append(pathway)
+        if any(x >= treshold for x in [s_s, s_p, s_m, s_r]):
+            print(pathway)
     return pathways
 
 
@@ -281,19 +284,31 @@ def run_analysis():
     Parameters = namedtuple('Parameters', ['n', 'C', 'E'])
     results_eth = []
     results_iso = []
-    for n in range(5, 10):
+    start = 5
+    stop = 10
+    for n in range(start, stop):
         for C_eth in [['15361', '16236']]:
             for E_eth in [[]]:
                 parameters = Parameters(n, C_eth, E_eth)
+                print('ETH', parameters)
                 raw_eth = pw.evaluate_input(n, G, C_eth, E_eth, context)
                 # Compare to reference and save results.
                 pathways = compare_pathways(raw_eth, ref_eth, context)
                 results_eth.append(Result(pathways, parameters))
+                print()
+            print()
+        print()
+    print()
+    for n in range(start, stop):
         for C_iso in [[]]:
             for E_iso in [[]]:
-                parameters = Parameters(n, C_eth, E_eth)
+                parameters = Parameters(n, C_iso, E_iso)
+                print('ISO', parameters)
                 raw_iso = pw.evaluate_input(n, G, C_iso, E_iso, context)
                 # Compare to reference and save results.
                 pathways = compare_pathways(raw_iso, ref_iso, context)
                 results_iso.append(Result(pathways, parameters))
+                print()
+            print()
+        print()
     return results_eth, results_iso
