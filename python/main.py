@@ -43,12 +43,57 @@ method calls the superclass method (in addition to its own behavior).
 """
 
 
+from collections import namedtuple
+
 import chebi
 import files
 import market
 import paths
 import pw
 import rhea
+
+
+def compare_pathways(pathways_raw, reactions_ref, context):
+    """
+    """
+    Pathway = namedtuple('Pathway', ['path', 'score', 's_s', 's_p', 's_mol',
+                                     's_rxn'])
+    pathways = []
+    substrates_ref = []
+    products_ref = []
+    n_reactions_ref = len(reactions_ref)
+    for reaction in reactions_ref:
+        substrates_ref.append(context['stoichiometrics'][reaction][0])
+        products_ref.append(context['stoichiometrics'][reaction][1])
+    n_substrates_ref = len(substrates_ref)
+    n_products_ref = len(products_ref)
+    for score, reactions in pathways_raw:
+        n_reactions = len(reactions)
+        substrates = []
+        products = []
+        n_matches_reactions = 0
+        for reaction in reactions:
+            substrates.append(context['stoichiometrics'][reaction][0])
+            products.append(context['stoichiometrics'][reaction][1])
+            if reaction in reactions_ref:
+                n_matches_reactions += 2  # += 2?
+        n_matches_substrates = 0
+        for substrate in substrates:
+            if substrate in substrates_ref:
+                n_matches_substrates += 2  # += 2?
+        n_substrates = len(substrates)
+        n_matches_products = 0
+        for product in products:
+            if product in products_ref:
+                n_matches_products += 2  # += 2?
+        n_products = len(products)
+        s_s = n_matches_substrates / (n_substrates + n_substrates_ref)
+        s_p = n_matches_products / (n_products + n_products_ref)
+        s_m = n_matches_substrates + n_matches_products / (
+            n_substrates + n_substrates_ref + n_products + n_products_ref)
+        s_r = n_matches_reactions / (n_reactions + n_reactions_ref)
+        pathways.append(Pathway(reactions, score, s_s, s_p, s_m, s_r))
+    return pathways
 
 
 def initialize_chebi():
@@ -201,11 +246,11 @@ def initialize_rhea(chebi_parents={}):
     # Extract data from tsv file.
     ecs_raw = files.get_content(paths.RHEA_TSV, files.RHEA_EC)
     ecs_tsv = files.parse_tsv(ecs_raw, ['EC', 'RHEA', 'DIRECTION'])
-    enz_reactions, reaction_ecs = rhea.read_ecs(ecs_tsv, rxn_master, master_rxn)
+    ec_reactions, reaction_ecs = rhea.read_ecs(ecs_tsv, rxn_master, master_rxn)
 
     # Save data in JSON format.
     data = [mol_rxns,
-            enz_reactions,
+            ec_reactions,
             reaction_ecs,
             rxn_equats,
             rxn_stoich,
@@ -243,12 +288,22 @@ def run_analysis():
     ref_iso = ['10189', '15991', '17066', '16342', '23733', '23285', '13370']
 
     # Obtain results.
-    for n in range(1, 20):
+    Result = namedtuple('Result', ['paths', 'parameters'])
+    Parameters = namedtuple('Parameters', ['n', 'C', 'E'])
+    results_eth = []
+    results_iso = []
+    for n in range(5, 10):
         for C_eth in []:
             for E_eth in []:
+                parameters = Parameters(n, C_eth, E_eth)
                 raw_eth = pw.evaluate_input(n, G, C_eth, E_eth, context)
                 # Compare to reference and save results.
+                pathways = compare_pathways(raw_eth, ref_eth, context)
+                results_eth.append(Result(pathways, parameters))
         for C_iso in []:
             for E_iso in []:
+                parameters = Parameters(n, C_eth, E_eth)
                 raw_iso = pw.evaluate_input(n, G, C_iso, E_iso, context)
                 # Compare to reference and save results.
+                pathways = compare_pathways(raw_iso, ref_iso, context)
+                results_iso.append(Result(pathways, parameters))
