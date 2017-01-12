@@ -231,8 +231,8 @@ def filter_pathways(
                 discard_products_2 = any(p in pre_s for p in products)
                 if discard_products_1 and discard_products_2:
                     break
-            compounds_pw.update(substrates.keys())
-            compounds_pw.update(products.keys())
+            compounds_pw.update(substrates)
+            compounds_pw.update(products)
             try:
                 enzymes_pw.update(reaction_ecs[reaction])
             except KeyError:

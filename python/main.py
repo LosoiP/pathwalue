@@ -59,39 +59,27 @@ def compare_pathways(pathways_raw, reactions_ref, context):
     Pathway = namedtuple('Pathway', ['path', 'score', 's_s', 's_p', 's_mol',
                                      's_rxn'])
     pathways = []
-    substrates_ref = []
-    products_ref = []
-    n_reactions_ref = len(reactions_ref)
+    substrates_ref = set()
+    products_ref = set()
     for reaction in reactions_ref:
-        substrates_ref.append(context['stoichiometrics'][reaction][0])
-        products_ref.append(context['stoichiometrics'][reaction][1])
-    n_substrates_ref = len(substrates_ref)
-    n_products_ref = len(products_ref)
+        substrates_ref.update(context['stoichiometrics'][reaction][0])
+        products_ref.update(context['stoichiometrics'][reaction][1])
     for score, reactions in pathways_raw:
-        n_reactions = len(reactions)
-        substrates = []
-        products = []
-        n_matches_reactions = 0
+        substrates = set()
+        products = set()
         for reaction in reactions:
-            substrates.append(context['stoichiometrics'][reaction][0])
-            products.append(context['stoichiometrics'][reaction][1])
-            if reaction in reactions_ref:
-                n_matches_reactions += 2  # += 2?
-        n_matches_substrates = 0
-        for substrate in substrates:
-            if substrate in substrates_ref:
-                n_matches_substrates += 2  # += 2?
-        n_substrates = len(substrates)
-        n_matches_products = 0
-        for product in products:
-            if product in products_ref:
-                n_matches_products += 2  # += 2?
-        n_products = len(products)
-        s_s = n_matches_substrates / (n_substrates + n_substrates_ref)
-        s_p = n_matches_products / (n_products + n_products_ref)
-        s_m = n_matches_substrates + n_matches_products / (
-            n_substrates + n_substrates_ref + n_products + n_products_ref)
-        s_r = n_matches_reactions / (n_reactions + n_reactions_ref)
+            substrates.update(context['stoichiometrics'][reaction][0])
+            products.update(context['stoichiometrics'][reaction][1])
+        intersect_s = substrates & substrates_ref
+        intersect_p = products & products_ref
+        intersect_r = set(reactions) & set(reactions_ref)
+        union_s = substrates | substrates_ref
+        union_p = products | products_ref
+        union_r = set(reactions) | set(reactions_ref)
+        s_s = len(intersect_s) / len(union_s)
+        s_p = len(intersect_p) / len(union_p)
+        s_m = len(intersect_s | intersect_p) / len(union_s | union_p)
+        s_r = len(intersect_r) / len(union_r)
         pathways.append(Pathway(reactions, score, s_s, s_p, s_m, s_r))
     return pathways
 
@@ -276,6 +264,7 @@ def run_analysis():
         'complexities': files.get_json(paths.JSON, files.RXN_COMPLEXITIES),
         'demands': files.get_json(paths.JSON, files.MOL_DEMANDS),
         'prices': files.get_json(paths.JSON, files.MOL_PRICES),
+        'reaction_ecs': files.get_json(paths.JSON, files.RXN_ECS),
         'stoichiometrics': files.get_json(paths.JSON,
                                           files.RXN_STOICHIOMETRICS),
         }
@@ -293,17 +282,18 @@ def run_analysis():
     results_eth = []
     results_iso = []
     for n in range(5, 10):
-        for C_eth in []:
-            for E_eth in []:
+        for C_eth in [['15361', '16236']]:
+            for E_eth in [[]]:
                 parameters = Parameters(n, C_eth, E_eth)
                 raw_eth = pw.evaluate_input(n, G, C_eth, E_eth, context)
                 # Compare to reference and save results.
                 pathways = compare_pathways(raw_eth, ref_eth, context)
                 results_eth.append(Result(pathways, parameters))
-        for C_iso in []:
-            for E_iso in []:
+        for C_iso in [[]]:
+            for E_iso in [[]]:
                 parameters = Parameters(n, C_eth, E_eth)
                 raw_iso = pw.evaluate_input(n, G, C_iso, E_iso, context)
                 # Compare to reference and save results.
                 pathways = compare_pathways(raw_iso, ref_iso, context)
                 results_iso.append(Result(pathways, parameters))
+    return results_eth, results_iso
