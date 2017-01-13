@@ -28,9 +28,22 @@ import numpy as np
 from exceptions import ReactionIdError
 
 
-RELATIONS_DEMAND = set(['has_role', 'is_a'])
-RELATIONS_PRICE = set(['has_role', 'has_functional_parent',
-                       'is_substituent_group_from', 'has_part', 'is_a'])
+RELATIONS_DEMAND = set([
+    'has_role',
+    'is_a',
+    'has_part',
+    ])
+RELATIONS_PRICE = set([
+    'has_role',
+    'has_functional_parent',
+    'is_functional_parent',
+    'is_substituent_group_from',
+    'has_part',
+    'is_conjugate_acid_of',
+    'is_conjugate_base_of',
+    'is_enantiomer_of',
+    'is_a',
+    ])
 CHEBIS_DEMAND = {
     '33232': 1,  # application
     # Applications (ChEBI 33232)

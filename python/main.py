@@ -53,7 +53,7 @@ import pw
 import rhea
 
 
-def compare_pathways(pathways_raw, reactions_ref, context, treshold=0.8):
+def compare_pathways(pathways_raw, reactions_ref, context):
     """
     """
     Pathway = namedtuple('Pathway', ['path', 'score', 's_s', 's_p', 's_mol',
@@ -64,26 +64,28 @@ def compare_pathways(pathways_raw, reactions_ref, context, treshold=0.8):
     for reaction in reactions_ref:
         substrates_ref.update(context['stoichiometrics'][reaction][0])
         products_ref.update(context['stoichiometrics'][reaction][1])
+    compounds_ref = substrates_ref | products_ref
     for score, reactions in pathways_raw:
         substrates = set()
         products = set()
         for reaction in reactions:
             substrates.update(context['stoichiometrics'][reaction][0])
             products.update(context['stoichiometrics'][reaction][1])
+        compounds = substrates | products
+        intersect_c = compounds & compounds_ref
         intersect_s = substrates & substrates_ref
         intersect_p = products & products_ref
         intersect_r = set(reactions) & set(reactions_ref)
+        union_c = compounds | compounds_ref
         union_s = substrates | substrates_ref
         union_p = products | products_ref
         union_r = set(reactions) | set(reactions_ref)
         s_s = len(intersect_s) / len(union_s)
         s_p = len(intersect_p) / len(union_p)
-        s_m = len(intersect_s | intersect_p) / len(union_s | union_p)
+        s_m = len(intersect_c) / len(union_c)
         s_r = len(intersect_r) / len(union_r)
         pathway = Pathway(reactions, score, s_s, s_p, s_m, s_r)
         pathways.append(pathway)
-        if any(x >= treshold for x in [s_s, s_p, s_m, s_r]):
-            print(pathway)
     return pathways
 
 
@@ -161,6 +163,7 @@ def initialize_market():
         Dicts of data.
 
     """
+    compounds_all = files.get_json(paths.JSON, files.MOL_NAMES)
     compound_reactions = files.get_json(paths.JSON, files.MOL_REACTIONS)
     compound_relations = files.get_json(paths.JSON, files.MOL_RELATIONS)
     stoichiometrics = files.get_json(paths.JSON, files.RXN_STOICHIOMETRICS)
@@ -257,7 +260,7 @@ def initialize_rhea(chebi_parents={}):
     return data
 
 
-def run_analysis():
+def main():
     """
     """
     # Define context.
@@ -266,6 +269,7 @@ def run_analysis():
         'compound_reactions': files.get_json(paths.JSON, files.MOL_REACTIONS),
         'complexities': files.get_json(paths.JSON, files.RXN_COMPLEXITIES),
         'demands': files.get_json(paths.JSON, files.MOL_DEMANDS),
+        'equations': files.get_json(paths.JSON, files.RXN_EQUATIONS),
         'prices': files.get_json(paths.JSON, files.MOL_PRICES),
         'reaction_ecs': files.get_json(paths.JSON, files.RXN_ECS),
         'stoichiometrics': files.get_json(paths.JSON,
@@ -280,35 +284,110 @@ def run_analysis():
     ref_iso = ['10189', '15991', '17066', '16342', '23733', '23285', '13370']
 
     # Obtain results.
-    Result = namedtuple('Result', ['paths', 'parameters'])
+    start = 10
+    stop = 11
+    Cs_eth = [
+        [],
+        #['any', '16236'],
+        #['15361', 'any'],
+        ['15361', '16236'],
+        #['15361', '15343', '16236'],
+        ]
+    Es_eth = [
+        [],
+#        ['4.1.1.1'],
+#        ['1.1.1.1'],
+#        ['4.1.1.1', '1.1.1.1'],
+        ]
+    Cs_iso = [
+        [],
+#        ['any', '35194'],
+#        ['57286', 'any'],
+#        ['57286', '35194'],
+#        ['57286', '57623', '35194'],
+#        ['57286', '43074', '35194'],
+#        ['57286', '43074', '36464', '35194'],
+#        ['57286', '128769', '57623', '35194'],
+#        ['57286', '43074', '36464', '58146', '35194'],
+#        ['57286', '57557', '128769', '57623', '35194'],
+#        ['57286', '43074', '36464', '58146', '57623', '35194'],
+#        ['57286', '58146', '57557', '128769', '57623', '35194'],
+#        ['57286', '43074', '36464', '58146', '57557', '57623', '35194'],
+#        ['57286', '36464', '58146', '57557', '128769', '57623', '35194'],
+#        ['57286', '43074', '36464', '58146', '57557', '128769', '57623', '35194'],
+        ]
+    Es_iso = [
+        [],
+#        ['2.3.3.10'],
+#        ['4.2.3.27'],
+#        ['2.3.3.10', '4.2.3.27'],
+#        ['2.3.3.10', '5.3.3.2', '4.2.3.27'],
+#        ['2.3.3.10', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
+#        ['2.3.3.10', '2.7.4.2', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
+#        ['2.3.3.10', '2.7.1.36', '2.7.4.2', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
+#        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '2.7.4.2', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
+#        ['2.3.3.10', '1.1.1.34', '4.2.3.27'],
+#        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '4.2.3.27'],
+#        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '2.7.4.2', '4.2.3.27'],
+#        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '2.7.4.2', '4.1.1.33', '4.2.3.27'],
+#        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '2.7.4.2', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
+        ]
+    results_eth = run_analysis(G, start, stop, Cs_eth, Es_eth, ref_eth,
+                               context)
+    results_iso = run_analysis(G, start, stop, Cs_iso, Es_iso, ref_iso,
+                               context)
+
+    show_results([results_eth, results_iso], ['ETH', 'ISO'], context)
+
+
+def run_analysis(G, n_start, n_stop, Cs, Es, reference, context):
+    """
+    """
     Parameters = namedtuple('Parameters', ['n', 'C', 'E'])
-    results_eth = []
-    results_iso = []
-    start = 5
-    stop = 10
-    for n in range(start, stop):
-        for C_eth in [['15361', '16236']]:
-            for E_eth in [[]]:
-                parameters = Parameters(n, C_eth, E_eth)
-                print('ETH', parameters)
-                raw_eth = pw.evaluate_input(n, G, C_eth, E_eth, context)
+    Result = namedtuple('Result', ['pathways', 'parameters'])
+    results = []
+    for n in range(n_start, n_stop):
+        for C in Cs:
+            for E in Es:
+                parameters = Parameters(n, C, E)
+                raw = pw.evaluate_input(n, G, C, E, context)
                 # Compare to reference and save results.
-                pathways = compare_pathways(raw_eth, ref_eth, context)
-                results_eth.append(Result(pathways, parameters))
+                pathways = compare_pathways(raw, reference, context)
+                results.append(Result(pathways, parameters))
+    return results
+
+
+def show_results(results, names, context):
+    """
+    """
+    pw_entries = ['score', 's_s', 's_p', 's_mol', 's_rxn']
+    with open('results_all.txt', mode='w') as file:
+        for result, name in zip(results, names):
+            for pathways, parameters in result:
+                print(name, parameters)
+                print(name, parameters, file=file)
+                for pathway in pathways:
+                    print(pathway)
+                    print(pathway, file=file)
+                    for rxn in pathway.path:
+                        print(rxn, context['equations'][rxn])
+                        print(rxn, context['equations'][rxn], file=file)
+                    for value, key in zip(pathway[1:], pw_entries):
+                        print(key, value)
+                        print(key, value, file=file)
+                    print()
+                    print(file=file)
                 print()
-            print()
-        print()
-    print()
-    for n in range(start, stop):
-        for C_iso in [[]]:
-            for E_iso in [[]]:
-                parameters = Parameters(n, C_iso, E_iso)
-                print('ISO', parameters)
-                raw_iso = pw.evaluate_input(n, G, C_iso, E_iso, context)
-                # Compare to reference and save results.
-                pathways = compare_pathways(raw_iso, ref_iso, context)
-                results_iso.append(Result(pathways, parameters))
-                print()
-            print()
-        print()
-    return results_eth, results_iso
+                print(file=file)
+    with open('results.txt', mode='w') as file:
+        for result, name in zip(results, names):
+            for pathways, parameters in result:
+                for pathway in pathways:
+                    if any(x >= 0.5 for x in pathway[2:]):
+                        print(name, parameters, file=file)
+                        print(pathway, file=file)
+                        for rxn in pathway.path:
+                            print(rxn, context['equations'][rxn], file=file)
+                        for value, key in zip(pathway[1:], pw_entries):
+                            print(key, value, file=file)
+                        print(file=file)
