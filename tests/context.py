@@ -13,7 +13,7 @@ import chebi
 import files
 # import intenz
 # import main
-# import market
+import market
 import paths
 # import pw
 import rhea
