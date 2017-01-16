@@ -269,6 +269,7 @@ def main():
         'complexities': files.get_json(paths.JSON, files.RXN_COMPLEXITIES),
         'demands': files.get_json(paths.JSON, files.MOL_DEMANDS),
         'equations': files.get_json(paths.JSON, files.RXN_EQUATIONS),
+        'ignored': chebi.IGNORED_COMPOUNDS,
         'prices': files.get_json(paths.JSON, files.MOL_PRICES),
         'reaction_ecs': files.get_json(paths.JSON, files.RXN_ECS),
         'stoichiometrics': files.get_json(paths.JSON,

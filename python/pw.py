@@ -211,24 +211,28 @@ def filter_pathways(
     """
     reaction_ecs = context['reaction_ecs']
     stoichiometrics = context['stoichiometrics']
+    ignored = context.get('ingored', set())
     for pathway in pathways:
         compounds_pw = set(['any'])
         enzymes_pw = set()
         for i, reaction in enumerate(pathway):
-            substrates, products = stoichiometrics[reaction]
+            substrates = set(stoichiometrics[reaction][0])
+            products = set(stoichiometrics[reaction][1])
             if target in substrates:
                 break
             elif source in products:
                 break
             elif i >= 2:
-                prepre_s, prepre_p = stoichiometrics[pathway[i - 2]]
-                pre_s, pre_p = stoichiometrics[pathway[i - 1]]
-                discard_substrates_1 = any(s in prepre_s for s in substrates)
-                discard_substrates_2 = any(s in pre_p for s in substrates)
+                prepre_s = set(stoichiometrics[pathway[i - 2]][0])
+                prepre_p = set(stoichiometrics[pathway[i - 2]][1])
+                pre_s = set(stoichiometrics[pathway[i - 1]][0])
+                pre_p = set(stoichiometrics[pathway[i - 1]][1])
+                discard_substrates_1 = substrates & (prepre_s - ignored)
+                discard_substrates_2 = substrates & (pre_p - ignored)
                 if discard_substrates_1 and discard_substrates_2:
                     break
-                discard_products_1 = any(p in prepre_p for p in products)
-                discard_products_2 = any(p in pre_s for p in products)
+                discard_products_1 = products & (prepre_p - ignored)
+                discard_products_2 = products & (pre_s - ignored)
                 if discard_products_1 and discard_products_2:
                     break
             compounds_pw.update(substrates)
