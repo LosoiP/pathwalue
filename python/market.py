@@ -88,6 +88,10 @@ CHEBIS_DEMAND = {
     '52217': 2,  # pharmaceutical
     # Pharmaceuticals (ChEBI 52217)
     '23888': 1,  # drug
+    #
+    '33245': 1,  # organic fundamental parent
+    '24632': 2,  # hydrocarbon
+    '33641': 1,  # olefin
     }
 CHEBIS_PRICE = {
     # Groups
