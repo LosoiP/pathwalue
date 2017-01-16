@@ -658,13 +658,13 @@ def parse_relations(data, vertex_compounds):
         if status.strip() == 'C':
             n_curated += 1
             # Map `goal` and `start` to compound IDs.
-            start = vertex_compounds[initial]
-            goal = vertex_compounds[final]
+            source = vertex_compounds[final]
+            target = vertex_compounds[initial]
             # Map relation start to mapping from goal to type.
             try:
-                compound_relations[start][goal] = type_
+                compound_relations[source][target] = type_
             except KeyError:
-                compound_relations[start] = {goal: type_}
+                compound_relations[source] = {target: type_}
     print('CHEBI: {}/{} relations curated'.format(n_curated, n_entries))
     return compound_relations
 

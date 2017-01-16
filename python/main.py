@@ -163,7 +163,6 @@ def initialize_market():
         Dicts of data.
 
     """
-    compounds_all = files.get_json(paths.JSON, files.MOL_NAMES)
     compound_reactions = files.get_json(paths.JSON, files.MOL_REACTIONS)
     compound_relations = files.get_json(paths.JSON, files.MOL_RELATIONS)
     stoichiometrics = files.get_json(paths.JSON, files.RXN_STOICHIOMETRICS)
@@ -284,13 +283,15 @@ def main():
     ref_iso = ['10189', '15991', '17066', '16342', '23733', '23285', '13370']
 
     # Obtain results.
-    start = 10
-    stop = 11
+    start = 3
+    stop = 6
     Cs_eth = [
         [],
         #['any', '16236'],
         #['15361', 'any'],
         ['15361', '16236'],
+        #['any', '15343', '16236'],
+        #['15361', '15343', 'any'],
         #['15361', '15343', '16236'],
         ]
     Es_eth = [
@@ -361,14 +362,20 @@ def show_results(results, names, context):
     """
     """
     pw_entries = ['score', 's_s', 's_p', 's_mol', 's_rxn']
+    results_best = []
     with open('results_all.txt', mode='w') as file:
         for result, name in zip(results, names):
             for pathways, parameters in result:
                 print(name, parameters)
                 print(name, parameters, file=file)
+                s_mols = []
+                s_rxns = []
+                n = len(pathways)
                 for pathway in pathways:
                     print(pathway)
                     print(pathway, file=file)
+                    s_mols.append(pathway.s_mol)
+                    s_rxns.append(pathway.s_rxn)
                     for rxn in pathway.path:
                         print(rxn, context['equations'][rxn])
                         print(rxn, context['equations'][rxn], file=file)
@@ -377,17 +384,28 @@ def show_results(results, names, context):
                         print(key, value, file=file)
                     print()
                     print(file=file)
+                if n > 0:
+                    mean_mols = sum(s_mols) / n
+                    mean_rxns = sum(s_rxns) / n
+                    print(name, 'Result:', mean_mols)
+                    print(name, 'Result:', mean_rxns, file=file)
+                    if mean_mols > 0.5 or mean_rxns > 0.5:
+                        results_best.append([result, name, mean_mols, mean_rxns])
                 print()
                 print(file=file)
     with open('results.txt', mode='w') as file:
-        for result, name in zip(results, names):
+        for result, name, mean_mols, mean_rxns in results_best:
             for pathways, parameters in result:
+                if len(pathways) == 0:
+                    continue
+                print(name, parameters, file=file)
+                print(name, mean_mols, mean_rxns, file=file)
+                print(file=file)
                 for pathway in pathways:
-                    if any(x >= 0.5 for x in pathway[2:]):
-                        print(name, parameters, file=file)
-                        print(pathway, file=file)
-                        for rxn in pathway.path:
-                            print(rxn, context['equations'][rxn], file=file)
-                        for value, key in zip(pathway[1:], pw_entries):
-                            print(key, value, file=file)
-                        print(file=file)
+                    print(pathway, file=file)
+                    for rxn in pathway.path:
+                        print(rxn, context['equations'][rxn], file=file)
+                    for value, key in zip(pathway[1:], pw_entries):
+                        print(key, value, file=file)
+                    print(file=file)
+                print(file=file)
