@@ -304,7 +304,7 @@ def main():
         [],
 #        ['any', '35194'],
 #        ['57286', 'any'],
-#        ['57286', '35194'],
+        ['57286', '35194'],
 #        ['57286', '57623', '35194'],
 #        ['57286', '43074', '35194'],
 #        ['57286', '43074', '36464', '35194'],
@@ -338,7 +338,7 @@ def main():
     results_iso = run_analysis(G, start, stop, Cs_iso, Es_iso, ref_iso,
                                context)
 
-    show_results([results_eth, results_iso], ['ETH', 'ISO'], context)
+    return show_results([results_eth, results_iso], ['ETH', 'ISO'], context)
 
 
 def run_analysis(G, n_start, n_stop, Cs, Es, reference, context):
@@ -387,25 +387,26 @@ def show_results(results, names, context):
                 if n > 0:
                     mean_mols = sum(s_mols) / n
                     mean_rxns = sum(s_rxns) / n
-                    print(name, 'Result:', mean_mols)
+                    print(name, 'Result:', mean_mols, file=file)
                     print(name, 'Result:', mean_rxns, file=file)
                     if mean_mols > 0.5 or mean_rxns > 0.5:
-                        results_best.append([result, name, mean_mols, mean_rxns])
+                        results_best.append([parameters, pathways, name,
+                                             mean_mols, mean_rxns])
                 print()
                 print(file=file)
     with open('results.txt', mode='w') as file:
-        for result, name, mean_mols, mean_rxns in results_best:
-            for pathways, parameters in result:
-                if len(pathways) == 0:
-                    continue
-                print(name, parameters, file=file)
-                print(name, mean_mols, mean_rxns, file=file)
+        for parameters, pathways, name, mean_mols, mean_rxns in results_best:
+            if len(pathways) == 0:
+                continue
+            print(name, parameters, file=file)
+            print(name, mean_mols, mean_rxns, file=file)
+            print(file=file)
+            for pathway in pathways:
+                print(pathway, file=file)
+                for rxn in pathway.path:
+                    print(rxn, context['equations'][rxn], file=file)
+                for value, key in zip(pathway[1:], pw_entries):
+                    print(key, value, file=file)
                 print(file=file)
-                for pathway in pathways:
-                    print(pathway, file=file)
-                    for rxn in pathway.path:
-                        print(rxn, context['equations'][rxn], file=file)
-                    for value, key in zip(pathway[1:], pw_entries):
-                        print(key, value, file=file)
-                    print(file=file)
-                print(file=file)
+            print(file=file)
+    return results_best
