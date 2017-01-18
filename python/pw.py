@@ -160,13 +160,15 @@ def evaluate_pathway(steps, compounds):
     values_products = (compounds[p][1] * compounds[p][0] for p in products)
     amount_reactions = len(steps)
 
+    # Evaluate similarity of reactants and products.
+    s = len(substrates_all & products_all) / len(substrates_all | products_all)
     # Evaluate total value of products and reactants.
     p = sum(values_products)
     r = sum(values_reactants)
     # Evaluate pathway's total complexity factor.
     c = sum(values_reactions)
     # Evaluate and return pathway's value.
-    value = m.ceil((p - r) * (c + 1) / amount_reactions)
+    value = m.ceil(s * (p - r) * (c + 1) / amount_reactions)
     return value
 
 
