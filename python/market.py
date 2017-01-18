@@ -51,10 +51,13 @@ RELATIONS_PRICE = set([
     'is_tautomer_of'
     ])
 CHEBIS_DEMAND = {
+    '50906': 1,  # role
+    # Roles (ChEBI 50906)
     '33232': 1,  # application
+    '24432': 1,  # biological role
+    '51086': 1,  # chemical role
     # Applications (ChEBI 33232)
-    '33286': 2,  # agrochemical
-    '75835': 1,  # anti-anaemic agent
+    '33286': 1,  # agrochemical
     '67079': 1,  # anti-inflammatory agent
     '77964': 1,  # anticaking agent
     '77973': 1,  # antifoaming agent
@@ -62,49 +65,57 @@ CHEBIS_DEMAND = {
     '75358': 1,  # curing agent
     '27780': 1,  # detergent
     '37958': 1,  # dye
-    '78152': 1,  # enzyme mimic
-    '75324': 1,  # excipient
-    '79314': 1,  # flame retardant
     '64047': 1,  # food additive
     '48318': 1,  # fragnance
-    '33292': 2,  # fuel
+    '33292': 1,  # fuel
     '77968': 1,  # humectant
     '47867': 1,  # indicator
     '35209': 1,  # label
     '64345': 1,  # MALDI matrix material
-    '74152': 1,  # mordant
-    '74886': 1,  # neoglycolipid probe
-    '25944': 2,  # pesticide
-    '79056': 2,  # plasticiser
+    '25944': 1,  # pesticide
+    '79056': 1,  # plasticiser
     '50406': 1,  # probe
     '76414': 1,  # propellant
-    '51087': 1,  # protecting group
-    '50533': 1,  # protein denaturant
-    '73352': 1,  # protein-sequencing agent
-    '33893': 2,  # reagent
-    '78433': 2,  # refrigerant
-    '46787': 2,  # solvent
+    '33893': 1,  # reagent
+    '78433': 1,  # refrigerant
+    '46787': 1,  # solvent
     '35204': 1,  # tracer
-    '52217': 2,  # pharmaceutical
-    # Pharmaceuticals (ChEBI 52217)
-    '23888': 1,  # drug
-    #
-    '33245': 1,  # organic fundamental parent
-    '24632': 2,  # hydrocarbon
-    '33641': 1,  # olefin
+    '52217': 1,  # pharmaceutical
+    # Biological roles (ChEBI 24432)
+    '52210': 1,  # pharmacological role
+    '50188': 1,  # provitamin
+    '50913': 1,  # fixative
+    '50846': 1,  # immunomodulator
+    '52206': 1,  # biochemical role
+    '24850': 1,  # insect attractant
+    '73190': 1,  # antimutagen
+    '35222': 1,  # inhibitor
+    '35703': 1,  # xenobiotic
+    # Chemical roles (ChEBI 51086)
+    '37527': 1,  # acid
+    '22695': 1,  # base
+    '74236': 1,  # polymerisation monomer
+    '62803': 1,  # fuel additive
+    '63046': 1,  # emulsifier
+    '22586': 1,  # antioxidant
+    '63490': 1,  # explosive
+    '46787': 1,  # solvent
+    '35225': 1,  # buffer
+    '35223': 1,  # catalyst
+    '52215': 1,  # photochemical role
     }
 CHEBIS_PRICE = {
     # Groups
     '33249': 1,  # organyl group
-    '23019': 2,  # carbonyl group
-    '46883': 2,  # carboxy group
+    '23019': 1,  # carbonyl group
+    '46883': 1,  # carboxy group
     '51422': 1,  # organodiyl group
     '79073': 1,  # CHOH group
     '43176': 1,  # hydroxy group
     '50860': 1,  # organic molecular entity
     # Organic molecular entities (ChEBI 50860)
     '18059': 1,  # lipid
-    '78840': 2,  # olefinic compound
+    '78840': 1,  # olefinic compound
     '64709': 1,  # organic acid
     '50047': 1,  # organic amino compound
     '33245': 1,  # organic fundamental parent
@@ -123,17 +134,15 @@ CHEBIS_PRICE = {
     '33641': 1,  # olefin
     # Acyclic olefins (ChEBI 33645)
     '32878': 1,  # alkene
-    # Organic amino compounds (ChEBI 50047)
-    '32952': 1,  # amine
-    '33709': 1,  # amino acid
-    '22478': 1,  # amino alcohol
-    '33869': 1,  # aromatic amine
     # Organic fundamental parents (ChEBI 33245)
     '24632': 1,  # hydrocarbon
     # Organic hydroxy compounds (ChEBI 33822)
     '30879': 1,  # alcohol
     '33823': 1,  # enol
     '33853': 1,  # phenols
+    # Metabolites
+    '75763': 1,  # eukaryotic metabolite
+    '76924': 1,  # plant metabolite
     }
 
 COMPLEXITY_COMPOUNDS = {
