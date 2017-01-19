@@ -32,23 +32,25 @@ RELATIONS_DEMAND = set([
     'has_functional_parent',
     'has_parent_hydride',
     'has_part',
+    'has_role',
     'is_a',
     'is_conjugate_acid_of',
     'is_conjugate_base_of',
     'is_enantiomer_of',
     'is_substituent_group_from',
-    'is_tautomer_of'
+    'is_tautomer_of',
     ])
 RELATIONS_PRICE = set([
     'has_functional_parent',
     'has_parent_hydride',
     'has_part',
+    'has_role',
     'is_a',
     'is_conjugate_acid_of',
     'is_conjugate_base_of',
     'is_enantiomer_of',
     'is_substituent_group_from',
-    'is_tautomer_of'
+    'is_tautomer_of',
     ])
 CHEBIS_DEMAND = {
     '50906': 1,  # role
