@@ -168,7 +168,7 @@ def evaluate_pathway(steps, compounds):
     # Evaluate pathway's total complexity factor.
     c = sum(values_reactions)
     # Evaluate and return pathway's value.
-    value = m.ceil(s * (p - r) * (c + 1) / amount_reactions)
+    value = m.ceil(s**2 * (p - r) * (c + 1) / amount_reactions**2)
     return value
 
 

@@ -284,8 +284,8 @@ def main():
     ref_iso = ['10189', '15991', '17066', '16342', '23733', '23285', '13370']
 
     # Obtain results.
-    start = 3
-    stop = 6
+    start = 100
+    stop = 101
     Cs_eth = [
         [],
         ['any', '16236'],
