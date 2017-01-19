@@ -284,12 +284,12 @@ def main():
     ref_iso = ['10189', '15991', '17066', '16342', '23733', '23285', '13370']
 
     # Obtain results.
-    start = 100
-    stop = 101
+    start = 5
+    stop = 6
     Cs_eth = [
         [],
-        ['any', '16236'],
-        ['15361', 'any'],
+#        ['any', '16236'],
+#        ['15361', 'any'],
         ['15361', '16236'],
 #        ['any', '15343', '16236'],
 #        ['15361', '15343', 'any'],
@@ -303,8 +303,8 @@ def main():
         ]
     Cs_iso = [
         [],
-        ['any', '35194'],
-        ['57286', 'any'],
+#        ['any', '35194'],
+#        ['57286', 'any'],
         ['57286', '35194'],
 #        ['any', '43074', '35194'],
 #        ['any', '57623', '35194'],
@@ -335,6 +335,32 @@ def main():
     results_iso = run_analysis(G, start, stop, Cs_iso, Es_iso, ref_iso,
                                context)
 
+    print('REF ETH')
+    data = list(pw.order_pathway_data([ref_eth],
+                                      context['stoichiometrics'],
+                                      context['complexities'],
+                                      context['demands'],
+                                      context['prices']))
+    print(list(pw.evaluate_pathway(s, c) for s, c in data))
+    for rxn in ref_eth:
+        print('RXN', rxn, context['equations'][rxn])
+        for mol in set(S[rxn][0]):
+            print('S', mol, context['demands'][mol], context['prices'][mol])
+        for mol in set(S[rxn][1]):
+            print('P', mol, context['demands'][mol], context['prices'][mol])
+    print('REF ISO')
+    data = list(pw.order_pathway_data([ref_iso],
+                                      context['stoichiometrics'],
+                                      context['complexities'],
+                                      context['demands'],
+                                      context['prices']))
+    print(list(pw.evaluate_pathway(s, c) for s, c in data))
+    for rxn in ref_iso:
+        print('RXN', rxn, context['equations'][rxn])
+        for mol in set(S[rxn][0]):
+            print('S', mol, context['demands'][mol], context['prices'][mol])
+        for mol in set(S[rxn][1]):
+            print('P', mol, context['demands'][mol], context['prices'][mol])
     return show_results([results_eth, results_iso], ['ETH', 'ISO'], context)
 
 
@@ -363,23 +389,18 @@ def show_results(results, names, context):
     with open('results_all.txt', mode='w') as file:
         for result, name in zip(results, names):
             for pathways, parameters in result:
-                print(name, parameters)
                 print(name, parameters, file=file)
                 s_mols = []
                 s_rxns = []
                 n = len(pathways)
                 for pathway in pathways:
-                    print(pathway)
                     print(pathway, file=file)
                     s_mols.append(pathway.s_mol)
                     s_rxns.append(pathway.s_rxn)
                     for rxn in pathway.path:
-                        print(rxn, context['equations'][rxn])
                         print(rxn, context['equations'][rxn], file=file)
                     for value, key in zip(pathway[1:], pw_entries):
-                        print(key, value)
                         print(key, value, file=file)
-                    print()
                     print(file=file)
                 if n > 0:
                     mean_mols = sum(s_mols) / n
@@ -389,7 +410,6 @@ def show_results(results, names, context):
                     if mean_mols > 0.5 or mean_rxns > 0.5:
                         results_best.append([parameters, pathways, name,
                                              mean_mols, mean_rxns])
-                print()
                 print(file=file)
     with open('results.txt', mode='w') as file:
         for parameters, pathways, name, mean_mols, mean_rxns in results_best:

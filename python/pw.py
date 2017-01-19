@@ -154,8 +154,9 @@ def evaluate_pathway(steps, compounds):
     values_reactions = (data[0] for data in steps.values())
     substrates_all = set(s for step in steps.values() for s in step[1])
     products_all = set(p for step in steps.values() for p in step[2])
-    substrates = substrates_all - products_all
-    products = products_all - substrates_all
+    steps_list = list(steps.values())
+    substrates = steps_list[0][1]
+    products = steps_list[-1][2]
     values_reactants = (compounds[s][1] * compounds[s][0] for s in substrates)
     values_products = (compounds[p][1] * compounds[p][0] for p in products)
     amount_reactions = len(steps)
@@ -168,7 +169,7 @@ def evaluate_pathway(steps, compounds):
     # Evaluate pathway's total complexity factor.
     c = sum(values_reactions)
     # Evaluate and return pathway's value.
-    value = m.ceil(s**2 * (p - r) * (c + 1) / amount_reactions**2)
+    value = m.ceil(10 * m.sqrt(s) * (p - r) / ((c + 1) * amount_reactions**2))
     return value
 
 

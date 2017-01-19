@@ -29,20 +29,20 @@ from exceptions import ReactionIdError
 
 
 RELATIONS_DEMAND = set([
-    'has_functional_parent',
-    'has_parent_hydride',
-    'has_part',
+    # 'has_functional_parent',
+    # 'has_parent_hydride',
+    # 'has_part',
     'has_role',
     'is_a',
     'is_conjugate_acid_of',
     'is_conjugate_base_of',
     'is_enantiomer_of',
-    'is_substituent_group_from',
+    # 'is_substituent_group_from',
     'is_tautomer_of',
     ])
 RELATIONS_PRICE = set([
-    'has_functional_parent',
-    'has_parent_hydride',
+    # 'has_functional_parent',
+    # 'has_parent_hydride',
     'has_part',
     'has_role',
     'is_a',
@@ -55,7 +55,7 @@ RELATIONS_PRICE = set([
 CHEBIS_DEMAND = {
     '50906': 1,  # role
     # Roles (ChEBI 50906)
-    '33232': 1,  # application
+    '33232': 5,  # application
     '24432': 1,  # biological role
     '51086': 1,  # chemical role
     # Applications (ChEBI 33232)
@@ -63,13 +63,13 @@ CHEBIS_DEMAND = {
     '67079': 1,  # anti-inflammatory agent
     '77964': 1,  # anticaking agent
     '77973': 1,  # antifoaming agent
-    '64857': 1,  # cosmetic
+    '64857': 5,  # cosmetic
     '75358': 1,  # curing agent
     '27780': 1,  # detergent
     '37958': 1,  # dye
     '64047': 1,  # food additive
-    '48318': 1,  # fragnance
-    '33292': 1,  # fuel
+    '48318': 5,  # fragnance
+    '33292': 5,  # fuel
     '77968': 1,  # humectant
     '47867': 1,  # indicator
     '35209': 1,  # label
@@ -78,13 +78,13 @@ CHEBIS_DEMAND = {
     '79056': 1,  # plasticiser
     '50406': 1,  # probe
     '76414': 1,  # propellant
-    '33893': 1,  # reagent
+    '33893': 3,  # reagent
     '78433': 1,  # refrigerant
-    '46787': 1,  # solvent
+    '46787': 3,  # solvent
     '35204': 1,  # tracer
-    '52217': 1,  # pharmaceutical
+    '52217': 3,  # pharmaceutical
     # Biological roles (ChEBI 24432)
-    '52210': 1,  # pharmacological role
+    '52210': 3,  # pharmacological role
     '50188': 1,  # provitamin
     '50913': 1,  # fixative
     '50846': 1,  # immunomodulator
@@ -96,12 +96,12 @@ CHEBIS_DEMAND = {
     # Chemical roles (ChEBI 51086)
     '37527': 1,  # acid
     '22695': 1,  # base
-    '74236': 1,  # polymerisation monomer
-    '62803': 1,  # fuel additive
+    '74236': 3,  # polymerisation monomer
+    '62803': 3,  # fuel additive
     '63046': 1,  # emulsifier
     '22586': 1,  # antioxidant
     '63490': 1,  # explosive
-    '46787': 1,  # solvent
+    '46787': 3,  # solvent
     '35225': 1,  # buffer
     '35223': 1,  # catalyst
     '52215': 1,  # photochemical role
@@ -137,9 +137,9 @@ CHEBIS_PRICE = {
     # Acyclic olefins (ChEBI 33645)
     '32878': 1,  # alkene
     # Organic fundamental parents (ChEBI 33245)
-    '24632': 1,  # hydrocarbon
+    '24632': 2,  # hydrocarbon
     # Organic hydroxy compounds (ChEBI 33822)
-    '30879': 1,  # alcohol
+    '30879': 2,  # alcohol
     '33823': 1,  # enol
     '33853': 1,  # phenols
     # Metabolites
@@ -344,7 +344,7 @@ def evaluate_complexity(reaction, stoichiometrics={}, compounds={}):
     total = sum(values.values())
     if total < 0:
         return 0
-    return total
+    return 0
 
 
 def evaluate_compound(demand, price):
