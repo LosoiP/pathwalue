@@ -293,19 +293,21 @@ def main():
         ['15361', '16236'],
 #        ['any', '15343', '16236'],
 #        ['15361', '15343', 'any'],
-#        ['15361', '15343', '16236'],
+        ['15361', '15343', '16236'],
         ]
     Es_eth = [
         [],
-#        ['4.1.1.1'],
-#        ['1.1.1.1'],
-#        ['4.1.1.1', '1.1.1.1'],
+        ['4.1.1.1'],
+        ['1.1.1.1'],
+        ['4.1.1.1', '1.1.1.1'],
         ]
     Cs_iso = [
         [],
 #        ['any', '35194'],
 #        ['57286', 'any'],
         ['57286', '35194'],
+        ['57286', '43074', '35194'],
+        ['57286', '57623', '35194'],
 #        ['any', '43074', '35194'],
 #        ['any', '57623', '35194'],
 #        ['any', '58146', '57557', '35194'],
@@ -316,15 +318,15 @@ def main():
         ]
     Es_iso = [
         [],
-#        ['2.3.3.10'],
-#        ['4.2.3.27'],
-#        ['2.3.3.10', '4.2.3.27'],
-#        ['2.3.3.10', '5.3.3.2', '4.2.3.27'],
+        ['2.3.3.10'],
+        ['4.2.3.27'],
+        ['2.3.3.10', '4.2.3.27'],
+        ['2.3.3.10', '5.3.3.2', '4.2.3.27'],
+        ['2.3.3.10', '1.1.1.34', '4.2.3.27'],
 #        ['2.3.3.10', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
 #        ['2.3.3.10', '2.7.4.2', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
 #        ['2.3.3.10', '2.7.1.36', '2.7.4.2', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
 #        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '2.7.4.2', '4.1.1.33', '5.3.3.2', '4.2.3.27'],
-#        ['2.3.3.10', '1.1.1.34', '4.2.3.27'],
 #        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '4.2.3.27'],
 #        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '2.7.4.2', '4.2.3.27'],
 #        ['2.3.3.10', '1.1.1.34', '2.7.1.36', '2.7.4.2', '4.1.1.33', '4.2.3.27'],
@@ -335,32 +337,6 @@ def main():
     results_iso = run_analysis(G, start, stop, Cs_iso, Es_iso, ref_iso,
                                context)
 
-    print('REF ETH')
-    data = list(pw.order_pathway_data([ref_eth],
-                                      context['stoichiometrics'],
-                                      context['complexities'],
-                                      context['demands'],
-                                      context['prices']))
-    print(list(pw.evaluate_pathway(s, c) for s, c in data))
-    for rxn in ref_eth:
-        print('RXN', rxn, context['equations'][rxn])
-        for mol in set(S[rxn][0]):
-            print('S', mol, context['demands'][mol], context['prices'][mol])
-        for mol in set(S[rxn][1]):
-            print('P', mol, context['demands'][mol], context['prices'][mol])
-    print('REF ISO')
-    data = list(pw.order_pathway_data([ref_iso],
-                                      context['stoichiometrics'],
-                                      context['complexities'],
-                                      context['demands'],
-                                      context['prices']))
-    print(list(pw.evaluate_pathway(s, c) for s, c in data))
-    for rxn in ref_iso:
-        print('RXN', rxn, context['equations'][rxn])
-        for mol in set(S[rxn][0]):
-            print('S', mol, context['demands'][mol], context['prices'][mol])
-        for mol in set(S[rxn][1]):
-            print('P', mol, context['demands'][mol], context['prices'][mol])
     return show_results([results_eth, results_iso], ['ETH', 'ISO'], context)
 
 
@@ -386,32 +362,26 @@ def show_results(results, names, context):
     """
     pw_entries = ['score', 's_s', 's_p', 's_mol', 's_rxn']
     results_best = []
-    with open('results_all.txt', mode='w') as file:
+    with open('results_table.txt', mode='w') as file:
         for result, name in zip(results, names):
             for pathways, parameters in result:
-                print(name, parameters, file=file)
                 s_mols = []
                 s_rxns = []
                 n = len(pathways)
                 for pathway in pathways:
-                    print(pathway, file=file)
                     s_mols.append(pathway.s_mol)
                     s_rxns.append(pathway.s_rxn)
-                    for rxn in pathway.path:
-                        print(rxn, context['equations'][rxn], file=file)
-                    for value, key in zip(pathway[1:], pw_entries):
-                        print(key, value, file=file)
-                    print(file=file)
                 if n > 0:
                     mean_mols = sum(s_mols) / n
                     mean_rxns = sum(s_rxns) / n
-                    print(name, 'Result:', mean_mols, file=file)
-                    print(name, 'Result:', mean_rxns, file=file)
-                    if mean_mols > 0.5 or mean_rxns > 0.5:
-                        results_best.append([parameters, pathways, name,
-                                             mean_mols, mean_rxns])
-                print(file=file)
-    with open('results.txt', mode='w') as file:
+                    print('{} & {} & '.format(', '.join(parameters.C),
+                                              ', '.join(parameters.E)), end='',
+                          file=file)
+                    print('{} & {} \\\\'.format(mean_mols, mean_rxns),
+                          file=file)
+                    results_best.append([parameters, pathways, name,
+                                         mean_mols, mean_rxns])
+    with open('results_all.txt', mode='w') as file:
         for parameters, pathways, name, mean_mols, mean_rxns in results_best:
             if len(pathways) == 0:
                 continue
