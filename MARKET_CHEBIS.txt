@@ -1,94 +1,100 @@
-CHEBIS_DEMAND = {
-    '50906': 1,  # role
-    # Roles (ChEBI 50906)
-    '33232': 5,  # application
-    '24432': 1,  # biological role
-    '51086': 1,  # chemical role
-    # Applications (ChEBI 33232)
-    '33286': 1,  # agrochemical
-    '67079': 1,  # anti-inflammatory agent
-    '77964': 1,  # anticaking agent
-    '77973': 1,  # antifoaming agent
-    '64857': 5,  # cosmetic
-    '75358': 1,  # curing agent
-    '27780': 1,  # detergent
-    '37958': 1,  # dye
-    '64047': 1,  # food additive
-    '48318': 5,  # fragnance
-    '33292': 5,  # fuel
-    '77968': 1,  # humectant
-    '47867': 1,  # indicator
-    '35209': 1,  # label
-    '64345': 1,  # MALDI matrix material
-    '25944': 1,  # pesticide
-    '79056': 1,  # plasticiser
-    '50406': 1,  # probe
-    '76414': 1,  # propellant
-    '33893': 3,  # reagent
-    '78433': 1,  # refrigerant
-    '46787': 3,  # solvent
-    '35204': 1,  # tracer
-    '52217': 3,  # pharmaceutical
-    # Biological roles (ChEBI 24432)
-    '52210': 3,  # pharmacological role
-    '50188': 1,  # provitamin
-    '50913': 1,  # fixative
-    '50846': 1,  # immunomodulator
-    '52206': 1,  # biochemical role
-    '24850': 1,  # insect attractant
-    '73190': 1,  # antimutagen
-    '35222': 1,  # inhibitor
-    '35703': 1,  # xenobiotic
-    # Chemical roles (ChEBI 51086)
-    '37527': 1,  # acid
-    '22695': 1,  # base
-    '74236': 3,  # polymerisation monomer
-    '62803': 3,  # fuel additive
-    '63046': 1,  # emulsifier
-    '22586': 1,  # antioxidant
-    '63490': 1,  # explosive
-    '46787': 3,  # solvent
-    '35225': 1,  # buffer
-    '35223': 1,  # catalyst
-    '52215': 1,  # photochemical role
-    }
-CHEBIS_PRICE = {
-    # Groups
-    '33249': 1,  # organyl group
-    '23019': 1,  # carbonyl group
-    '46883': 1,  # carboxy group
-    '51422': 1,  # organodiyl group
-    '79073': 1,  # CHOH group
-    '43176': 1,  # hydroxy group
-    '50860': 1,  # organic molecular entity
-    # Organic molecular entities (ChEBI 50860)
-    '18059': 1,  # lipid
-    '78840': 1,  # olefinic compound
-    '64709': 1,  # organic acid
-    '50047': 1,  # organic amino compound
-    '33245': 1,  # organic fundamental parent
-    '33822': 1,  # organic hydroxy compound
-    '33635': 1,  # organic polycyclic compound
-    # Lipids (ChEBI 18059)
-    '35366': 1,  # fatty acid
-    '28868': 1,  # fatty acid anion
-    '35748': 1,  # fatty acid ester
-    '24026': 1,  # fatty alcohol
-    '29348': 1,  # fatty amide
-    '35741': 1,  # glycerolipid
-    '131727': 1,  # hydroxylipid
-    '24913':  1,  # isoprenoid
-    # Olefinic compounds (ChEBI 78840)
-    '33641': 1,  # olefin
-    # Acyclic olefins (ChEBI 33645)
-    '32878': 1,  # alkene
-    # Organic fundamental parents (ChEBI 33245)
-    '24632': 2,  # hydrocarbon
-    # Organic hydroxy compounds (ChEBI 33822)
-    '30879': 2,  # alcohol
-    '33823': 1,  # enol
-    '33853': 1,  # phenols
-    # Metabolites
-    '75763': 1,  # eukaryotic metabolite
-    '76924': 1,  # plant metabolite
-    }
+# Market ChEBIs
+
+# ChEBIs below yield demand for compounds, that have a relation to them
+# in ChEBI ontology.
+
+'50906',  # role
+# Roles (ChEBI 50906)
+'33232',  # application
+'24432',  # biological role
+'51086',  # chemical role
+# Applications (ChEBI 33232)
+'33286',  # agrochemical
+'67079',  # anti-inflammatory agent
+'77964',  # anticaking agent
+'77973',  # antifoaming agent
+'64857',  # cosmetic
+'75358',  # curing agent
+'27780',  # detergent
+'37958',  # dye
+'64047',  # food additive
+'48318',  # fragnance
+'33292',  # fuel
+'77968',  # humectant
+'47867',  # indicator
+'35209',  # label
+'64345',  # MALDI matrix material
+'25944',  # pesticide
+'79056',  # plasticiser
+'50406',  # probe
+'76414',  # propellant
+'33893',  # reagent
+'78433',  # refrigerant
+'46787',  # solvent
+'35204',  # tracer
+'52217',  # pharmaceutical
+# Biological roles (ChEBI 24432)
+'52210',  # pharmacological role
+'50188',  # provitamin
+'50913',  # fixative
+'50846',  # immunomodulator
+'52206',  # biochemical role
+'24850',  # insect attractant
+'73190',  # antimutagen
+'35222',  # inhibitor
+'35703',  # xenobiotic
+# Chemical roles (ChEBI 51086)
+'37527',  # acid
+'22695',  # base
+'74236',  # polymerisation monomer
+'62803',  # fuel additive
+'63046',  # emulsifier
+'22586',  # antioxidant
+'63490',  # explosive
+'46787',  # solvent
+'35225',  # buffer
+'35223',  # catalyst
+'52215',  # photochemical role
+
+
+# ChEBIs below yield price for compounds, that have a relation to them
+# in ChEBI ontology.
+
+# Groups
+'33249',  # organyl group
+'23019',  # carbonyl group
+'46883',  # carboxy group
+'51422',  # organodiyl group
+'79073',  # CHOH group
+'43176',  # hydroxy group
+'50860',  # organic molecular entity
+# Organic molecular entities (ChEBI 50860)
+'18059',  # lipid
+'78840',  # olefinic compound
+'64709',  # organic acid
+'50047',  # organic amino compound
+'33245',  # organic fundamental parent
+'33822',  # organic hydroxy compound
+'33635',  # organic polycyclic compound
+# Lipids (ChEBI 18059)
+'35366',  # fatty acid
+'28868',  # fatty acid anion
+'35748',  # fatty acid ester
+'24026',  # fatty alcohol
+'29348',  # fatty amide
+'35741',  # glycerolipid
+'131727',  # hydroxylipid
+'24913':  1,  # isoprenoid
+# Olefinic compounds (ChEBI 78840)
+'33641',  # olefin
+# Acyclic olefins (ChEBI 33645)
+'32878',  # alkene
+# Organic fundamental parents (ChEBI 33245)
+'24632',  # hydrocarbon
+# Organic hydroxy compounds (ChEBI 33822)
+'30879',  # alcohol
+'33823',  # enol
+'33853',  # phenols
+# Metabolites
+'75763',  # eukaryotic metabolite
+'76924',  # plant metabolite
