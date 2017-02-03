@@ -1,0 +1,52 @@
+# Reaction ChEBIs
+
+# ChEBIs below yield score for a reaction, that consumes them.
+# Deoxyribonucleotides
+'61404',  # dATP(4-)
+'57667',  # dADP(3-)
+'58245',  # dAMP(2-)
+'61481',  # dCTP(4-)
+'58593',  # dCDP(3-)
+'57566',  # dCMP(2-)
+'61429',  # dGTP(4-)
+'58595',  # dGDP(4-)
+'57673',  # dGMP(4-)
+'61382',  # dITP(4-)
+'37568',  # dTTP(4-)
+'58369',  # dTDP(3-)
+'63528',  # dTMP(2-)
+'61555',  # dUTP(4-)
+'60471',  # dUDP(3-)
+'246422',  # dUMP(2-)
+# Ribonucleotides
+'30616',  # ATP(4-)
+'456216',  # ADP(3-)
+'456215',  # AMP(2-)
+'37563',  # CTP(4-)
+'58069',  # CDP(3-)
+'60377',  # CMP(2-)
+'37565',  # GTP(4-)
+'58189',  # GDP(3-)
+'58115',  # GMP(2-)
+'61402',  # ITP(4-)
+'58280',  # IDP(3-)
+'58053',  # IMP(2-)
+'46398',  # UTP(4-)
+'58223',  # UDP(3-)
+'57865',  # UMP(2-)
+'61314',  # XTP(4-)
+'59884',  # XDP(3-)
+'57464',  # XMP(2-)
+# Cofactors and -enzymes
+'16509',  # 1,4-benzoquinone
+'57530',  # 1,5-dihydrocoenzyme F420(4-)
+'16810',  # 2-oxoglutarate(2-)
+'175763',  # 2-trans,6-trans-farnesyl diphosphate(3-)
+'28889',  # 5,6,7,8-tetrahydropteridine
+'57454',  # 10-formyltetrahydrofolate(2-)
+'57288',  # acetyl-CoA(4-)
+'58342',  # acyl-CoA(4-)
+'64876',  # bacillthiol(1-)
+'60488',  # cob(I)alamin(1-)
+'16304',  # cob(II)alamin
+'28911',  # cob(III)alamin
