@@ -166,6 +166,11 @@ function evaluatePathway(steps, compounds) {
     var productsAll = [];
     var substrates = _.head(steps)[1];
     var products = _.last(steps)[2];
+    var s = 1;
+    var p = 1;
+    var r = 1;
+    var c = 1;
+    var n = steps.length;
     _.forEach(steps, function(step) {
         rxns.push(step[0]);
         substratesAll.push.apply(substratesAll, step[1]);
@@ -188,29 +193,11 @@ function evaluatePathway(steps, compounds) {
         }
     });
     // Evaluate similarity of all substrates and products.
-    return Math.ceil((_.sum(pros)-_.sum(subs))*(_.sum(rxns)+1)/steps.length);
-    /*
-    values_reactions = (data[0] for data in steps.values())
-    substrates_all = set(s for step in steps.values() for s in step[1])
-    products_all = set(p for step in steps.values() for p in step[2])
-    steps_list = list(steps.values())
-    substrates = steps_list[0][1]
-    products = steps_list[-1][2]
-    values_reactants = (compounds[s][1] * compounds[s][0] for s in substrates)
-    values_products = (compounds[p][1] * compounds[p][0] for p in products)
-    amount_reactions = len(steps)
-
-    # Evaluate similarity of reactants and products.
-    s = len(substrates_all & products_all) / len(substrates_all | products_all)
-    # Evaluate total value of products and reactants.
-    p = sum(values_products)
-    r = sum(values_reactants)
-    # Evaluate pathway's total complexity factor.
-    c = sum(values_reactions)
-    # Evaluate and return pathway's value.
-    value = m.ceil(10 * m.sqrt(s) * (p - r) / ((c + 1) * amount_reactions**2))
-    return value
-    */
+    s = _.intersection(substratesAll, productsAll).length / _.union(substratesAll, productsAll).length;
+    p = _.sum(pros);
+    r = _.sum(subs);
+    c = _.sum(rxns);
+    return Math.ceil(10*Math.sqrt(s)*(p-r)/((c+1)*Math.pow(n,2)));
 }
 
 

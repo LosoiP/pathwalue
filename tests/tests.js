@@ -337,9 +337,9 @@ QUnit.test('testCorrectResults', function(assert) {
     var value2 = PW.evaluatePathway(steps2, compounds);
     var value3 = PW.evaluatePathway(steps3, compounds);
 
-    assert.strictEqual(value1, 56, 'steps 1 -> 56');
-    assert.strictEqual(value2, 36, 'steps 2 -> 36');
-    assert.strictEqual(value3, Math.ceil(16*14/3), 'steps 3 -> ceil(16*14/3)');
+    assert.strictEqual(value1, 0, 'steps 1 -> 0');
+    assert.strictEqual(value2, 2, 'steps 2 -> 2');
+    assert.strictEqual(value3, Math.ceil(0), 'steps 3 -> 0');
 });
 
 
