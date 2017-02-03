@@ -200,6 +200,7 @@ function evaluatePathway(steps, compounds) {
 function filterPathways(pathways, filter, context) {
     var rxnEcs = context.reaction_ecs;
     var S = context.stoichiometrics;
+    var I = context.IGNORED_COMPOUNDS;
     var C = filter.compounds;
     var E = filter.enzymes;
     var s = filter.source;
@@ -243,18 +244,19 @@ function filterPathways(pathways, filter, context) {
                     return false;
                 }
                 // Check for repetitive consuming and producing.
+                // Ignore ignored chebis though.
                 if (i >= 2) {
                     prepreC = _.keys(S[pw[i - 2]][0]);  // substrates
-                    discard1 = _.intersection(prepreC, substrates);
-                    discard2 = _.intersection(preC, substrates);  // products
+                    discard1 = _.intersection(_.difference(prepreC, I), substrates);
+                    discard2 = _.intersection(_.difference(preC, I), substrates);  // products
                     if (discard1.length !== 0 && discard2.length !== 0) {
                         approved = false;
                         return false;
                     }
                     prepreC = _.keys(S[pw[i - 2]][1]);  // products
                     preC = _.keys(S[pw[i - 1]][0]);  // substrates
-                    discard1 = _.intersection(prepreC, products);
-                    discard2 = _.intersection(preC, products);
+                    discard1 = _.intersection(_.difference(prepreC, I), products);
+                    discard2 = _.intersection(_.difference(preC, I), products);
                     if (discard1.length !== 0 && discard2.length !== 0) {
                         approved = false;
                         return false;
