@@ -318,28 +318,37 @@ QUnit.test('testReturnCorrectCombinationResults', function(assert) {
 
 QUnit.module('testEvaluatePathway');
 QUnit.test('testCorrectResults', function(assert) {
-    var steps1 = [[6, ['5', '6'], ['3', '4']]];
+    var steps1 = [[1, ['5', '6'], ['3', '4']]];
     var steps2 = [
         [2, ['1', '2'], ['5', '6']],
-        [6, ['5', '6'], ['3', '4']],
+        [3, ['5', '6'], ['3', '4']],
     ];
     var steps3 = [
         [4, ['3', '4'], ['5', '6']],
-        [6, ['5', '6'], ['3', '4']],
-        [3, ['3', '4'], ['1', '2']],
+        [5, ['5', '6'], ['3', '4']],
+        [6, ['3', '4'], ['1', '2']],
     ];
     var compounds = {
-        '1': [1, 6], '2': [2, 5], '3': [3, 4],
-        '4': [4, 3], '5': [5, 2], '6': [1, 6],
+        '1': [6, 6], '2': [5, 5], '3': [4, 4],
+        '4': [3, 3], '5': [2, 2], '6': [1, 1],
     };
 
     var value1 = PW.evaluatePathway(steps1, compounds);
     var value2 = PW.evaluatePathway(steps2, compounds);
     var value3 = PW.evaluatePathway(steps3, compounds);
+    var evaluateFunction = function(s, p, r, c, n) {
+        return Math.ceil(10*Math.sqrt(s)*(p-r)/((c+1)*Math.pow(n,2)));
+    };
+    var correctValue1 = evaluateFunction(0, 25, 3, 1, 1);
+    var correctValue2 = evaluateFunction(1/3, 25, 61, 5, 2);
+    var correctValue3 = evaluateFunction(2/3, 61, 25, 15, 3);
 
-    assert.strictEqual(value1, 0, 'steps 1 -> 0');
-    assert.strictEqual(value2, 2, 'steps 2 -> 2');
-    assert.strictEqual(value3, Math.ceil(0), 'steps 3 -> 0');
+    assert.strictEqual(value1, correctValue1,
+        'steps 1 -> ceil(10 * sqrt(0) * (25 - 3) / ((1 + 1) * 1^2)');
+    assert.strictEqual(value2, correctValue2,
+        'steps 2 -> ceil(10 * sqrt(1/3) * (25 - 61) / ((5 + 1) * 2^2)');
+    assert.strictEqual(value3, correctValue3,
+        'steps 3 -> ceil(10 * sqrt(2/3) * (61 - 25) / ((15 + 1) * 3^2)');
 });
 
 
