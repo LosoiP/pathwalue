@@ -399,6 +399,8 @@ function formatPathway(document, pathway, context) {
     var substratePoints = 0;
     var productPoints = 0;
     var reactionPoints = 0;
+    var similarityIntersection = 0;
+    var similarityUnion = 0;
     // Group compounds to S, I and P.
     _.forEach(pathway[1], function(rhea) {
         S.push.apply(S, _.keys(context.stoichiometrics[rhea][0]));
@@ -406,6 +408,8 @@ function formatPathway(document, pathway, context) {
     _.forEach(pathway[1], function(rhea) {
         P.push.apply(P, _.keys(context.stoichiometrics[rhea][1]));
     });
+    similarityIntersection = _.uniq(_.intersection(S, P)).length;
+    similarityUnion = _.uniq(_.union(S, P)).length;
     I = _.uniq(_.intersection(S, P));
     S = _.uniq(_.difference(S, I));
     P = _.uniq(_.difference(P, I));
@@ -425,7 +429,7 @@ function formatPathway(document, pathway, context) {
         reactionPoints += context.complexities[rhea];
     });
     li = createHTMLElement(document, 'LI');
-    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') &sdot; (' + reactionPoints.toString() + ' + 1) &frasl; ' + pathway[1].length.toString() + '</small>';
+    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') ' + ' &sdot; &radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + ')</small>';
     ulMain.appendChild(li);
     // Substrates
     li = formatList(document, 'UL', 'Substrates: <small>' + substratePoints.toString() + '</small>', S, formatCompound, context);
@@ -438,7 +442,7 @@ function formatPathway(document, pathway, context) {
     li = formatList(document, 'UL', 'Products: <small>' + productPoints.toString() + '</small>', P, formatCompound, context);
     ulMain.appendChild(li);
     // Reaction steps
-    li = formatList(document, 'OL', 'Reaction steps: <small>(' + reactionPoints.toString() + ' + 1) &frasl; ' + pathway[1].length + '</small>', pathway[1],
+    li = formatList(document, 'OL', 'Reaction steps: <small>&radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + ')</small>', pathway[1],
             formatReaction, context);
     ulMain.appendChild(li);
     
