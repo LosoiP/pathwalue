@@ -65,9 +65,6 @@ function evaluateInput(G, n, C, E, Fl, context) {
     var maxTargets;
     var maxPw;
     var maxFilter;
-    //var a = 1000;
-    //var b = 1000;
-    //var c = 5;
     var filter = {compounds: C, enzymes: E, source: '', target: '', links: Fl};
     // Determine search and filter parameters.
     if (C.length > 1) {
@@ -103,38 +100,7 @@ function evaluateInput(G, n, C, E, Fl, context) {
         targets = sources;
     }
     // Find pathways.
-    // Constrain search to optimize performance.
-    /*
-    lenSources = sources.length;
-    lenTargets = targets.length;
-    maxSources = Math.ceil(Math.sqrt(a * lenSources / lenTargets));
-    maxTargets = Math.ceil(Math.sqrt(a * lenTargets / lenSources));
-    if (maxSources > 50) {
-        maxSources = 50;
-    }
-    if (maxTargets > 50) {
-        maxTargets > 50;
-    }
-    if (lenSources > maxSources) {
-        lenSources = maxSources;
-    }
-    if (lenTargets > maxTargets) {
-        lenTargets = maxTargets;
-    }
-    maxPw = Math.ceil(b / (lenSources * lenTargets));
-    maxFilter = n + Math.ceil(maxPw / c);
-    */
     // Store shortest path from each source to each target in pathways.
-    /*
-    _.forEach(sources.slice(0, maxSources), function (s, i) {
-        _.forEach(targets.slice(0, maxTargets), function (t, j) {
-            pws = _.take(findPathway(G, s, t), maxPw);
-            filterPws = _.take(
-                filterPathways(pws, filter, context), maxFilter);
-            pathways.push.apply(pathways, filterPws);
-        });
-    });
-    */
     _.forEach(sources, function (s) {
         _.forEach(targets, function (t) {
             pws = findPathway(G, s, t);
