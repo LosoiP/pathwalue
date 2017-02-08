@@ -47,6 +47,7 @@ from collections import namedtuple
 
 import chebi
 import files
+import intenz
 import market
 import paths
 import pw
@@ -89,7 +90,7 @@ def compare_pathways(pathways_raw, reactions_ref, context):
     return pathways
 
 
-def initialize_chebi():
+def initialize_chebi(rhea_chebis=set()):
     """
     Convert ChEBI tsv files to JSON files.
 
@@ -108,6 +109,8 @@ def initialize_chebi():
     tsv_compounds = files.parse_tsv(raw_compounds)
     compound_data = chebi.parse_compounds(tsv_compounds)
     compound_parents, compound_names = compound_data
+    if rhea_chebis:
+        compound_names = pw.intersect_dict(compound_names, rhea_chebis)
 
     # Obtain chemical data.
     raw_chemical = files.get_content(paths.CHEBI_TSV, files.CHEBI_DATA)
@@ -146,6 +149,31 @@ def initialize_chebi():
 
     # Save data in JSON format.
     files.write_jsons(data, paths.JSON, jsonnames)
+    return data
+
+
+def initialize_intenz(rhea_ecs=set()):
+    """
+    Read and process IntEnz enzyme.dat file to JSON files.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    list
+        Dicts of IntEnz data.
+
+    """
+    content = files.get_content(paths.INTENZ_DAT, files.INTENZ_ENZYMES)
+    ec_names = intenz.merge_dicts(intenz.get_enzymes(content), 'ec', 'name')
+    if rhea_ecs:
+        ec_names = pw.intersect_dict(ec_names, rhea_ecs)
+    files.write_json(ec_names, paths.JSON, files.ENZ_NAMES)
+    data = [
+        ec_names,
+        ]
     return data
 
 
