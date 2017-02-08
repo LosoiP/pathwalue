@@ -93,6 +93,9 @@ function evaluateInput(G, n, C, E, Fl, context) {
         filter.source = start;
         filter.target = goal;
     } else {
+        if (E.length > 1) {
+            sources = [];
+        }
         _.forEach(E, function(ec) {
             sources.push.apply(sources, ecReactions[ec]);
         });
@@ -132,8 +135,8 @@ function evaluateInput(G, n, C, E, Fl, context) {
         });
     });
     */
-    _.forEach(sources, function (s, i) {
-        _.forEach(targets, function (t, j) {
+    _.forEach(sources, function (s) {
+        _.forEach(targets, function (t) {
             pws = findPathway(G, s, t);
             filterPws = filterPathways(pws, filter, context);
             pathways.push.apply(pathways, filterPws);
