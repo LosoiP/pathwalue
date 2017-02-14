@@ -429,20 +429,20 @@ function formatPathway(document, pathway, context) {
         reactionPoints += context.complexities[rhea];
     });
     li = createHTMLElement(document, 'LI');
-    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') ' + ' &sdot; &radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + ')</small>';
+    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') ' + ' &sdot; &radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + '<sup>2</sup>)</small>';
     ulMain.appendChild(li);
     // Substrates
     li = formatList(document, 'UL', 'Substrates: <small>' + substratePoints.toString() + '</small>', S, formatCompound, context);
     ulMain.appendChild(li);
     // Intermediates
-    li = formatList(document, 'UL', 'Intermediates:', I, formatIntermediates,
+    li = formatList(document, 'UL', 'Intermediates:', I, formatCompound,
             context);
     ulMain.appendChild(li);
     // Products
     li = formatList(document, 'UL', 'Products: <small>' + productPoints.toString() + '</small>', P, formatCompound, context);
     ulMain.appendChild(li);
     // Reaction steps
-    li = formatList(document, 'OL', 'Reaction steps: <small>&radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + ')</small>', pathway[1],
+    li = formatList(document, 'OL', 'Reaction steps: <small>&radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + '<sup>2</sup>)</small>', pathway[1],
             formatReaction, context);
     ulMain.appendChild(li);
     
