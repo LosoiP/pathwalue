@@ -419,10 +419,10 @@ function formatPathway(document, pathway, context) {
     totalReaction = namesS.join(' + ') + ' => ' + namesP.join(' + ');
     liMain.innerHTML = 'Total reaction: <b>' + totalReaction + '</b>';
     // Assign points.
-    _.forEach(S, function (chebi) {
+    _.forEach(_.keys(context.stoichiometrics[_.head(pathway[1])][0]), function (chebi) {
         substratePoints += context.prices[chebi] * context.demands[chebi];
     });
-    _.forEach(P, function (chebi) {
+    _.forEach(_.keys(context.stoichiometrics[_.last(pathway[1])][1]), function (chebi) {
         productPoints += context.prices[chebi] * context.demands[chebi];
     });
     _.forEach(pathway[1], function (rhea) {
