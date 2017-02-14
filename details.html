@@ -115,6 +115,7 @@ PathWalue generates pathways using a shortest path algorithm to a directed graph
 <p>
 Generating pathways in PathWalue is based on a directed graph of nodes that correspond to reactions in the Rhea database.
 Every reaction exists in both directions in the graph as separate nodes, just as the different directions exist in separate entries in the Rhea database.
+
 </p>
 <p>
 Any two reaction nodes are connected by an edge if the first reaction produces a substrate for the second reaction.
@@ -124,7 +125,7 @@ At the moment PathWalue has a predefined list of 500 compounds that are not allo
 The list inclues inorganic ions, cofactors and protein residues among others.
 </p>
 <p>
-The reaction graph in PathWalue has about 14500 nodes and 230000 edges.
+The reaction graph in PathWalue has about 14000 nodes and 200000 edges.
 </p>
 <h4>Search algorithm</h4>
 <p>
@@ -132,9 +133,6 @@ The algorithm looks for the shortest paths from the source to target reaction.
 The source and target reactions are determined as described in section 1 Determination of the search type.
 Moving from one reaction node to another occurs always trough a directed edge.
 Recall from the Directed graph section that a reaction has an edge to another reaction if it produces a substrate for the other reaction.
-</p>
-<p>
-At the moment the edges are unweighted which means that all edges are equal in length.
 </p>
 
 
