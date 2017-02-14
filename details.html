@@ -145,7 +145,7 @@ PathWalue filters all generated pathways according to these criteria:
 <ul>
 <li>All the given compounds in the Compounds field at the Input section must be present in the pathway.</li>
 <li>All the given enzymes in the Enzymes field at the Input section must be present in the pathway.</li>
-<li>Repetitive producing and consuming of a compound in three successive reactions is forbidden.
+<li>Repetitive producing and consuming of a compound in three successive reactions is forbidden, unless the compound is an ignored compound that is not allowed to connect reactions (see Directed graph at section 2).
     <br />Example: a pathway is filtered if its reaction 1 produces compound A, reaction 2 consumes A and reaction 3 produces A again.</li>
 </ul>
 PathWalue uses additionally these criteria when a directed search is conducted from or to a compound:
