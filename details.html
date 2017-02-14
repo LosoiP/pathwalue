@@ -45,7 +45,6 @@ Return to
 <h1>PathWalue - pathways with value</h1>
 <p>
 Welcome to read the description of the PathWalue application!
-The pages are being updated at the moment.
 </p>
 <hr class="sectionLine" />
 <h2>Details of user input processing</h2>
@@ -79,6 +78,8 @@ The search is then conducted using source-target -pairs of reactions.
 <p>
 A wildcard compound "any ChEBI" can be used to leave either the source or target compound open.
 If "any ChEBI" is the source, then PathWalue generates pathways from all reactions to those reactions that produce the given target compound.
+This may result in a slow search.
+The search comprehensity of "any ChEBI" will be restricted in a future update to make computational time feasible.
 </p>
 <p>
 Examples:
@@ -91,6 +92,8 @@ Examples:
 <p>
 If the user hasn't specified enough compounds to conduct a directed search, PathWalue collects all reactions that the given enzymes are involved in.
 The collected reactions are then used as sources and targets to yield pathways.
+If only 1 enzyme is present, PathWalue uses all possible reactions as additional sources and targets, which may result in a slow search.
+The search comprehensity of using only 1 enzyme will be restricted in a future update to make computational time feasible.
 </p>
 <p>
 Examples:
