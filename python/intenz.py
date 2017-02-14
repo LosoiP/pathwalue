@@ -34,8 +34,9 @@ def get_enzymes(content):
         elif row.startswith('DE'):
             name.append(row[5:].rstrip().rstrip('.'))
         elif row.startswith('//'):
-            yield {'ec': ec, 'name': ' '.join(name)}
-            name.clear()
+            if name:
+                yield {'ec': ec, 'name': ' '.join(name)}
+                name.clear()
 
 
 def merge_dicts(dicts, kkey, vkey):
@@ -59,26 +60,3 @@ def merge_dicts(dicts, kkey, vkey):
 
     """
     return {d.get(kkey): d.get(vkey) for d in dicts if kkey in d and vkey in d}
-
-
-def initialize_intenz():
-    """
-    Read and process IntEnz enzyme.dat file to JSON files.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    list
-        Dicts of IntEnz data.
-
-    """
-    content = get_content(PATH_INTENZ, INTENZ)
-    ec_names = merge_dicts(get_enzymes(content), 'ec', 'name')
-    write_json(ec_names, PATH_JSON, FILE_EC_NAMES)
-    data = [
-        ec_names,
-        ]
-    return data

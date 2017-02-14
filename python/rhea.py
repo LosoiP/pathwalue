@@ -109,21 +109,26 @@ def read_rd_data(rds_parsed, chebi_parents):
             if approve_reaction:
                 *__, id_rhea = record.identifier.partition(' ')
                 print(', saving reaction {}'.format(id_rhea))
+                reactants = Counter()
                 for mol in rxn.mols[:rxn.n_reactants]:
                     *__, id_chebi = mol.name.partition(':')
                     chebi = chebi_parents.get(id_chebi, id_chebi)
                     mol_rxns.setdefault(id_chebi, [[], []])[0].append(id_rhea)
-                    rxn_stoich.setdefault(id_rhea, [[], []])[0].append(chebi)
+                    reactants[chebi] += 1
+                products = Counter()
                 for mol in rxn.mols[rxn.n_reactants:]:
                     *__, id_chebi = mol.name.partition(':')
                     chebi = chebi_parents.get(id_chebi, id_chebi)
                     mol_rxns.setdefault(id_chebi, [[], []])[1].append(id_rhea)
-                    rxn_stoich.setdefault(id_rhea, [[], []])[1].append(chebi)
+                    products[chebi] += 1
+                rxn_stoich[id_rhea] = [dict(reactants), dict(products)]
                 rxn_equats[id_rhea] = record.data['equation']
                 rxn_masters[id_rhea] = record.data['masterId']
                 n_accepted += 1
             else:
                 print()
+    for chebi, reactions in mol_rxns.items():
+        mol_rxns[chebi] = [list(set(reactions[0])), list(set(reactions[1]))]
     print('RHEA: {} records read, {} accepted'.format(n_records, n_accepted))
     print('RHEA: found statuses {}'.format(types_status))
     print('RHEA: found qualifiers {}'.format(types_qualifier))
