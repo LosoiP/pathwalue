@@ -166,23 +166,21 @@ Only such pathways that fulfill the necessary criteria will be evaluated.
 
 <h3>4 Evaluating pathways</h3>
 <p>
-PathWalue scores pathways according to the values of the compounds and
-complexities of the reaction steps.
+PathWalue scores pathways according to the values of the compounds and complexities of the reaction steps.
 </p>
 <p>
 Compound values are based on a synthetic database of market demands and prices.
 The value of a compound is evaluated as a product of its demand and price.
-The synthetic database has been prepared by using ChEBI compound ontology that also includes classifications related to compound applications and functional groups.
+The synthetic database was prepared by using ChEBI compound ontology that also includes classifications related to compound applications and functional groups.
+For example, compounds connected to ChEBI 33292 "fuel" were assigned demand, or compounds connected to ChEBI 23019 "carbonyl group" were assigned price.
 </p>
 <p>
-Reaction complexities are based on the amount and types of biochemically
-important cofactors involved in the reaction step.
-PathWalue considers reactions involving cofactors less complex than those that
-don't involve.
+Reaction complexities are based on the amount and types of biochemically important cofactors involved in the reaction step.
+PathWalue considers reactions involving cofactors less complex than those that don't involve.
 This mechanism favours pathways that involve biologically meaningful cofactors.
 </p>
 <p>
-A pathway's score is evaluated as the ratio of the total value of compounds to the total complexity and amount of reaction steps.
+A pathway's score is evaluated as (total value of products &minus; total value of substrates) &sdot; &radic;(amount of chemical species present in both pathway substrates and products &frasl; amount of all chemical species present) &frasl;((cofactor score + 1) &sdot; amount of reaction steps).
 </p>
 
 
