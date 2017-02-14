@@ -180,7 +180,7 @@ PathWalue considers reactions involving cofactors less complex than those that d
 This mechanism favours pathways that involve biologically meaningful cofactors.
 </p>
 <p>
-A pathway's score is evaluated as (total value of products &minus; total value of substrates) &sdot; &radic;(amount of chemical species present in both pathway substrates and products &frasl; amount of all chemical species present) &frasl;((cofactor score + 1) &sdot; amount of reaction steps).
+A pathway's score is evaluated as (total value of products of last reaction &minus; total value of substrates of first reaction) &sdot; &radic;(amount of chemical species present in both pathway substrates and products &frasl; amount of all chemical species present) &frasl;((cofactor score + 1) &sdot; amount of reaction steps).
 </p>
 
 
@@ -189,16 +189,16 @@ A pathway's score is evaluated as (total value of products &minus; total value o
 
 <h3>5 Formatting results</h3>
 <p>
-PathWalue returns the best scoring pathways and shows additional details of it.
+PathWalue returns the best scoring pathways and shows additional details of them.
 The output is divided into the pathway's total reaction, score, substrates, intermediates, products and reaction steps.
 <ul>
 <li>Total reaction: pathway substrates => pathway products.
     <br />Pathway substrates and products are defined below.</li>
 <li>Score: pathway's total score evaluated as described in section 4 Evaluating pathways</li>
-<li>Substrates: a list of those compounds that are used only as substrates in the pathway's reaction steps</li>
+<li>Substrates: a list of those compounds that are used only as substrates in the pathway's reaction steps. Note: may differ from the substrates of the first reaction, which are used in evaluation.</li>
 <li>Intermediates: a list of those compounds that are consumed by a reaction but also produced by some other reaction.
     <br />Compounds classified here as intermediates contain all the links between successive reactions, but also all other such compounds that are both produced and consumed during the pathway.</li>
-<li>Products: a list of those compounds that are only produced in the reaction steps</li>
+<li>Products: a list of those compounds that are only produced in the reaction steps. Note: may differ from the products of the last reaction, which are used in evaluation.</li>
 <li>Reaction steps: a list of the individual Rhea reactions that constitute the pathway. Each reaction step has a list of its substrates, products and also possible enzyme catalysts if applicable.</li>
 </ul>
 </p>
@@ -229,7 +229,7 @@ The application has been tested using Firefox 45 and Internet Explorer 11 web br
 
 
 <div class="footer">
-<p><small>Author: Pauli Losoi<br />Updated: 3.2.2017, the pages are being updated further.</small></p>
+<p><small>Author: Pauli Losoi<br />Updated: 14.2.2017</small></p>
 <h2>Powered by</h2>
 <p>
 <ul class="inline">
