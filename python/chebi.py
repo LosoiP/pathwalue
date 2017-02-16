@@ -3,6 +3,23 @@
 # MIT License
 # Pauli Losoi
 """
+Read and process ChEBI tsv files.
+
+Functions
+---------
+parse_chemical_data
+    Parse chemical data file contents.
+parse_compounds
+    Parse compound data file contents.
+parse_relations
+    Parse relation data file contents.
+parse_vertices
+    Parse vertex data file contents.
+
+Constants
+---------
+IGNORED_COMPOUNDS : set
+    Set of compounds, that are not allowed to connect reactions.
 
 """
 
@@ -557,19 +574,19 @@ def parse_chemical_data(data, compound_parents={}):
     Parameters
     ---------
     data : iterable of dicts
-        Iterable of dicts of strings, that correspond to chemical
-        data file rows.
+        Dicts of strings, that correspond to chemical data file rows.
 
     compound_parents : dict
-        Mapping from compound IDs to parent IDs.
+        Mapping from compound ID strings to parent ID strings.
 
     Returns
     -------
-    tuple
-        Dicts formed from contents.
-        [0] compound IDs to compound charges.
-        [1] compound IDs to compound formulae.
-        [2] compound IDs to compound masses.
+    tuple of 3 dicts
+        [0] compound ID strings to compound charge floats.
+
+        [1] compound ID strings to compound formula strings.
+
+        [2] compound ID strings to compound mass floats.
 
     """
     charges, formulae, masses = {}, {}, {}
@@ -594,19 +611,20 @@ def parse_chemical_data(data, compound_parents={}):
 
 def parse_compounds(data):
     """
-    Read content and return compound data as dicts of str.
+    Read content and return compound data as dicts.
 
     Parameters
     ----------
-    contents : list
-        List of compound data file row strings.
+    data : iterable of dicts
+        ChEBI ID keyed by 'ID', species name keyed by 'NAME' and parent
+        ID keyed by 'PARENT_ID'.
 
     Returns
     -------
-    tuple
-        Dicts formed from contents:
-        [0] compound IDs to parent IDs.
-        [1] compound IDs to compound names.
+    tuple of 2 dicts
+        [0] compound ID strings to parent ID strings.
+
+        [1] compound ID strings to compound name strings.
 
    """
     compound_names, compound_parents = {}, {}
@@ -632,21 +650,22 @@ def parse_compounds(data):
 
 def parse_relations(data, vertex_compounds):
     """
-    Read content and return relation data as dict of dict of str.
+    Read content and return relation data in a dict of dicts.
 
     Parameters
     ----------
-    contents : list
-        List of relation data file row strings.
+    data : iterable of dicts
+        Source vertex keyed by 'FINAL_ID', target vertex by 'INIT_ID',
+        status by 'STATUS' and relation type by 'TYPE'.
 
     vertex_compounds : dict
-        Mapping from vertex IDs to compound IDs.
+        Mapping from vertex ID strings to compound ID strings.
 
     Returns
     -------
     dict
-        Mapping from start compound IDs to mappings from goal compound
-        IDs to relation type strings.
+        Mapping from source compound ID strings to mappings from target
+        compound ID strings to relation type strings.
 
     """
     compound_relations = {}
@@ -674,20 +693,20 @@ def parse_relations(data, vertex_compounds):
 
 def parse_vertices(data, compound_parents={}):
     """
-    Read contents and return vertex data as dict of str.
+    Read contents and return vertex data in a dict.
 
     Parameters
     ----------
-    content : list
-        List of vertex data file row strings.
+    data : iterable of dicts
+        Vertex ID keyed by 'ID' and compound ID by 'COMPOUND_CHILD_ID' 
 
     compound_parents : dict
-        Mapping from compound IDs to parents IDs.
+        Mapping from compound ID strings to parents ID strings.
 
     Returns
     -------
     dict
-        Mapping from vertex IDs to compound IDs.
+        Mapping from vertex ID strings to compound ID strings.
 
     """
     vertex_compounds = {}
@@ -698,3 +717,4 @@ def parse_vertices(data, compound_parents={}):
         vertex_compounds[id_] = parent
     print('CHEBI: {} vertices parsed'.format(n_entries))
     return vertex_compounds
+
