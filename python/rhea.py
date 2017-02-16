@@ -7,25 +7,46 @@
 """
 Read and process Rhea data to JSON files.
 
-Requires that chebi.main() has been run. (ChEBI parent IDs)
-
 Functions
 ---------
-read_ecs: read and process EC file.
-read_rds: read and process rd files.
-main: process Rhea data to JSON files.
+crosslink_master_ids
+    Map master reaction IDs to reaction IDs.
+read_ecs
+    Read EC number to Rhea ID mapping data.
+read_rd_data
+    Read rd records.
 
 """
 
 from collections import Counter
 
-RD_APPROVED = 'approved'
-RD_QUALIFIERS_DENIED = ['TR', 'CR']  # transport, class
-RD_QUALIFIERS_REQUIRED = ['CB', 'FO', 'MA']  # balanced, formula, mass
+# Rd file contants:
+# An rd file is rejected, if it contains denied qualifiers, if it
+# doesn't contain required qualifiers or if it isn't approved.
+_RD_APPROVED = 'approved'
+_RD_QUALIFIERS_DENIED = ['TR', 'CR']  # transport, class
+_RD_QUALIFIERS_REQUIRED = ['CB', 'FO', 'MA']  # balanced, formula, mass
 
 
 def crosslink_master_ids(reaction_masters):
     """
+    Map master reaction IDs to reaction IDs.
+
+    EC numbers are mapped to undirected Rhea master reactions. Rhea rd
+    files map directed Rhea reaction to undirected master reactions.
+    Mapping master reactions to directed reactions allows mapping enzyme
+    EC numbers to directed reaction Rhea IDs.
+
+    Parameters
+    ----------
+    reaction_masters : dict
+        Mapping from reaction IDs to master IDs.
+
+    Returns
+    -------
+    dict
+        Mapping from master IDs to reaction IDs.
+
     """
     master_reactions = {}
     for rhea, master in reaction_masters.items():
@@ -35,21 +56,29 @@ def crosslink_master_ids(reaction_masters):
 
 def read_ecs(contents, reaction_masters, master_reactions):
     """
-    Read Rhea EC number data.
+    Read Rhea EC number to Rhea ID mapping data.
 
     Parameters
     ----------
-    contents : iterable
-        EC file rows as strings.
-    reaction_masters_reactions: dict
-        Rhea ID string keys to dict values that map Rhea ID strings to
-        a list of Rhea ID strings.
+    contents : iterable of dicts
+        EC number string keyed by 'EC' and Rhea ID string keyed by
+        'RHEA'.
+    reaction_masters : dict
+        Mapping from directed reaction Rhea ID strings to undirected
+        master reaction Rhea ID strings.
+    masters_reactions: dict
+        Mapping from undirected master reaction Rhea ID strings to
+        directed reaction Rhea ID strings.
 
     Returns
     -------
-    tuple
-        Rhea EC number data dicts that map EC numbers to Rhea IDs and
-        vice-versa.
+    tuple of 2 dicts
+        Complementary dicts that map EC numbers to Rhea IDs and vice
+        -versa.
+
+        [0] maps EC number strings to Rhea ID strings.
+
+        [1] maps Rhea ID strings to EC number strings.
 
     """
     ec_reactions, reaction_ecs = {}, {}
@@ -72,6 +101,34 @@ def read_ecs(contents, reaction_masters, master_reactions):
 
 
 def read_rd_data(rds_parsed, chebi_parents):
+    """
+    Read rd records.
+
+    Parameters
+    ----------
+    rds_parsed : iterable of files.Rd namedtuples
+        Parsed rd files.
+
+    Returns
+    -------
+    tuple of 4 dicts
+        [0] mapping from ChEBI ID strings to 2 lists of Rhea ID strings,
+        [0] corresponds to reactions consuming the molecule, [1] to
+        reactions producing.
+
+        [1] mapping from Rhea ID strings to reaction equation strings.
+
+        [2] mapping from directed reaction Rhea ID strings to undirected
+        master reaction Rhea ID strings.
+
+        [3] mapping from Rhea ID strings to a list of 2 mappings from
+        ChEBI ID strings to stoichiometric integers. [0] corresponds to
+        consumed molecules and [1] to produced molecules.
+
+    See also
+    --------
+        files.parse_rd
+    """
     mol_rxns, rxn_equats, rxn_masters, rxn_stoich = {}, {}, {}, {}
     n_records = 0
     n_accepted = 0
@@ -88,17 +145,17 @@ def read_rd_data(rds_parsed, chebi_parents):
             # Check reaction status and qualifiers.
             status = record.data['status']
             types_status[status] += 1
-            if status != RD_APPROVED:
+            if status != _RD_APPROVED:
                 print(', status {}'.format(status), end='')
                 approve_reaction = False
             # Check reaction qualifiers.
             qualifiers_raw = record.data['qualifiers']
             qualifiers = qualifiers_raw.strip('[]').replace(' ', '').split(',')
             types_qualifier.update(qualifiers)
-            if any(q in qualifiers for q in RD_QUALIFIERS_DENIED):
+            if any(q in qualifiers for q in _RD_QUALIFIERS_DENIED):
                 print(', forbidden qualifiers {}'.format(qualifiers), end='')
                 approve_reaction = False
-            elif not all(q in qualifiers for q in RD_QUALIFIERS_REQUIRED):
+            elif not all(q in qualifiers for q in _RD_QUALIFIERS_REQUIRED):
                 print(', inadequate qualifiers {}'.format(qualifiers), end='')
                 approve_reaction = False
             # Check that reaction molecules belong to ChEBI.
