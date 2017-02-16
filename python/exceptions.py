@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# (C) 2017 Tampere University of Technology
+# MIT License
+# Pauli Losoi
 """
 Created on Fri Nov 25 13:46:16 2016
 

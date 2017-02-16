@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Nov 25 13:37:14 2016
+Test chebi module.
 
-@author: losoip
 """
 
 import pytest

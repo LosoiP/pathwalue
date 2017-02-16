@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# (C) 2017 Tampere University of Technology
+# MIT License
 # Original by Tommi Aho
 # Modified by Pauli Losoi
 
