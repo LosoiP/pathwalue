@@ -3,9 +3,8 @@
 # MIT License
 # Pauli Losoi
 """
-Created on Fri Nov 25 13:46:16 2016
+Define exceptions used by PathWalue modules.
 
-@author: losoip
 """
 
 
@@ -51,3 +50,4 @@ class EnzymeIdError(IdError):
 
 class ReactionIdError(IdError):
     pass
+
