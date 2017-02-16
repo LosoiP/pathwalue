@@ -3,7 +3,7 @@
 # MIT License
 # Pauli Losoi
 """
-pytest module for intenz.py unit tests.
+Test intenz module.
 
 """
 

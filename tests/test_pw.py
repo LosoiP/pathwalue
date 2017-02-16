@@ -3,9 +3,8 @@
 # MIT License
 # Pauli Losoi
 """
-Created on Fri Nov 25 13:38:10 2016
+Test pw module.
 
-@author: losoip
 """
 
 from collections import OrderedDict

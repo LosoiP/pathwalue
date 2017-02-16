@@ -3,6 +3,8 @@
 # MIT License
 # Pauli Losoi
 """
-pytest module for main.py tests.
+Test main module.
+
+Might get removed in future.
 
 """

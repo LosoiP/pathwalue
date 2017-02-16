@@ -3,9 +3,8 @@
 # MIT License
 # Pauli Losoi
 """
-Created on Fri Nov 25 13:37:56 2016
+Test paths module.
 
-@author: losoip
 """
 
 import pytest

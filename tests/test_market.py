@@ -3,7 +3,7 @@
 # MIT License
 # Pauli Losoi
 """
-pytest module for analysis.py unit tests.
+Test market module.
 
 """
 
