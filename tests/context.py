@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.normpath('../python/'))
 
 import chebi
 import files
-# import intenz
+import intenz
 # import main
 import market
 import paths

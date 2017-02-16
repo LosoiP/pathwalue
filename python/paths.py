@@ -19,7 +19,7 @@ _RD = 'rd'
 _TSV = 'tsv'
 
 # Directory paths
-_BASE = os.path.normpath('P:/My Documents/biochassis2/pathwalue')
+_BASE = os.path.normpath('..')
 _DATA = os.path.join(_BASE, 'data')
 _TESTS = os.path.join(_BASE, 'tests')
 
