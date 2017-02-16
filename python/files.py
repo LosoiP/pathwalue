@@ -3,18 +3,91 @@
 # MIT License
 # Pauli Losoi
 """
-Created on Fri Nov 25 12:57:40 2016
+Define functions and constants for PathWalue files.
 
-@author: losoip
+collections.namedtuple is used in saving parsed database file data for
+further use. Constants are the filenames for the database files of
+PathWalue. Functions defined in this module read, process and write
+files.
 
-RD, RXN, MOL and CTAB:
-J . Chem. InJ Comput. Sci. 1992, 32, 244-255 
-Description of Several Chemical Structure File Formats Used by Computer Programs 
-Developed at Molecular Design Limited 
-ARTHUR DALBY, JAMES G. NOURSE,* W. DOUGLAS HOUNSHELL, ANN K . I. GUSHURST, 
-DAVID L. GRIER, BURTON A. LELAND, and JOHN LAUFER 
-Molecular Design Limited, 21 32 Farallon Drive, San Leandro, California 94577 
-Received January 23, 1992 
+Classes
+-------
+Mol
+    collections.namedtuple for mol data.
+Rd
+    collections.namedtuple for rd data.
+RdRecord
+    collections.namedtuple for rd records.
+Rxn
+    collections.namedtuple for rxn data.
+Tsv
+    collections.namedtuple for tsv data.
+
+Functions
+---------
+get_content
+    Return content list of a text file.
+get_contents
+    Yield content lists of text files.
+get_json
+    Return object from a JSON file.
+parse_ctab
+    Parse a ctab entry. NOT IMPLEMENTED
+parse_mol
+    Parse a mol entry.
+parse_rd
+    Parse an rd entry.
+parse_rxn
+    Parse an rxn entry.
+parse_tsv
+    Parse a tsv entry.
+write_json
+    Write an object into a JSON file.
+write_jsons
+    Write objects into JSON files.
+
+Constants
+---------
+CHEBI_COMPOUNDS
+CHEBI_DATA
+CHEBI_RELATIONS
+CHEBI_VERTICES
+INTENZ_ENZYMES
+RHEA_EC
+ENZ_NAMES
+ENZ_REACTIONS
+MOL_CHARGES
+MOL_DEMANDS
+MOL_FORMULAE
+MOL_IGNORED
+MOL_MASSES
+MOL_NAMES
+MOL_PARENTS
+MOL_PRICES
+MOL_REACTIONS
+MOL_RELATIONS
+MOL_VALUES
+RXN_COMPLEXITIES
+RXN_ECS
+RXN_EQUATIONS
+RXN_STOICHIOMETRICS
+JS_MOL_NAMES
+JS_MOL_PRICES
+JS_MOL_REACTIONS
+JS_MOL_IGNORED
+JS_ENZ_NAMES
+JS_ENZ_REACTIONS
+JS_RXN_COMPLEXITIES
+JS_RXN_ENZYMES
+JS_RXN_EQUATIONS
+JS_RXN_STOICHIOMETRICS
+
+See also
+--------
+Description of Several Chemical Structure File Formats Used by Computer
+Programs by Arthur Dalby, James G. Nourse et al. in Journal of Chemical
+Information and Computer Sciences (1992) 32:244-255
+
 """
 
 
@@ -105,20 +178,20 @@ Tsv = namedtuple('TSV', ['fields', 'data'])
 
 def get_content(path, filename, strip_newlines=True):
     """
-    Return content of a text file.
+    Return content list of a text file.
 
     Parameters
     ----------
-    path : str
+    path : string
         Directory path to file.
-    filename : str
+    filename : string
         Name of the file. Name must include extension.
     strip_newlines : bool
-        If true, strip newlines '\\n'.
+        If true (default), strip newlines '\\n'.
 
-    Yields
+    Returns
     ------
-    str
+    list
         Contents of the file. Elements correspond to text file rows.
 
     Raises
@@ -126,7 +199,7 @@ def get_content(path, filename, strip_newlines=True):
     FileNotFoundError
         If the path or file does not exist.
     TypeError
-        If path or filename is not str.
+        If path or filename is not string.
 
     """
     if not isinstance(path, str):
@@ -145,28 +218,28 @@ def get_content(path, filename, strip_newlines=True):
 
 def get_contents(path, filenames, strip_newlines=True):
     """
-    Return content of a text file.
+    Yield content lists of text files.
 
     Parameters
     ----------
-    path : str
+    path : string
         Directory path to file.
-    filename : str
-        Name of the file. Name must include extension.
+    filename : list of strings
+        Names of the files. Names must include extension.
     strip_newlines : bool
         If true, strip newlines '\\n'.
 
     Yields
     ------
-    generator
-        File content string generators.
+    list
+        File contents.
 
     Raises
     ------
     FileNotFoundError
-        If the path or file does not exist.
+        If the path or a file does not exist.
     TypeError
-        If path or filename is not str.
+        If filenames is not a list.
 
     """
     if not isinstance(path, str):
@@ -179,19 +252,23 @@ def get_contents(path, filenames, strip_newlines=True):
 
 def get_json(path, filename):
     """
-    Return data object from a JSON formatted file.
+    Return data object from a JSON file.
 
     Parameters
     ----------
-    path : str
+    path : string
         Directory path to file.
-    filename : str
+    filename : string
         Name of the file. Name must include extension.
 
     Returns
     -------
     object
         Object contained in the JSON file.
+
+    See also
+    --------
+    write_json, write_jsons
 
     """
     if not isinstance(path, str):
@@ -292,6 +369,20 @@ def parse_ctab(contents):
 
 def parse_mol(contents, ctab_parse=False):
     """
+    Parse a mol entry.
+
+    Parameters
+    ----------
+    contents : list
+        Mol entry contents.
+    ctab_parse : boolean
+        If false (default), leave ctab portion of entry unparsed.
+
+    Returns
+    -------
+    collections.namedtuple
+        Properties: name, meta, comment and ctab.
+
     """
     if contents[0] != '$MOL':
         raise MolError
@@ -307,6 +398,22 @@ def parse_mol(contents, ctab_parse=False):
 
 def parse_rd(contents):
     """
+    Parse an rd entry.
+
+    Parameters
+    ----------
+    contents : list
+        Rd file contents.
+
+    Returns
+    -------
+    collections.namedtuple
+        Properties: version, time, records
+
+    Raises
+    ------
+    RdError
+        If rd file contents have invalid formatting.
     """
     # Check file validity.
     if len(contents) < 2:
@@ -360,6 +467,23 @@ def _parse_rd_record(contents):
 
 def parse_rxn(contents):
     """
+    Parse rxn entry.
+
+    Parameters
+    ----------
+    contents : list
+        Rxn entry contents.
+
+    Returns
+    -------
+    collections.namedtuple
+        properties: name, comment, n_reactants, n_products, mols
+
+    Raises
+    ------
+    RxnError
+        If rxn entry contents have invalid formatting.
+
     """
     if len(contents) < 5:
         raise RxnError(
@@ -390,8 +514,22 @@ def parse_rxn(contents):
 
 def parse_tsv(contents, fields_header=[]):
     """
-    """
+    Parse tsv file.
 
+    Parameters
+    ----------
+    contents : list
+        Tsv file contents.
+    fields_header : iterable of hashables
+        Keys used in yielded dicts. Default [], in which case the
+        file is assumed to provide field headers at first row.
+
+    Yields
+    ------
+    dict
+        Tsv field value string keyed by field headers provided either in
+        the file or by the user in fields_header.
+    """
     start_index = 0
     if not fields_header:
         fields_header = contents[0].strip().split(_DELIMITER_TSV)
@@ -408,21 +546,25 @@ def parse_tsv(contents, fields_header=[]):
 
 def write_json(python_object, path, filename):
     """
-    Save object data in a JSON formatted file.
+    Save object data in a JSON file.
 
     Parameters
     ----------
-    python_object : obj
+    python_object : object
         Object to be saved in the JSON file.
-    path : str
+    path : string
         Directory path to file.
-    filename : str
-        Name of the target JSON file. Filename must not contain path or
-        extension.
+    filename : string
+        Name of the target JSON file. Filename must not contain path.
 
     Returns
     -------
     None
+
+    Raises
+    ------
+    TypeError
+        If path or filename is not string.
 
     """
     if not isinstance(path, str):
@@ -435,14 +577,14 @@ def write_json(python_object, path, filename):
 
 def write_jsons(data, path, filenames):
     """
-    Save objects in JSON formatted files.
+    Save objects in JSON files.
 
     Parameters
     ----------
     data : list
         Objects to be saved in the files. Object index must correspond to
         filename index.
-    path : str
+    path : string
         Directory path to file.
     filenames : list
         Names of the target JSON files. Filename index must correspond
@@ -451,6 +593,12 @@ def write_jsons(data, path, filenames):
     Returns
     -------
     None
+
+    Raises
+    ------
+    TypeError
+        If data or filenames is neither list nor tuple, or if path is
+        not string.
 
     """
     if not isinstance(data, (list, tuple)):
@@ -461,3 +609,4 @@ def write_jsons(data, path, filenames):
         raise TypeError('`filenames` must be list or tuple')
     for object_, filename in zip(data, filenames):
         write_json(object_, path, filename)
+
