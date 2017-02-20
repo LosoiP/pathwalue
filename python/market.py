@@ -5,19 +5,37 @@
 """
 Evaluate compound demands and prices and reaction complexities.
 
+Constants
+---------
+RELATIONS_DEMAND
+    Set of ChEBI relation ID strings used in evaluating demand.
+RELATIONS_PRICE
+    Set of ChEBI relation ID strings used in evaluating price.
+CHEBIS_DEMAND
+    Mapping from CHEBI ID strings to demand integer values.
+CHEBIS_PRICE
+    Mapping from CHEBI ID strings to price integer values.
+COMPLEXITY_COMPOUNDS
+    Mapping from CHEBI ID strings to complexity integer values.
+
 Functions
 ---------
-compare_formulae: return Euclidian distance between chemical formulae.
-evaluate_complexity: return reaction complexity.
-evaluate_compound: return compound value.
-evaluate_ontology: return ontology-derived value.
-initialize_graph: initialize networkx.DiGraph to ontology analysis.
-parse_formula: return a dict representation of a chemical formula str.
-main: create JSON files for prices, demands and complexities.
+compare_formulae
+    Return Euclidian distance between chemical formulae.
+evaluate_complexity
+    Return reaction complexity.
+evaluate_compound
+    Return compound value.
+evaluate_ontology
+    Return ontology-derived value.
+initialize_graph
+    Initialize networkx.DiGraph to ontology analysis.
+parse_formula
+    Return a dict representation of a chemical formula str.
 
-Exceptions
-----------
-ParseCharacterError: error in parsing a chemical formula.
+Todo
+----
+Remove outdated functions compare_formulae and parse_formula.
 
 """
 
@@ -263,7 +281,7 @@ def compare_formulae(formulae):
     ----------
     formulae : iterable
         Must contain 2 chemical formulae dicts {'element': int, ...}.
-        Use `parse_formula` to construct dicts.
+        Use parse_formula to construct dicts.
 
     Returns
     -------
@@ -278,7 +296,7 @@ def compare_formulae(formulae):
         If both formula dicts are empty or if the number of dicts is
         invalid.
     TypeError
-        If `formulae` is not a list or a tuple.
+        If formulae is not a list or a tuple.
 
     See also
     --------
@@ -304,13 +322,9 @@ def evaluate_complexity(reaction, stoichiometrics={}, compounds={}):
     """
     Evaluate complexity factor for reaction step.
 
-    Reaction complexity factor is currently the amount of compounds in
-    `compounds` consumed in reaction  multiplied by their respective
-    complexity values.
-
     Parameters
     ----------
-    reaction : str
+    reaction : string
         Reaction Rhea ID.
     stoichiometrics : dict
         Mapping from Rhea ID to a list of two dicts. [0] maps from
@@ -321,15 +335,15 @@ def evaluate_complexity(reaction, stoichiometrics={}, compounds={}):
 
     Returns
     -------
-    number
+    integer
         Reaction complexity factor.
 
     Raises
     ------
     TypeError
-        If `reaction` is not a string.
-    RheaIDError
-        If `reaction` is not recognized as a Rhea ID number.
+        If reaction is not a string.
+    ReactionIdError
+        If reaction is not recognized as a Rhea ID number.
 
     """
     if not isinstance(reaction, str):
@@ -369,9 +383,9 @@ def evaluate_compound(demand, price):
     Raises
     ------
     TypeError
-        If `demand` or `price` are not numeric.
+        If demand or price are not numeric.
     ValueError
-        If `demand` or `price` is not non-negative.
+        If demand or price is not non-negative.
 
     """
     if not isinstance(demand, (float, int)):
@@ -389,17 +403,16 @@ def evaluate_ontology(graph, compound, target_values):
 
     Parameters
     ----------
-    graph : networkx.DiGraph object
-        Use `initialize_graph` to create `graph`.
-    compound : str
+    graph : networkx.DiGraph
+        Use initialize_graph to create graph.
+    compound : string
         ChEBI ID.
     types : dict
-        Mapping from relation strings to dicts that map target ChEBI
-        IDs to target value numbers.
+        Mapping from ChEBI IDs to value numbers.
 
     Returns
     -------
-    number
+    int
         Sum of found target values.
 
     """
@@ -424,7 +437,7 @@ def initialize_graph(compound_relations, relation_types):
         strings to relation type strings.
     relation_types : iterable
         Relation type_strings to be included in creating edges between
-        ChEBI ID string nodes.
+        hEBI ID string nodes.
 
     Returns
     -------
@@ -459,9 +472,9 @@ def parse_formula(formula):
     Raises
     ------
     ParseCharacterError
-        If `formula` contains invalid characters.
+        If formula contains invalid characters.
     TypeError
-        If `formula` is not a string.
+        If formula is not a string.
 
     """
     def find_multiplier(start):
