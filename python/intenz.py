@@ -3,30 +3,35 @@
 # MIT License
 # Pauli Losoi
 """
-Read and process IntEnz data to JSON files.
+Read and process IntEnz data file.
 
 Functions
 ---------
-get_enzymes: find EC numbers and enzyme names
-merge_dicts: process a list of dicts to a dict.
-main: process IntEnz data to JSON files.
+get_enzymes
+    find EC numbers and enzyme names
+merge_dicts
+    process a list of dicts to a dict.
+
+Todo
+----
+Move merge_dicts to a more appropriate module.
 
 """
 
 
 def get_enzymes(content):
     """
-    Find enzyme names names and EC numbers in content.
+    Find enzyme names and EC numbers in contents.
 
     Parameters
     ----------
     content : iterable
-        Content strs.
+        enzyme.dat file content strings.
 
     Yields
     ------
     dict
-        Mapping from EC number str to enzyme name str.
+        Mapping from EC number strings to enzyme name strings.
 
     """
     ec = ''
@@ -44,22 +49,22 @@ def get_enzymes(content):
 
 def merge_dicts(dicts, kkey, vkey):
     """
-    Map `kkey` value to `vkey` value from dicts in `dicts`.
+    Map kkey value to vkey value from dicts in dicts.
 
     Parameters
     ----------
     dicts : iterable
         Dicts.
     kkey : hashable
-        The key to fetch values from `dicts` to be used as keys.
+        The key to fetch values from dicts to be used as keys.
     vkey : hashable
-        The key to fetch values from `dicts` to be used as values.
+        The key to fetch values from dicts to be used as values.
 
     Returns
     -------
     dict
-        A new dict that maps `kkey` values from `dicts` to `vkey`
-        values from `dicts`.
+        A new dict that maps kkey values from dicts to vkey values from
+        dicts.
 
     """
     return {d.get(kkey): d.get(vkey) for d in dicts if kkey in d and vkey in d}
