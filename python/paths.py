@@ -3,9 +3,28 @@
 # MIT License
 # Pauli Losoi
 """
-Created on Fri Nov 25 12:57:40 2016
+Define directory paths used by PathWalue.
 
-@author: losoip
+Constants
+---------
+CHEBI_TSV
+    Directory path to ChEBI tsv files.
+INTENZ_DAT
+    Directory path to IntEnz dat files.
+JS
+    Directory path to js files. Not implemented yet.
+JSON
+    Directory path to json files.
+RHEA_RD
+    Directory path to Rhea rd files.
+RHEA_TSV
+    Directory path to Rhea tsv files.
+
+Functions
+---------
+get_names
+    Return filenames of a directory.
+
 """
 
 
@@ -44,7 +63,7 @@ def get_names(path):
 
     Parameters
     ----------
-    path : str
+    path : string
         Directory path.
 
     Returns
@@ -60,6 +79,6 @@ def get_names(path):
     try:
         __, __, filenames = os.walk(path).__next__()
     except StopIteration:
-        raise DirectoryNotFoundError('directory `{}` not found'.format(path))
+        raise DirectoryNotFoundError('directory {} not found'.format(path))
     else:
         return filenames
