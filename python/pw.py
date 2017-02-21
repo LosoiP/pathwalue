@@ -3,9 +3,27 @@
 # MIT License
 # Pauli Losoi
 """
-Created on Fri Nov 25 12:57:40 2016
 
-@author: losoip
+Functions
+---------
+determine_intermediates
+    Determine intermediates from reactants and products.
+evaluate_input
+    Evaluate user input.
+evaluate_pathway
+    Evaluate pathway score.
+filter_pathways
+    Filter pathways.
+find_pathway
+    Find pathway.
+intersect_dict
+    Reduce dict to have only keys present in another iterable.
+initialize_graph
+    Initialize networkx.DiGraph for pathway analysis.
+nbest_items
+    Return n highest scored items.
+order_pathway_data
+    Collect and pack pathway data.
 """
 
 
@@ -24,7 +42,7 @@ def determine_intermediates(substrates, products):
     Parameters
     ----------
     substrates, products : dict
-        Must contain keys 'chebi' and 'number'.
+        Must contain keys chebi and number.
 
     Returns
     -------
@@ -51,27 +69,26 @@ def evaluate_input(n, graph, compounds=[], enzymes=[], context={}):
     ----------
     n : int
         The amount of results to be returned. Must be at least 1.
+    graph : networkx.DiGraph
+        Rhea reaction ID string nodes and compound edges.
     compounds : list or tuple
         ChEBI ID strings. Order matters.
     enzymes : list or tuple
         EC number strings. Order doesn't matter.
+    context : dict
+        Mappings from ID strings to data. Must have keys ec_reactions,
+        compound_reactions, complexities, demands, prices,
+        reactions_ecs, stoichiometrics.
 
     Returns
     -------
     list
-        Tuples of value, pathway -pairs.
+        Tuples of score, pathway -pairs.
 
     Raises
     ------
-    ChEBIIDError
-        If a ChEBI ID in `compounds` is not recognized.
-    ECNumberError
-        If an EC number in `enzymes` is not recognized.
     TypeError
-        If `n` is not int or if `compounds` or `enzymes` is neither
-        list nor tuple.
-    ValueError
-        If `n` is less than 1.
+        If `n` is not integer.
 
     """
     if not isinstance(n, int):
@@ -147,12 +164,6 @@ def evaluate_pathway(steps, compounds):
     number
         Pathway's value.
 
-    Raises
-    ------
-    TypeError
-        If `steps` is not an instance of collections.OrderedDict.
-        If `compounds` is not a dict.
-
     """
     values_reactions = (data[0] for data in steps.values())
     substrates_all = set(s for step in steps.values() for s in step[1])
@@ -187,31 +198,35 @@ def filter_pathways(
     """
     Yield pathways that meet filtering conditions.
 
+    The effect of filterig parameters is explained below. Filters
+    automatically pathways, that repeatedly consumes and produces a
+    compound, that is not ignored (see chebi.IGNORED_COMPOUNDS).
+
     Parameters
     ----------
     pathways : iterable
         Lists of Rhea ID strings.
     source : string
         ChEBI ID of pathway's source compound. Filters pathways that
-        have reactions producing `source`.
+        have reactions producing source.
     target : string
         ChEBI ID of pathway's target compound. Filters pathways that
-        have reactions consuming `target`.
+        have reactions consuming target.
     compounds : iterable
         CheBI ID strings. Filters pathways that don't have all
         compounds.
     enzymes : iterable
         EC number strings. Filters pathways that don't have all enzymes.
     context : dict
-        Key `reaction_ecs` maps to a dict of Rhea ID string keys to EC
+        Key reaction_ecs maps to a dict of Rhea ID string keys to EC
         number string list values.
-        Key `stoichiometrics` maps to a dict of Rhea ID string keys to
+        Key stoichiometrics maps to a dict of Rhea ID string keys to
         a list of dicts of substrates and products.
 
     Yields
     ------
-    list
-        Pathway reaction lists that meet the filtering conditions of
+    tuple
+        Pathway reaction tuples that meet the filtering conditions of
         given arguments.
 
     """
@@ -262,22 +277,18 @@ def find_pathway(graph, source=None, target=None):
     Parameters
     ----------
     graph : networkx graph object
-        Use `initialize_graph_reaction` to create graph.
+        Rhea reaction ID nodes.
     reactions : iterable of 1 or 2
-        `graph` node IDs to search pathways for.
+        Reaction graph node IDs to search pathways for.
 
     Yields
     ------
     list
-        Pathways from source to target nodes. If length of `reactions`
-        is 1, the ID in `reactions` is used as a source and as a
-        target. If length of `reactions` is 2, the first item is used as
-        the source and the second item is used as the target.
+        Pathways from source to target reaction nodes.
 
-    Raises
-    ------
-    ValueError
-        If length of `reactions` is neither 1 nor 2.
+    See also
+    --------
+    initialize_graph
 
     """
     if target is None:
@@ -315,12 +326,12 @@ def intersect_dict(target, filter_to={}):
     target : dict
         key: value -pairs.
     filter_to : iterable
-        Keys that are to be kept in `target`.
+        Keys that are to be kept in target.
 
     Returns
     -------
     dict
-        `target` without keys that aren't present in `filter_to`.
+        Target dict without keys that aren't present in filter_to.
 
     """
     for key in target.copy():
@@ -338,6 +349,12 @@ def initialize_graph(
     """
     Initialize graph to find pathways.
 
+    Connects reactions 1 and 2 by an edge (1, 2), if reaction 1
+    produces a compound that is consumed by reaction 2. A reaction
+    is not connected to its opposite direction node under any
+    circumstances. See chebi.IGNORED_COMPOUNDS for a list of compounds,
+    that won't connect reactions in the graph.
+
     Parameters
     ----------
     reaction_stoichiometrics : dict
@@ -352,6 +369,10 @@ def initialize_graph(
     Returns
     -------
     nx.DiGraph object
+
+    See also
+    --------
+    chebi.IGNORED_COMPOUNDS
 
     """
     graph = nx.DiGraph()
@@ -379,9 +400,9 @@ def nbest_items(n, values, items):
     n : int
         The amount of best value-item -pairs to be returned.
     values : iterable
-        Values of items in `items`. Indices must match.
+        Values of items in items. Indices must match.
     items : iterable
-        Items to be compared by values in `values`. Indices must match.
+        Items to be compared by values in values. Indices must match.
 
     Returns
     -------
@@ -391,17 +412,17 @@ def nbest_items(n, values, items):
     Raises
     ------
     TypeError
-        If `n` or items in `values` are non-numeric.
+        If n or items in values are non-numeric.
     ValueError
-        If `n` is less than 1.
+        If n is less than 1.
 
     """
     if not isinstance(n, (float, int)):
-        raise TypeError('`n` non-numeric')
+        raise TypeError('n non-numeric')
     elif n < 1:
-        raise ValueError('`n` less than 1')
+        raise ValueError('n less than 1')
     elif not all((isinstance(value, (float, int)) for value in values)):
-        raise TypeError('nonnumerical item in `values`')
+        raise TypeError('nonnumerical item in values')
     maxes = hq.nlargest(n, values)
     indices_max = [ix for ix, value in enumerate(values) if value in maxes]
     items_max = [items[index_max] for index_max in indices_max]
@@ -423,6 +444,16 @@ def order_pathway_data(
     ----------
     pathways : iterable
         Lists or tuples of ordered reaction Rhea ID strings.
+    stoichiometrics : dict
+        Mapping from Rhea reaction ID string to lists of 2 dicts. [0]
+        maps reactant ChEBI ID strings to stoichiometric numbers and [1]
+        maps product ChEBI ID strings to stoichiometric numbers.
+    complexities : dict
+        Maps Rhea reaction ID strings to complexity values.
+    demands : dict
+        Maps ChEBI compound ID strings to demand values.
+    prices : dict
+        Maps ChEBI compound ID strings to price values.
 
     Yields
     ------
