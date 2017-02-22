@@ -3,45 +3,31 @@
 # MIT License
 # Pauli Losoi
 """
-Define functions, constants and exceptions for PathWalue application.
+Define functions for PathWalue application.
 
-PEP 257:
-The docstring of a script (a stand-alone program) should be usable as
-its "usage" message, printed when the script is invoked with incorrect
-or missing arguments (or perhaps with a "-h" option, for "help"). Such
-a docstring should document the script's function and command line
-syntax, environment variables, and files. Usage messages can be fairly
-elaborate (several screens full) and should be sufficient for a new
-user to use the command properly, as well as a complete quick reference
-to all options and arguments for the sophisticated user.
+Defines functions for creating json files from relevant data in the
+databases ChEBI, IntEnz and Rhea (also some irrelevant data is saved at
+the moment). Defines also functions for running an analysis assessing
+the performance of PathWalue application.
 
-The docstring for a module should generally list the classes,
-exceptions and functions (and any other objects) that are exported by
-the module, with a one-line summary of each. (These summaries generally
-give less detail than the summary line in the object's docstring.) The
-docstring for a package (i.e., the docstring of the package's
-__init__.py module) should also list the modules and subpackages
-exported by the package.
-
-The docstring for a function or method should summarize its behavior
-and document its arguments, return value(s), side effects, exceptions
-raised, and restrictions on when it can be called (all if applicable).
-Optional arguments should be indicated. It should be documented whether
-keyword arguments are part of the interface.
-
-The docstring for a class should summarize its behavior and list the
-public methods and instance variables. If the class is intended to be
-subclassed, and has an additional interface for subclasses, this
-interface should be listed separately (in the docstring). The class
-constructor should be documented in the docstring for its __init__
-method. Individual methods should be documented by their own docstring.
-
-If a class subclasses another class and its behavior is mostly
-inherited from that class, its docstring should mention this and
-summarize the differences. Use the verb "override" to indicate that a
-subclass method replaces a superclass method and does not call the
-superclass method; use the verb "extend" to indicate that a subclass
-method calls the superclass method (in addition to its own behavior).
+Functions
+---------
+compare_pathways
+    Compare pathways to reference pathway.
+initialize_chebi
+    Read ChEBI files and save data to json files.
+initialize_intenz
+    Read IntEnz file and save data to json files.
+initialize_market
+    Evaluate price, demand and complexity values and save to json files.
+initialize_rhea
+    Read Rhea files and save data to json files.
+main
+    Initialize context, run analysis and display results.
+run_analysis
+    Run analysis with given parameters.
+show_results
+    Print and save analysis results.
 
 """
 
@@ -59,6 +45,17 @@ import rhea
 
 def compare_pathways(pathways_raw, reactions_ref, context):
     """
+    Compare pathways to a reference pathway.
+
+    Parameters
+    ----------
+    pathways_raw : iterable of number, iterable of string pairs
+        [0] score of pathway, [1] pathway iterable of reaction ID
+        strings.
+    reactions_ref : iterable of strings
+        Reference pathway.
+    context : dict
+        Data context, must contain stoichiometrics.
     """
     Pathway = namedtuple('Pathway', ['path', 'score', 's_s', 's_p', 's_mol',
                                      's_rxn'])
@@ -99,12 +96,14 @@ def initialize_chebi(rhea_chebis=set()):
 
     Parameters
     ----------
-    None
+    rhea_chebis : iterable
+        ChEBI ID strings found in Rhea database. Used to limit compound
+        names. Empty by default.
 
     Returns
     -------
     list
-        Dicts of data.
+        Dicts of ChEBI data.
 
     """
     # Obtain compound data.
@@ -161,7 +160,9 @@ def initialize_intenz(rhea_ecs=set()):
 
     Parameters
     ----------
-    None
+    rhea_ecs : iterable
+        EC numbers found in Rhea database, used to limit the EC numbers
+        saved from IntEnz.
 
     Returns
     -------
@@ -182,7 +183,7 @@ def initialize_intenz(rhea_ecs=set()):
 
 def initialize_market():
     """
-    Run analysis to evaluate demands, prices and complexities.
+    Evaluate demands, prices and complexities.
 
     Parameters
     ----------
@@ -249,7 +250,8 @@ def initialize_rhea(chebi_parents={}):
 
     Parameters
     ----------
-    None
+    chebi_parents : dict
+        Mapping from ChEBI ID strings to ChEBI parent ID strings.
 
     Returns
     -------
@@ -292,6 +294,21 @@ def initialize_rhea(chebi_parents={}):
 
 def main():
     """
+    Define data context, run analysis and save results.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    list
+        Best scoring (mean similarity) analysis run data.
+
+    See also
+    --------
+    run_analysis, show_results
+
     """
     # Define context.
     context = {
@@ -373,6 +390,34 @@ def main():
 
 def run_analysis(G, n_start, n_stop, Cs, Es, reference, context):
     """
+    Run analysis with given parameters.
+
+    Parameters
+    ----------
+    G : networkx.DiGraph
+        Reaction node graph.
+    n_start : integer
+        The max results range start value.
+    n_stop : integer
+        The max results range stop value.
+    Cs : list
+        Compounds parameter lists.
+    Es : list
+        Enzymes parameter lists.
+    reference : iterable
+        Reference pathway.
+    context : dict
+        Data context.
+
+    Returns
+    -------
+    list
+        collections.namedtuples with attributes pathways and parameters.
+
+    See also
+    --------
+    main, show_results
+
     """
     Parameters = namedtuple('Parameters', ['n', 'C', 'E'])
     Result = namedtuple('Result', ['pathways', 'parameters'])
@@ -390,6 +435,23 @@ def run_analysis(G, n_start, n_stop, Cs, Es, reference, context):
 
 def show_results(results, names, context):
     """
+    Print and save analysis results.
+
+    Parameters
+    ----------
+    results : list of collections.namedtuple
+        Attributes pathways and parameters.
+
+    Returns
+    -------
+    list of collections.namedtuple
+        Result collections.namedtuples, that score above a treshold
+        value.
+
+    See also
+    --------
+    main, run_analysis
+
     """
     pw_entries = ['score', 's_s', 's_p', 's_mol', 's_rxn']
     results_best = []
