@@ -1,15 +1,15 @@
 'use strict';
+// (C) 2017 Tampere University of Technology
+// MIT License
+// Pauli Losoi
 /**
- * @fileOverview JavaScript for PathWalue-application.
- *
- * @author Pauli Losoi
+ * @module JavaScript for PathWalue-application.
  *
  * @requires Lodash
  * @requires jQuery
  * @requires JSNetworkX
  * @requires Select2
  */
-
 var PW = (function (PW, $, jsnx, _, select2) {
 
 

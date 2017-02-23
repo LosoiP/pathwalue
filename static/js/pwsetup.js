@@ -1,8 +1,9 @@
 'use strict';
+// (C) 2017 Tampere University of Technology
+// MIT License
+// Pauli Losoi
 /**
- * @fileOverview JavaScript for PathWalue-application.
- *
- * @author Pauli Losoi
+ * @file JavaScript for PathWalue-application.
  *
  * @requites jQuery
  * @requires Lodash
