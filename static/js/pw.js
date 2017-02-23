@@ -3,7 +3,11 @@
 // MIT License
 // Pauli Losoi
 /**
- * @module JavaScript for PathWalue-application.
+ * @module PW
+ * @summary JavaScript for PathWalue-application.
+ *
+ * @description Defines functions for PathWalue application. Includes
+ * functions, that connect user input to evaluation to output.
  *
  * @requires Lodash
  * @requires jQuery
@@ -14,15 +18,18 @@ var PW = (function (PW, $, jsnx, _, select2) {
 
 
 /**
- * Return a new HTML element with attributes.
- * @param {HTMLElement} documentObject the document.
- * @param {string} tagName the HTML element tag name.
- * @param {object} attributes the attributes to the HTML element.
+ * @function createHTMLElement
+ * @summary Return a new HTML element with attributes.
+ *
+ * @param {htmlelement} documentObject - HTML document.
+ * @param {string} tagName - HTML element tag name.
+ * @param {object} attributes - Attributes to the HTML element.
  *
  * @returns {HTMLElement} HTML element.
  */
 function createHTMLElement(documentObject, tagName, attributes) {
     var element = documentObject.createElement(tagName);
+    // Add attributes to the element.
     _.forOwn(attributes, function (value, key) {
         element[key] = value;
     });
@@ -31,14 +38,17 @@ function createHTMLElement(documentObject, tagName, attributes) {
 
 
 /**
- * Search and return best scoring pathways.
- * @param {jsnx.DiGraph} G
- * @param {number} n
- * @param {array} C
- * @param {array} E
- * @param {object} context
+ * @function evaluateInput
+ * @summary Search and return best scoring pathways.
+ * 
+ * @param {jsnx.DiGraph} G - Reaction node graph.
+ * @param {number} n - Maximum amount of results.
+ * @param {array} C - Compounds.
+ * @param {array} E - Enzymes.
+ * @param {array} Fl - Filter links.
+ * @param {object} context - Data context.
  *
- * @returns {array}
+ * @returns {array} Score, pathway -pairs.
  */
 function evaluateInput(G, n, C, E, Fl, context) {
     var pathways = [];
@@ -90,6 +100,8 @@ function evaluateInput(G, n, C, E, Fl, context) {
         filter.source = start;
         filter.target = goal;
     } else {
+        // Remove null from E, if at least 2 enzymes present.
+        // Restricts search space.
         if (E.length > 1) {
             sources = [];
         }
@@ -132,11 +144,13 @@ function evaluateInput(G, n, C, E, Fl, context) {
 
 
 /**
- * Return pathway value.
- * @param {array} steps
- * @param {object} compounds
+ * @function evaluatePathway
+ * @summary Return pathway value.
  *
- * @returns {number}
+ * @param {array} steps - Reaction steps.
+ * @param {object} compounds - Compound data.
+ *
+ * @returns {number} Pathway score.
  */
 function evaluatePathway(steps, compounds) {
     var rxns = [];
@@ -182,10 +196,12 @@ function evaluatePathway(steps, compounds) {
 
 
 /**
- * Return pathways that meet filtering conditions.
- * @param {array} pathways pathway arrays.
- * @param {object} filter filter object.
- * @param {object} context context object.
+ ' @fuction filterPathways
+ * @summary Return pathways that meet filtering conditions.
+ *
+ * @param {array} pathways - Pathway arrays.
+ * @param {object} filter - Filter object.
+ * @param {object} context - Context object.
  *
  * @returns {array} Approved pathways.
  */
@@ -276,10 +292,12 @@ function filterPathways(pathways, filter, context) {
 
 
 /**
- * Return pathways from source to target.
- * @param {object} G jsnx.DiGraph object
- * @param {string} source pathway source Rhea ID.
- * @param {string} target pathway target Rhea ID.
+ * @function findPathway
+ * @summary Return pathways from source to target.
+ *
+ * @param {object} G - jsnx.DiGraph object.
+ * @param {string} source - Pathway source Rhea ID.
+ * @param {string} target - Pathway target Rhea ID.
  *
  * @returns {array} Rhea ID arrays.
  */

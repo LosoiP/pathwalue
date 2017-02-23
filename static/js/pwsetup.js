@@ -3,23 +3,29 @@
 // MIT License
 // Pauli Losoi
 /**
- * @file JavaScript for PathWalue-application.
+ * @summary Initialize PathWalue application.
  *
- * @requites jQuery
+ * @file Initializes PathWalue application after the document has been
+ * loaded. Creates the reaction node graph, loads datasets to the input
+ * form and applies select2 to input select elements.
+ *
+ * @requires jQuery
  * @requires Lodash
- *
  * @requires pw.js
  */
+
 
 (function (PW, $, _) {
     $(document).ready(
         function () {
+            // Initialize reaction graph.
             PW.GRAPH = PW.initializeGraph(
                 PW.DATA.stoichiometrics, PW.DATA.compound_reactions, PW.DATA.IGNORED_COMPOUNDS);
+            // Load datasets to input form.
             PW.initializeForm(
                 _.keys(PW.DATA.compound_reactions), PW.DATA.compounds,
                 _.keys(PW.DATA.ec_reactions), PW.DATA.enzymes);
-
+            // Apply select2.
             $(".select2Multi").select2().on(
                 'select2:select',
                 function(e) {
