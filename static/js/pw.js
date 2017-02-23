@@ -342,7 +342,14 @@ function findPathway(G, source, target) {
 
 
 /**
- * Format a compound entry in results.
+ * @function formatCompound
+ * @summary Format a compound entry in results.
+ *
+ * @param {DOM} document - Document.
+ * @param {string} chebi - ChEBI ID.
+ * @param {object} context - Data context.
+ *
+ * @returns {htmlelement}
  */
 function formatCompound(document, chebi, context) {
     var liMain = formatIntermediates(document, chebi, context);
@@ -355,7 +362,14 @@ function formatCompound(document, chebi, context) {
 
 
 /**
- * Format a compound entry in results.
+ * @function formatIntermediates
+ * @summary Format an intermediate compound entry in results.
+ *
+ * @param {DOM} document - Document.
+ * @param {string} chebi - ChEBI ID.
+ * @param {object} context - Data context.
+ *
+ * @returns {htmlelement}
  */
 function formatIntermediates(document, chebi, context) {
     var liMain = createHTMLElement(document, 'LI');
@@ -365,7 +379,17 @@ function formatIntermediates(document, chebi, context) {
 
 
 /**
- * Format a list tag.
+ * @function formatList
+ * @summary Format a list in results.
+ *
+ * @param {DOM} document - Document.
+ * @param {string} listTag - HTML tag type string.
+ * @param {string} title - List title.
+ * @param {array} container - List elements.
+ * @param {function} f - Element formatting function.
+ * @param {object} context - Data context.
+ *
+ * @returns {htmlelement}
  */
 function formatList(document, listTag, title, container, f, context) {
     var liMain = createHTMLElement(document, 'LI');
@@ -380,7 +404,14 @@ function formatList(document, listTag, title, container, f, context) {
 
 
 /**
- * Format output for showing results.
+ * @function formatOutput
+ * @summary Format application output.
+ *
+ * @param {DOM} document - Document.
+ * @param {array} results - Results.
+ * @param {object} context - Data context.
+ *
+ * @returns {htmlelement}
  */
 function formatOutput(document, results, context) {
     var ol = createHTMLElement(document, 'OL');
@@ -399,7 +430,14 @@ function formatOutput(document, results, context) {
 
 
 /**
- * Format a pathway entry in results.
+ * @function formatPathway
+ * @summary Format a pathway entry in results.
+ *
+ * @param {DOM} document - Document.
+ * @param {array} pathway - Pathway.
+ * @param {object} context - Data context.
+ *
+ * @returns {htmlelement}
  */
 function formatPathway(document, pathway, context) {
     var li;
@@ -471,7 +509,14 @@ function formatPathway(document, pathway, context) {
 
 
 /**
- * Format a reaction entry in results.
+ * @function formatReaction
+ * @summary Format a reaction entry in results.
+ *
+ * @param {DOM} document - Document.
+ * @param {string} rhea - Rhea ID.
+ * @param {object} data - Data context.
+ *
+ * @returns {htmlelement}
  */
 function formatReaction(document, rhea, data) {
     var liMain = createHTMLElement(document, 'LI');
