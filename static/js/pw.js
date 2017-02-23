@@ -551,11 +551,13 @@ function formatReaction(document, rhea, data) {
 
 
 /**
- * Return values from a form of input and 2 select fields.
- * @param {HTMLElement} form the HTML form element.
+ * @function getInputValues
+ * @summary Return values from a form of input and 2 select fields.
+ *
+ * @param {htmlelement} form - HTML form element.
  *
  * @returns {object} selected values of form. Keys: 'compounds',
-   'enzymes' and 'nResults'.
+ * 'enzymes' and 'nResults'.
  */
 function getInputValues(form) {
     var selectNodes = form.getElementsByTagName('SELECT');
@@ -578,10 +580,12 @@ function getInputValues(form) {
 
 
 /**
- * Return all selected values of a select element.
- * @param {HTMLElement} select the HTML select element.
+ * @function getMultiselectValues
+ * @summary Return all selected values of a select element.
  *
- * @returns {array} selected values of the select element.
+ * @param {htmlelement} select - HTML select element.
+ *
+ * @returns {array} Selected values of the select element.
  */
 function getMultiselectValues(select) {
     var result = [];
@@ -598,10 +602,12 @@ function getMultiselectValues(select) {
 
 
 /**
- * Return an initialized jsnx.DiGraph.
- * @param {object} S stoichiometrics object.
- * @param {object} C compounds object.
- * @param {object} I ignored compounds array.
+ * @function initializeGraph
+ * @summary Return an initialized jsnx.DiGraph.
+ *
+ * @param {object} S - Stoichiometrics object.
+ * @param {object} C - Compounds object.
+ * @param {object} I - Ignored compounds array.
  *
  * @returns {object} jsnx.DiGraph.
  */
@@ -625,7 +631,13 @@ function initializeGraph(S, C, I) {
 
 
 /**
- * Initialize HTML form at Input section.
+ * @function initializeForm
+ * @summary Initialize HTML form at Input section.
+ *
+ * @param {object} rheaChebis - Maps ChEBIs to Rheas.
+ * @param {object} chebiNames - Maps ChEBIs to names.
+ * @param {object} rheaEcs - Maps Rheas to ECs.
+ * @param {object} ecNames - Maps ECs to names.
  */
 function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
     var compounds = [{id: 'any', text: 'any ChEBI'}];
@@ -656,8 +668,6 @@ function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
     });
     return;
 }
-
-
 
 
 /**
