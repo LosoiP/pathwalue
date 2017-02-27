@@ -751,17 +751,15 @@ function submitSearch() {
  * arrays. Returns true otherwise.
  */
 function validateInputCE(compounds, enzymes) {
-    var isValid;
     var lenCompounds = compounds.length;
     var lenEnzymes = enzymes.length;
     if (lenCompounds >= 2) {
-        isValid = true;
+        return true;
     } else if (lenEnzymes >= 1) {
-        isValid = true;
+        return true;
     } else {
-        isValid = false;
+        return false;
     }
-    return isValid;
 }
 
 
