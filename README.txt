@@ -1,16 +1,18 @@
 README: PathWalue
 Author: Pauli Losoi (pauli.losoi@tut.fi)
 License: MIT license, see LICENSE.txt for details.
-(C) Tampere University of Technology 2016
+(C) 2017 Tampere University of Technology
 
-TODO: write project description
-TODO: documentate source code
 
-Code base is under revision.
+NOTE: Code base is under revision.
 Outline and purpose of the code stays the same, but implementation details are subject to change.
 
+The html documents index.html and details.html are used at the web-site
+http://www.tut.fi/pathw/ along with the directory static/. PathWalue
+directory structure is detailed below.
 
-Full Table of Contents (31.1.2017):
+
+Full Table of Contents of repository (31.1.2017):
 
 .gitignore
 FILTERED_CHEBIS.txt
@@ -54,3 +56,38 @@ tests/
     test_rhea.py
     tests.html
     tests.js
+
+
+PathWalue directory structure (27.2.2017):
+Note, some of the files aren't in this repository.
+
+details.html  # Detailed description page.
+index.html  # Main page of the application.
+static/  # Directory for non-html files served.
+    css/
+        external/  # 3rd party css files.
+            select2.min.css
+        pw.css  # Cascading Style Sheet for PathWalue.
+    js/
+        data/  # Js files comprising the data used by PathWalue.
+            cmp_demands.js
+            cmp_prices.js
+            cmp_names.js
+            cmp_reactions.js
+            ec_names.js
+            ec_reactions.js
+            rxn_complexities.js
+            rxn_ecs.js
+            rxn_equations.js
+            rxn_stoichiometrics.js
+            ignored_chebis.js
+        external/  # 3rd party js files.
+            jquery-3.1.0.min.js
+            select2.min.js
+            lodash.min.js
+            jsnetworkx.js
+        pw.js  # PathWalue js functions.
+        pwsetup.js  # PathWalue setup js.
+    png/
+        logo.png  # TUT logo.
+
