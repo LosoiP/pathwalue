@@ -671,14 +671,16 @@ function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
 
 
 /**
- * Return data for pathway evaluation.
- * @param {array} pathways
- * @param {object} S
- * @param {object} C
- * @param {object} D
- * @param {object} P
+ * @function orderPathwayData
+ * @summary Return data for pathway evaluation.
  *
- * @returns {array}
+ * @param {array} pathways - Arrays of Rhea ID strings.
+ * @param {object} S - Stoichiometry mapping object.
+ * @param {object} C - Compounds to reactions mapping object.
+ * @param {object} D - Compounds to demands mapping object.
+ * @param {object} P - Compounds to prices mapping object.
+ *
+ * @returns {array} Steps, compounds.
  */
 function orderPathwayData(pathways, S, C, D, P) {
     var steps = [];
@@ -712,7 +714,11 @@ function orderPathwayData(pathways, S, C, D, P) {
 
 
 /**
- * Submit and evaluate input and return output.
+ * @function submitSearch
+ * @summary Submit and evaluate input and return output.
+ *
+ * @description Collects input form values, sends them to further
+ * processing and sends results to output field.
  */
 function submitSearch() {
     var outputSlot = document.getElementById('outputDiv');
@@ -735,12 +741,14 @@ function submitSearch() {
 
 
 /**
- * Return a boolean of the validity of two fields.
- * @param {array} compounds array of chosen compounds.
- * @param {array} enzymes array of chosen enzymes.
+ * @function validateInputCE
+ * @summary Return a boolean of the validity of two fields.
+ *
+ * @param {array} compounds - Array of chosen compounds.
+ * @param {array} enzymes - Array of chosen enzymes.
  *
  * @returns {boolean} false if both compounds and enzymes are empty
-    arrays. Returns true otherwise.
+ * arrays. Returns true otherwise.
  */
 function validateInputCE(compounds, enzymes) {
     var isValid;
@@ -758,19 +766,19 @@ function validateInputCE(compounds, enzymes) {
 
 
 /**
- * Return a boolean of the validity of the numeric field.
- * @param {number} n the number in the field.
+ * @function validateInputN
+ * @summary Return a boolean of the validity of the numeric field.
+ *
+ * @param {number} n - Number in the field.
  *
  * @returns {boolean} true if 1 < n < 20. Returns false otherwise.
  */
 function validateInputN(n) {
-    var isValid;
     if (isNaN(n) || n < 1 || n > 20) {
-        isValid = false;
+        return false;
     } else {
-        isValid = true;
+        return true;
     }
-    return isValid;
 }
 
 // Export.
