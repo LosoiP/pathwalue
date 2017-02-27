@@ -1,8 +1,9 @@
 'use strict';
+// (C) 2017 Tampere University of Technology
+// MIT License
+// Pauli Losoi
 /**
- * @fileOverview QUnit tests for PathWalue-application.
- *
- * @author Pauli Losoi
+ * @file QUnit tests for PathWalue-application.
  *
  * @requires Lodash
  * @requires jQuery
@@ -122,6 +123,14 @@ var DATA = {
 // Test data initialize functions
 // ------------------------------
 
+/**
+ * @function createFilter
+ * @summary Create a filter object for pw.filterPathways.
+ *
+ * @param {array} conditions - Name, condition -pairs.
+ *
+ * @returns {object} Filter object.
+ */
 function createFilter(conditions) {
     var filter = {compounds: [], enzymes: [], source: '', target: '',
                   links: []};
@@ -132,6 +141,12 @@ function createFilter(conditions) {
 }
 
 
+/**
+ * @function createInputForm
+ * @summary Creates a temporary HTML form.
+ *
+ * @returns {HTML form}
+ */
 function createInputForm() {
     var form = document.createElement('FORM');
     var attrOption = {value:10, text:'10', selected:true};
@@ -149,6 +164,15 @@ function createInputForm() {
 }
 
 
+/**
+ * @function createMultiselect
+ * @summary Creates a HTML multiselect element.
+ *
+ * @param {HTML document} documentObject - The document.
+ * @param {string} elementName - Name of the element.
+ *
+ * @returns {HTML select}
+ */
 function createMultiselect(documentObject, elementName) {
     var multiselect = documentObject.createElement('SELECT');
     var option1 = documentObject.createElement('OPTION');
@@ -164,6 +188,12 @@ function createMultiselect(documentObject, elementName) {
 }
 
 
+/**
+ * @function createPathways
+ * @summary Returns the set of test pathways.
+ *
+ * @returns {array} Arrays of test pathways.
+ */
 function createPathways() {
     return [
         ['1'], ['1', '4'], ['1', '4', '5'],
