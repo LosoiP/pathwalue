@@ -24,7 +24,7 @@
 <p>
 The PathWalue application is intended to find biochemical pathways that have commercial potential.
 The commercial potential of a pathway is estimated by the value of the compounds involved in the pathway and the complexity of the reaction steps needed.
-The price and demand data of compounds and complexity data of reactions are synthetic in the test version and they aren't necessarily realistic.
+The price and demand data of compounds are synthetic and they aren't necessarily realistic.
 </p>
 <p>
 A pathway is considered to have a good commercial potential if its reaction steps are not too complex to implement and its products are more valuable than its substrates.
@@ -175,12 +175,12 @@ The synthetic database was prepared by using ChEBI compound ontology that also i
 For example, compounds connected to ChEBI 33292 "fuel" were assigned demand, or compounds connected to ChEBI 23019 "carbonyl group" were assigned price.
 </p>
 <p>
-Reaction complexities are based on the amount and types of biochemically important cofactors involved in the reaction step.
-PathWalue considers reactions involving cofactors less complex than those that don't involve.
-This mechanism favours pathways that involve biologically meaningful cofactors.
+Reaction complexity consists of two factors: the total amount of reaction steps present and the similarity of all pathway products to all pathway substrates.
+Short pathways are preferred over long ones, and pathways with similar substrates and products are preferred.
+The idea is, that the more similar the set of all substrates is to the set of all products, the less the pathway branches and leaves cofactors unregenerated.
 </p>
 <p>
-A pathway's score is evaluated as (total value of products of last reaction &minus; total value of substrates of first reaction) &sdot; &radic;(amount of chemical species present in both pathway substrates and products &frasl; amount of all chemical species present) &frasl;((cofactor score + 1) &sdot; (amount of reaction steps)<sup>2</sup>).
+A pathway's score is evaluated as (total value of products of last reaction &minus; total value of substrates of first reaction) &sdot; &radic;(amount of chemical species present in both pathway substrates and products &frasl; amount of all chemical species present) &frasl; amount of reaction steps<sup>2</sup>).
 </p>
 
 
@@ -229,7 +229,7 @@ The application has been tested using Firefox 45 and Internet Explorer 11 web br
 
 
 <div class="footer">
-<p><small>Author: Pauli Losoi<br />Updated: 14.2.2017</small></p>
+<p><small>Author: Pauli Losoi<br />Updated: 6.3.2017</small></p>
 <h2>Powered by</h2>
 <p>
 <ul class="inline">
