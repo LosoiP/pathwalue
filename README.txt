@@ -18,7 +18,6 @@ Full Table of Contents of repository (31.1.2017):
 FILTERED_CHEBIS.txt
 LICENSE.txt
 MARKET_CHEBIS.txt
-REACTION_CHEBIS.txt
 README.txt
 details.html
 index.html
@@ -76,7 +75,6 @@ static/  # Directory for non-html files served.
             cmp_reactions.js
             ec_names.js
             ec_reactions.js
-            rxn_complexities.js
             rxn_ecs.js
             rxn_equations.js
             rxn_stoichiometrics.js
