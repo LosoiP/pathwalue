@@ -34,14 +34,6 @@ var RHEA_CHEBIS = {
     '8': [{'7': 4}, {'8': 4}],
     '9': [{'8': 4}, {'9': 4}],
 };
-var COMPLEXITIES = {
-    '1': 1,
-    '2': 2,
-    '3': 3,
-    '4': 4,
-    '5': 5,
-    '6': 6,
-};
 var CHEBI_RHEAS = {
     '1': [['1', '2'], ['3', '5']],
     '2': [['1', '2'], ['3', '5']],
@@ -107,7 +99,6 @@ var EC_RHEAS = {
 };
 var DATA = {
     'stoichiometrics': RHEA_CHEBIS,
-    'complexities': COMPLEXITIES,
     'compound_reactions': CHEBI_RHEAS,
     'demands': DEMANDS,
     'prices': PRICES,
@@ -348,37 +339,26 @@ QUnit.test('testReturnCorrectCombinationResults', function (assert) {
 
 QUnit.module('testEvaluatePathway');
 QUnit.test('testCorrectResults', function (assert) {
-    var steps1 = [[1, ['5', '6'], ['3', '4']]];
-    var steps2 = [
-        [2, ['1', '2'], ['5', '6']],
-        [3, ['5', '6'], ['3', '4']],
-    ];
-    var steps3 = [
-        [4, ['3', '4'], ['5', '6']],
-        [5, ['5', '6'], ['3', '4']],
-        [6, ['3', '4'], ['1', '2']],
-    ];
-    var compounds = {
-        '1': [6, 6], '2': [5, 5], '3': [4, 4],
-        '4': [3, 3], '5': [2, 2], '6': [1, 1],
-    };
+    var pathway1 = ['6'];
+    var pathway2 = ['2', '6'];
+    var pathway3 = ['4', '6', '3'];
 
-    var value1 = PW.evaluatePathway(steps1, compounds);
-    var value2 = PW.evaluatePathway(steps2, compounds);
-    var value3 = PW.evaluatePathway(steps3, compounds);
-    var evaluateFunction = function(s, p, r, c, n) {
-        return Math.ceil(10*Math.sqrt(s)*(p-r)/((c+1)*Math.pow(n,2)));
+    var value1 = PW.evaluatePathway(pathway1, DATA);
+    var value2 = PW.evaluatePathway(pathway2, DATA);
+    var value3 = PW.evaluatePathway(pathway3, DATA);
+    var evaluateFunction = function(s, p, r, n) {
+        return Math.ceil(10*Math.sqrt(s)*(p-r)/Math.pow(n,2));
     };
-    var correctValue1 = evaluateFunction(0, 25, 3, 1, 1);
-    var correctValue2 = evaluateFunction(1/3, 25, 61, 5, 2);
-    var correctValue3 = evaluateFunction(2/3, 61, 25, 15, 3);
+    var correctValue1 = evaluateFunction(0, 24, 16, 1);
+    var correctValue2 = evaluateFunction(1/3, 24, 16, 2);
+    var correctValue3 = evaluateFunction(2/3, 16, 24, 3);
 
     assert.strictEqual(value1, correctValue1,
-        'steps 1 -> ceil(10 * sqrt(0) * (25 - 3) / ((1 + 1) * 1^2)');
+        'steps 1 -> ceil(10 * sqrt(0) * (25 - 3) / 1^2');
     assert.strictEqual(value2, correctValue2,
-        'steps 2 -> ceil(10 * sqrt(1/3) * (25 - 61) / ((5 + 1) * 2^2)');
+        'steps 2 -> ceil(10 * sqrt(1/3) * (25 - 61) / 2^2');
     assert.strictEqual(value3, correctValue3,
-        'steps 3 -> ceil(10 * sqrt(2/3) * (61 - 25) / ((15 + 1) * 3^2)');
+        'steps 3 -> ceil(10 * sqrt(2/3) * (61 - 25) / 3^2');
 });
 
 
@@ -805,36 +785,3 @@ QUnit.test('testCorrectIgnores', function (assert) {
     assert.deepEqual(G2.edges(), correctEdges2, 'correct edges I12');
 });
 
-
-QUnit.module('testOrderPathwayData');
-QUnit.test('testReturnCorrectData', function (assert) {
-    var pathways = [['1', '2', '3'], ['4', '5', '6']];
-
-    var output = PW.orderPathwayData(
-        pathways, RHEA_CHEBIS, COMPLEXITIES, DEMANDS, PRICES);
-
-    var steps = [
-        [
-            [1, ['1', '2'], ['3', '4']],
-            [2, ['1', '2'], ['5', '6']],
-            [3, ['3', '4'], ['1', '2']]
-        ],
-        [
-            [4, ['3', '4'], ['5', '6']],
-            [5, ['5', '6'], ['1', '2']],
-            [6, ['5', '6'], ['3', '4']]
-        ],
-    ];
-    var compounds = [
-        {
-            '1': [1, 6], '2': [2, 5], '3': [3, 4],
-            '4': [4, 3], '5': [5, 2], '6': [6, 1],
-        },
-        {
-            '1': [1, 6], '2': [2, 5], '3': [3, 4],
-            '4': [4, 3], '5': [5, 2], '6': [6, 1],
-        },
-    ];
-    assert.deepEqual(output[0], steps, 'correct step data');
-    assert.deepEqual(output[1], compounds, 'correct compound data');
-});

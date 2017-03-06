@@ -54,7 +54,6 @@ function evaluateInput(G, n, C, E, Fl, context) {
     var pathways = [];
     var ecReactions = context['ec_reactions'];
     var compoundReactions = context['compound_reactions'];
-    var complexities = context['complexities'];
     var demands = context['demands'];
     var prices = context['prices'];
     var stoichiometrics = context['stoichiometrics'];
@@ -134,10 +133,8 @@ function evaluateInput(G, n, C, E, Fl, context) {
         }
     });
     // Fetch data for evaluate function.
-    data = orderPathwayData(
-        pathways, stoichiometrics, complexities, demands, prices);
-    _.forEach(_.zip(data[0], data[1]), function (SC) {
-        values.push(evaluatePathway(SC[0], SC[1]));
+    _.forEach(pathways, function (pathway) {
+        values.push(evaluatePathway(pathway, context));
     });
     return _.sortBy(_.zip(values, pathways), function (pw) {return - pw[0];}).slice(0, n);
 }
@@ -147,32 +144,29 @@ function evaluateInput(G, n, C, E, Fl, context) {
  * @function evaluatePathway
  * @summary Return pathway value.
  *
- * @param {array} steps - Reaction steps.
- * @param {object} compounds - Compound data.
+ * @param {array} pathway - Reaction Rhea ID strings.
+ * @param {object} context - Data context.
  *
  * @returns {number} Pathway score.
  */
-function evaluatePathway(steps, compounds) {
-    var rxns = [];
+function evaluatePathway(pathway, context) {
     var pros = [];
     var subs = [];
     var substratesAll = [];
     var productsAll = [];
-    var substrates = _.head(steps)[1];
-    var products = _.last(steps)[2];
+    var substrates = _.keys(context.stoichiometrics[_.head(pathway)][0]);
+    var products = _.keys(context.stoichiometrics[_.last(pathway)][1]);
     var s = 1;
     var p = 1;
     var r = 1;
-    var c = 1;
-    var n = steps.length;
-    _.forEach(steps, function(step) {
-        rxns.push(step[0]);
-        substratesAll.push.apply(substratesAll, step[1]);
-        productsAll.push.apply(productsAll, step[2]);
+    var n = pathway.length;
+    _.forEach(pathway, function(reaction) {
+        substratesAll.push.apply(substratesAll, _.keys(context.stoichiometrics[reaction][0]));
+        productsAll.push.apply(productsAll, _.keys(context.stoichiometrics[reaction][1]));
     });
     _.forEach(substrates, function(s) {
         try {
-            subs.push(compounds[s][0] * compounds[s][1]);
+            subs.push(context.demands[s] * context.prices[s]);
         }
         catch (error) {
             ;
@@ -180,7 +174,7 @@ function evaluatePathway(steps, compounds) {
     });
     _.forEach(products, function(p) {
         try {
-            pros.push(compounds[p][0] * compounds[p][1]);
+            pros.push(context.demands[p] * context.prices[p]);
         }
         catch (error) {
             ;
@@ -190,8 +184,7 @@ function evaluatePathway(steps, compounds) {
     s = _.intersection(substratesAll, productsAll).length / _.union(substratesAll, productsAll).length;
     p = _.sum(pros);
     r = _.sum(subs);
-    c = _.sum(rxns);
-    return Math.ceil(10*Math.sqrt(s)*(p-r)/((c+1)*Math.pow(n,2)));
+    return Math.ceil(10*Math.sqrt(s)*(p-r)/Math.pow(n,2));
 }
 
 
@@ -481,11 +474,8 @@ function formatPathway(document, pathway, context) {
     _.forEach(_.keys(context.stoichiometrics[_.last(pathway[1])][1]), function (chebi) {
         productPoints += context.prices[chebi] * context.demands[chebi];
     });
-    _.forEach(pathway[1], function (rhea) {
-        reactionPoints += context.complexities[rhea];
-    });
     li = createHTMLElement(document, 'LI');
-    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') ' + ' &sdot; &radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + '<sup>2</sup>)</small>';
+    li.innerHTML = 'Score: ' + pwPoints.toString() + ', <small>(' + productPoints.toString() + ' &minus; ' + substratePoints.toString() + ') ' + ' &sdot; &radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ' + pathway[1].length.toString() + '<sup>2</sup></small>';
     ulMain.appendChild(li);
     // Substrates
     li = formatList(document, 'UL', 'Substrates: <small>' + substratePoints.toString() + '</small>', S, formatCompound, context);
@@ -498,7 +488,7 @@ function formatPathway(document, pathway, context) {
     li = formatList(document, 'UL', 'Products: <small>' + productPoints.toString() + '</small>', P, formatCompound, context);
     ulMain.appendChild(li);
     // Reaction steps
-    li = formatList(document, 'OL', 'Reaction steps: <small>&radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ((' + reactionPoints.toString() + ' + 1) &sdot; ' + pathway[1].length.toString() + '<sup>2</sup>)</small>', pathway[1],
+    li = formatList(document, 'OL', 'Reaction steps: <small>&radic;(' + similarityIntersection.toString() + ' &frasl; ' + similarityUnion.toString() + ')' + ' &frasl; ' + pathway[1].length.toString() + '<sup>2</sup></small>', pathway[1],
             formatReaction, context);
     ulMain.appendChild(li);
     
@@ -671,49 +661,6 @@ function initializeForm(rheaChebis, chebiNames, rheaEcs, ecNames) {
 
 
 /**
- * @function orderPathwayData
- * @summary Return data for pathway evaluation.
- *
- * @param {array} pathways - Arrays of Rhea ID strings.
- * @param {object} S - Stoichiometry mapping object.
- * @param {object} C - Compounds to reactions mapping object.
- * @param {object} D - Compounds to demands mapping object.
- * @param {object} P - Compounds to prices mapping object.
- *
- * @returns {array} Steps, compounds.
- */
-function orderPathwayData(pathways, S, C, D, P) {
-    var steps = [];
-    var stepsPw;
-    var compounds = [];
-    var compoundsPw;
-    var reaction = [];
-    var substrates = [];
-    var products = [];
-    var subs;
-    var pros;
-    _.forEach(pathways, function(pw) {
-        stepsPw = [];
-        compoundsPw = {};
-        _.forEach(pw, function (rxn) {
-            substrates = _.keys(S[rxn][0]);
-            products = _.keys(S[rxn][1]);
-            _.forEach(substrates, function(s) {
-                compoundsPw[s] = [D[s], P[s]];
-            });
-            _.forEach(products, function(p) {
-                compoundsPw[p] = [D[p], P[p]];
-            });
-            stepsPw.push([C[rxn], substrates, products]);
-        });
-        steps.push(stepsPw);
-        compounds.push(compoundsPw);
-    });
-    return [steps, compounds];
-}
-
-
-/**
  * @function submitSearch
  * @summary Submit and evaluate input and return output.
  *
@@ -795,7 +742,6 @@ PW.getInputValues = getInputValues;
 PW.getMultiselectValues = getMultiselectValues;
 PW.initializeGraph = initializeGraph;
 PW.initializeForm = initializeForm;
-PW.orderPathwayData = orderPathwayData;
 PW.submitSearch = submitSearch;
 PW.validateInputCE = validateInputCE;
 PW.validateInputN = validateInputN;
