@@ -95,7 +95,7 @@ class TestParseRelations:
     def test_return_correct_compound_names(self):
         compound_relations = chebi.parse_relations(self.relations,
                                                    self.vertex_compounds)
-        assert compound_relations == {'C2': {'C1': 'T1'}}
+        assert compound_relations == {'C1': {'C2': 'T1'}}
 
 
 class TestParseVertices:

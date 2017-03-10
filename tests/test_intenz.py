@@ -57,7 +57,7 @@ DR   P53761, LCAT_RABIT ;  P18424, LCAT_RAT   ;  O35840, LCAT_TATKG ;
 class TestGetEnzymes:
 
     def test_yield_correct_output(self):
-        output = list(ie.get_enzymes([s + '\n' for s in SAMPLES]))
+        output = list(intenz.get_enzymes([s + '\n' for s in SAMPLES]))
         correct = [
             {'ec': '1.14.17.3',
              'name': 'Peptidylglycine monooxygenase'
@@ -78,17 +78,17 @@ class TestMergeDicts:
         ]
 
     def test_return_empty_dict_for_empty_iterable(self):
-        assert ie.merge_dicts([], 'key1', 'key2') == {}
+        assert intenz.merge_dicts([], 'key1', 'key2') == {}
 
     def test_return_empty_dict_for_invalid_key(self):
-        assert ie.merge_dicts(self.samples, '', 'key1') == {}
+        assert intenz.merge_dicts(self.samples, '', 'key1') == {}
 
     def test_return_empty_values_for_invalid_value_key(self):
-        output = ie.merge_dicts(self.samples, 'key1', '')
+        output = intenz.merge_dicts(self.samples, 'key1', '')
         assert not any(value for value in output.values())
 
     def test_return_correct_key_value_pairs(self):
-        output = ie.merge_dicts(self.samples, 'key1', 'key2')
+        output = intenz.merge_dicts(self.samples, 'key1', 'key2')
         correct = {
             'value11': 'value12',
             'value21': 'value22',
@@ -97,7 +97,7 @@ class TestMergeDicts:
         assert output == correct
 
     def test_return_correct_key_value_pairs_input_iter(self):
-        output = ie.merge_dicts(iter(self.samples), 'key1', 'key2')
+        output = intenz.merge_dicts(iter(self.samples), 'key1', 'key2')
         correct = {
             'value11': 'value12',
             'value21': 'value22',
@@ -106,7 +106,7 @@ class TestMergeDicts:
         assert output == correct
 
     def test_return_correct_key_none_pairs(self):
-        output = ie.merge_dicts(self.samples, 'key1', 'key3')
+        output = intenz.merge_dicts(self.samples, 'key1', 'key3')
         correct = {
             'value11': 'value13',
             'value21': 'value23',

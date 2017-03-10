@@ -36,46 +36,6 @@ COMPLEXITY_CMPS = {
     }
 
 
-class TestCompareFormulae:
-
-    def test_2_empty_dicts(self):
-        with pytest.raises(ValueError):
-            market.compare_formulae(({}, {}))
-
-    def test_neither_list_nor_tuple(self):
-        with pytest.raises(TypeError):
-            market.compare_formulae({'C': 6, 'H': 12, 'O': 6})
-
-    def test_too_few_dicts(self):
-        with pytest.raises(ValueError):
-            market.compare_formulae([{'C': 6, 'H': 12, 'O': 6}])
-
-    def test_too_many_dicts(self):
-        with pytest.raises(ValueError):
-            market.compare_formulae([{'C': 6}, {'H': 12}, {'O': 6}])
-
-    def test_2_different_dicts(self):
-        assert market.compare_formulae([{'Al': 1, 'Br': 3}, {'Br': 3}]) == 1
-
-    def test_2_identical_dicts(self):
-        assert market.compare_formulae(({'H': 2, 'O': 1}, {'H': 2, 'O': 1})) == 0
-
-
-class TestEvaluateComplexity:
-
-    def test_invalid_id(self):
-        with pytest.raises(market.ReactionIdError):
-            market.evaluate_complexity('a')
-
-    def test_not_str(self):
-        with pytest.raises(TypeError):
-            market.evaluate_complexity(1)
-
-    def test_correct_output(self):
-        output = market.evaluate_complexity('1', STOICHIOMETRICS, COMPLEXITY_CMPS)
-        assert output == 2*2 + 1*1
-
-
 class TestEvaluateCompound:
 
     def test_invalid_type_demand(self):
@@ -119,54 +79,3 @@ class TestInitializeGraph:
         correct = set(['1', '2', '3'])
         assert set(nx.nodes(self.graph)) == correct
 
-
-class TestParseFormula:
-
-    def test_invalid_characters(self):
-        with pytest.raises(market.ParseCharacterError):
-            market.parse_formula('?')
-
-    def test_not_str(self):
-        with pytest.raises(TypeError):
-            market.parse_formula(1)
-
-    def test_all_specials_1(self):
-        assert market.parse_formula('H2O.2(2H2O.C2H4)10.H2O') \
-            == {'C': 40, 'H': 164, 'O': 42}
-
-    def test_all_specials_2(self):
-        assert market.parse_formula('2Al(OH)3.(C6H12O6)n') \
-            == {'Al': 2, 'C': 6, 'H': 18, 'O': 12}
-
-    def test_all_specials_3(self):
-        number = 1 + 2*(1 + 2*(2 + 2*(2*2)))
-        assert market.parse_formula('OH.2OH(2OH.2(2OH)2)2') \
-            == {'H': number, 'O': number}
-
-    def test_dots_1(self):
-        assert market.parse_formula('10H2O.5H2O.H2O') == {'H': 32, 'O': 16}
-
-    def test_dots_2(self):
-        assert market.parse_formula('Al2O3.5Al2O3.10Al2O3') == {'Al': 32, 'O': 48}
-
-    def test_empty_str(self):
-        assert market.parse_formula('') == {}
-
-    def test_no_numbers_1(self):
-        assert market.parse_formula('CHO') == {'C': 1, 'H': 1, 'O': 1}
-
-    def test_no_numbers_2(self):
-        assert market.parse_formula('AlBrCr') == {'Al': 1, 'Br': 1, 'Cr': 1}
-
-    def test_no_numbers_3(self):
-        assert market.parse_formula('AlCHNa') == {'Al': 1, 'C': 1, 'H': 1, 'Na': 1}
-
-    def test_parentheses_1(self):
-        assert market.parse_formula('(Al2O3)10') == {'Al': 20, 'O': 30}
-
-    def test_parentheses_2(self):
-        assert market.parse_formula('(C100Br20)n') == {'Br': 20, 'C': 100}
-
-    def test_parentheses_3(self):
-        assert market.parse_formula('(SH2(SO4(OH)2)2)2') \
-            == {'H': 12, 'O': 24, 'S': 6}
