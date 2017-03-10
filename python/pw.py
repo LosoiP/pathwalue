@@ -139,7 +139,7 @@ def evaluate_input(n, graph, compounds=[], enzymes=[], context={}):
     return nbest_items(n, values, pathways)
 
 
-def evaluate_pathway(steps, compounds):
+def evaluate_pathway(pathway, context):
     """
     Evaluate pathway.
 
@@ -149,13 +149,10 @@ def evaluate_pathway(steps, compounds):
 
     Parameters
     ----------
-    steps : collections.OrderedDict
-        Keys are Rhea ID strings and values are dicts of substrate and
-        product ChEBI ID-stoichiometric number -pairs. Order matches
-        the order of reaction steps.
-    compounds : dict
-        Keys are ChEBI ID strings and value are tuples of compound
-        demands and prices.
+    pathway : iterable of strings
+        Rhea ID strings.
+    context : dict
+        Context data.
 
     Returns
     -------
@@ -163,25 +160,24 @@ def evaluate_pathway(steps, compounds):
         Pathway's value.
 
     """
-    values_reactions = (data[0] for data in steps.values())
-    substrates_all = set(s for step in steps.values() for s in step[1])
-    products_all = set(p for step in steps.values() for p in step[2])
-    steps_list = list(steps.values())
-    substrates = steps_list[0][1]
-    products = steps_list[-1][2]
-    values_reactants = (compounds[s][1] * compounds[s][0] for s in substrates)
-    values_products = (compounds[p][1] * compounds[p][0] for p in products)
-    amount_reactions = len(steps)
+    prices = context['prices']
+    demands = context['demands']
+    stoich = context['stoichiometrics']
+    substrates_all = set(s for rxn in pathway for s in stoich[rxn][0])
+    products_all = set(p for rxn in pathway for p in stoich[rxn][1])
+    substrates = stoich[pathway[0]][0]
+    products = stoich[pathway[-1]][1]
+    values_reactants = (prices[s] * demands[s] for s in substrates)
+    values_products = (prices[p] * demands[p] for p in products)
+    amount_reactions = len(pathway)
 
     # Evaluate similarity of reactants and products.
     s = len(substrates_all & products_all) / len(substrates_all | products_all)
     # Evaluate total value of products and reactants.
     p = sum(values_products)
     r = sum(values_reactants)
-    # Evaluate pathway's total complexity factor.
-    c = sum(values_reactions)
     # Evaluate and return pathway's value.
-    value = m.ceil(10 * m.sqrt(s) * (p - r) / ((c + 1) * amount_reactions**2))
+    value = m.ceil(10 * m.sqrt(s) * (p - r) / amount_reactions**2)
     return value
 
 
