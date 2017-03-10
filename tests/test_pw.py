@@ -24,14 +24,6 @@ STOICHIOMETRICS = {
     '5': [['5', '5', '6'], ['1', '2', '2']],
     '6': [['5', '5', '6'], ['3', '3', '3', '4', '4', '4', '4']],
     }
-COMPLEXITIES = {
-    '1': 1,
-    '2': 2,
-    '3': 3,
-    '4': 4,
-    '5': 5,
-    '6': 6,
-    }
 COMPOUND_REACTIONS = {
     '1': [['1', '2'], ['3', '5']],
     '2': [['1', '2'], ['3', '5']],
@@ -94,7 +86,6 @@ EC_REACTIONS = {
     }
 CONTEXT = {
     'stoichiometrics': STOICHIOMETRICS,
-    'complexities': COMPLEXITIES,
     'compound_reactions': COMPOUND_REACTIONS,
     'demands': DEMANDS,
     'prices': PRICES,
@@ -257,38 +248,25 @@ class TestEvaluateInput:
 
 class TestEvaluatePathway:
 
-    steps_1 = OrderedDict([
-        ('6', [6, {'5': 5, '6': 6}, {'3': 3, '4': 4}]),
-        ])
-    steps_2 = OrderedDict([
-        ('2', [2, {'1': 1, '2': 2}, {'5': 5, '6': 6}]),
-        ('6', [6, {'5': 5, '6': 6}, {'3': 3, '4': 4}]),
-        ])
-    steps_3 = OrderedDict([
-        ('4', [4, {'3': 3, '4': 4}, {'5': 5, '6': 6}]),
-        ('6', [6, {'5': 5, '6': 6}, {'3': 3, '4': 4}]),
-        ('3', [3, {'3': 3, '4': 4}, {'1': 1, '2': 2}]),
-        ])
-    compounds = {
-        '1': (1, 6), '2': (2, 5), '3': (3, 4),
-        '4': (4, 3), '5': (5, 2), '6': (1, 6),
-        }
+    pathway_1 = ['6']
+    pathway_2 = ['2', '6']
+    pathway_3 = ['4', '6', '3']
 
-    def test_raise_typeerror_compounds_not_dict(self):
-        with pytest.raises(TypeError):
-            pw.evaluate_pathway(self.steps_1, list(self.compounds))
+    def evaluate(self, similarity, products, reactants, length):
+        score = pw.m.sqrt(similarity)*(products-reactants)/length**2
+        return pw.m.ceil(10*score)
 
-    def test_return_correct_value_56_steps_1(self):
-        output = pw.evaluate_pathway(self.steps_1, self.compounds)
-        assert output == 56
+    def test_return_correct_value_0_pathway_1(self):
+        output = pw.evaluate_pathway(self.pathway_1, CONTEXT)
+        assert output == self.evaluate(0, 24, 16, 1)
 
-    def test_return_correct_value_36_steps_2(self):
-        output = pw.evaluate_pathway(self.steps_2, self.compounds)
-        assert output == 36
+    def test_return_correct_value_12_pathway_2(self):
+        output = pw.evaluate_pathway(self.pathway_2, CONTEXT)
+        assert output == self.evaluate(1/3, 24, 16, 2)
 
-    def test_return_correct_value_ceil_16times14per3_steps_3(self):
-        output = pw.evaluate_pathway(self.steps_3, self.compounds)
-        assert output == pw.m.ceil(16 * 14 / 3)
+    def test_return_correct_value_minus7_pathway_3(self):
+        output = pw.evaluate_pathway(self.pathway_3, CONTEXT)
+        assert output == self.evaluate(2/3, 16, 24, 3)
 
 
 class TestFilterPathways:
@@ -609,38 +587,3 @@ class TestNBestItems:
         correct = [(6, 'best'), (5, 'better'), (4, 'good')]
         assert output == correct
 
-
-class TestOrderPathwayData:
-
-    pathways = [
-        ['1', '2', '3'],
-        ['4', '5', '6'],
-        ]
-    output = list(pw.order_pathway_data(
-        pathways, STOICHIOMETRICS, COMPLEXITIES, DEMANDS, PRICES))
-
-    def test_yield_correct_compounds(self):
-        compounds = [c for __, c in self.output]
-        assert compounds == [
-            {'1': (1, 6), '2': (2, 5), '3': (3, 4),
-             '4': (4, 3), '5': (5, 2), '6': (6, 1),
-             },
-            {'1': (1, 6), '2': (2, 5), '3': (3, 4),
-             '4': (4, 3), '5': (5, 2), '6': (6, 1),
-             },
-            ]
-
-    def test_yield_correct_steps(self):
-        steps = [s for s, __ in self.output]
-        assert steps == [
-            OrderedDict([
-                ('1', [1, {'1': 1, '2': 1}, {'3': 1, '4': 1}]),
-                ('2', [2, {'1': 2, '2': 2}, {'5': 2, '6': 2}]),
-                ('3', [3, {'3': 1, '4': 1}, {'1': 1, '2': 1}]),
-                ]),
-            OrderedDict([
-                ('4', [4, {'3': 3, '4': 3}, {'5': 3, '6': 3}]),
-                ('5', [5, {'5': 2, '6': 2}, {'1': 2, '2': 2}]),
-                ('6', [6, {'5': 3, '6': 3}, {'3': 3, '4': 3}]),
-                ]),
-            ]

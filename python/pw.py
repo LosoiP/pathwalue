@@ -22,8 +22,6 @@ initialize_graph
     Initialize networkx.DiGraph for pathway analysis.
 nbest_items
     Return n highest scored items.
-order_pathway_data
-    Collect and pack pathway data.
 """
 
 
@@ -429,51 +427,3 @@ def nbest_items(n, values, items):
     values_max = [values[index_max] for index_max in indices_max]
     return sorted(list(zip(values_max, items_max)), reverse=True)[:n]
 
-
-def order_pathway_data(
-        pathways,
-        stoichiometrics={},
-        complexities={},
-        demands={},
-        prices={},
-        ):
-    """
-    Yield ordered pathway dicts.
-
-    Parameters
-    ----------
-    pathways : iterable
-        Lists or tuples of ordered reaction Rhea ID strings.
-    stoichiometrics : dict
-        Mapping from Rhea reaction ID string to lists of 2 dicts. [0]
-        maps reactant ChEBI ID strings to stoichiometric numbers and [1]
-        maps product ChEBI ID strings to stoichiometric numbers.
-    complexities : dict
-        Maps Rhea reaction ID strings to complexity values.
-    demands : dict
-        Maps ChEBI compound ID strings to demand values.
-    prices : dict
-        Maps ChEBI compound ID strings to price values.
-
-    Yields
-    ------
-    tuple
-        [0] collections.OrderedDict of Rhea ID string keys and value
-        lists of reaction complexities and dicts of reactant and
-        product ChEBI ID strings keys and stoichiometric number values.
-        [1] Dict of ChEBI ID string keys and value tuples of compound
-        demand and price.
-
-    """
-    for pw in pathways:
-        steps = cl.OrderedDict()
-        compounds = {}
-        for step in pw:
-            reactants, products = stoichiometrics[step]
-            complexity = complexities[step]
-            steps[step] = [complexity, reactants, products]
-            compounds.update(
-                (r, (demands[r], prices[r])) for r in reactants)
-            compounds.update(
-                (p, (demands[p], prices[p])) for p in products)
-        yield steps, compounds
