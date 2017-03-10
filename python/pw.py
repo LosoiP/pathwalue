@@ -94,7 +94,6 @@ def evaluate_input(n, graph, compounds=[], enzymes=[], context={}):
 
     ec_reactions = context['ec_reactions']
     compound_reactions = context['compound_reactions']
-    complexities = context['complexities']
     demands = context['demands']
     prices = context['prices']
     stoichiometrics = context['stoichiometrics']
@@ -133,9 +132,7 @@ def evaluate_input(n, graph, compounds=[], enzymes=[], context={}):
 
     # Evaluate pathways.
     pathways = list(pathways)
-    pathway_data = order_pathway_data(pathways, stoichiometrics,
-                                      complexities, demands, prices)
-    values = [evaluate_pathway(s, c) for s, c in pathway_data]
+    values = [evaluate_pathway(pathway, context) for pathway in pathways]
     return nbest_items(n, values, pathways)
 
 
